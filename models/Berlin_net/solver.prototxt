@@ -1,0 +1,14 @@
+net: "/home/mpss2015m_1/DeepAudio/iLID/models/Berlin_net/net_mel_2lang_bn.prototxt"
+test_iter: 2500
+test_interval: 1000
+base_lr: 0.1
+lr_policy: "step"
+stepsize: 7000
+gamma: 0.1
+display: 100
+max_iter: 10000
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 10000
+snapshot_prefix: "snapshots/berlin_net"
+solver_mode: GPU

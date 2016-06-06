@@ -1,0 +1,26 @@
+english:
+  users:
+    - CNN
+    - bbcnews
+  playlists:
+    -
+german:
+  users:
+    - deutschewelle
+    - euronewsde
+    - N24de
+  playlists:
+    -
+french:
+  users:
+    - france24
+    - myFrancetv
+  playlists:
+    -
+spanish:
+  users:
+    - antena3noticias
+    - rtve
+  playlists:
+    -
+
