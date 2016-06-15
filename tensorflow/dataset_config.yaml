@@ -1,0 +1,9 @@
+train_dir: "/Users/therold/Programming/ML/deeptank/dataset/tf_records"
+batch_size: 32
+num_classes: 4
+learning_rate: 0.001
+max_steps: 100000
+
+image_width: 299
+image_height: 299
+image_depth: 3
