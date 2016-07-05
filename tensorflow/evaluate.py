@@ -70,7 +70,7 @@ def evaluate():
 
         if ckpt and ckpt.model_checkpoint_path:
             # Restores from checkpoint with relative path.
-            saver.restore(sess, ckpt.model_checkpoint_path)
+            saver.restore(sess, os.path.abspath(ckpt.model_checkpoint_path))
 
             # Assuming model_checkpoint_path looks something like:
             #   /my-favorite-path/imagenet_train/model.ckpt-0,
@@ -104,11 +104,11 @@ def evaluate():
 
                 while step < num_iter and not coord.should_stop():
 
-                    predicted, labels = sess.run([predictions_op, labels])
+                    predicted_y, true_y = sess.run([predictions_op, labels])
 
                     # Keep a running tally for evaluating on the whole test set
-                    predicted_labels = np.append(predicted_labels, predicted)
-                    true_labels = np.append(true_labels, labels)
+                    predicted_labels = np.append(predicted_labels, predicted_y)
+                    true_labels = np.append(true_labels, true_y)
 
                     step += 1
 
