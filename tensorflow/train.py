@@ -26,7 +26,7 @@ def train():
     with tf.Graph().as_default():
 
         # Init Data Loader
-        image_shape = [dataset_config["image_width"], dataset_config["image_height"], dataset_config["image_depth"]]
+        image_shape = [dataset_config["image_height"], dataset_config["image_width"], dataset_config["image_depth"]]
         images, labels = csv_loader.get(dataset_config["data_dir"], image_shape, dataset_config["batch_size"], "train")
 
 

@@ -5,6 +5,7 @@ from tensorflowslim import ops
 from tensorflowslim.scopes import arg_scope
 from tensorflowslim import scopes
 from tensorflowslim import variables
+from collections import OrderedDict
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -17,24 +18,24 @@ def create_model(inputs, num_classes, dropout_keep_prob=0.8):
         'epsilon': 0.001,
     }
 
-    end_points = {}
+    end_points = OrderedDict()
 
     with arg_scope([ops.conv2d, ops.fc], stddev=0.01, weight_decay=0.0005, ):
         with arg_scope([ops.conv2d], stddev=0.1, activation=tf.nn.relu, batch_norm_params=batch_norm_params):
             end_points['conv1'] = ops.conv2d(inputs, 12, [6, 6], scope='conv1')
             end_points['pool1'] = ops.max_pool(end_points['conv1'], [2, 2], scope='pool1')
-            end_points['conv2'] = ops.conv2d(inputs, 12, [6, 6], scope='conv2')
+            end_points['conv2'] = ops.conv2d(end_points['pool1'], 12, [6, 6], scope='conv2')
             end_points['pool2'] = ops.max_pool(end_points['conv2'], [2, 2], scope='pool2')
-            end_points['conv3'] = ops.conv2d(inputs, 12, [6, 6], scope='conv3')
+            end_points['conv3'] = ops.conv2d(end_points['pool2'], 12, [6, 6], scope='conv3')
 
-            end_points['pool3'] = ops.max_pool(end_points['conv2'], [141, 1], scope='pool3')
+            end_points['pool3'] = ops.max_pool(end_points['conv3'], [1, 1], scope='pool3')
 
             flatten = ops.flatten(end_points['pool3'], scope='flatten4')
             end_points['logits'] = ops.fc(flatten, num_classes, activation=None, scope='logits')
             # Softmax is happening in loss function
 
-            for endpoint in end_points:
-                print tf.shape(endpoint)
+            for key, endpoint in end_points.iteritems():
+                print "{0}: {1}".format(key, endpoint._shape)
 
 
             return end_points['logits'], end_points

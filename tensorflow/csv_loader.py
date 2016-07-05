@@ -97,7 +97,7 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
 def get(csv_path, data_shape, batch_size=32, subset="train"):
     # Generates image, label batches
 
-    if not os.path.isf1ile(csv_path):
+    if not os.path.isfile(csv_path):
         print('No file found for dataset %s' % csv_path)
         exit(-1)
 
