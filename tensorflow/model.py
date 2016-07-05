@@ -9,7 +9,7 @@ from tensorflowslim import variables
 FLAGS = tf.app.flags.FLAGS
 
 
-def create_model(inputs, ropout_keep_prob=0.8, num_classes=4):
+def create_model(inputs, num_classes, dropout_keep_prob=0.8):
     batch_norm_params = {
         # Decay for the moving averages
         'decay': 0.9997,
@@ -21,23 +21,20 @@ def create_model(inputs, ropout_keep_prob=0.8, num_classes=4):
 
     with arg_scope([ops.conv2d, ops.fc], stddev=0.01, weight_decay=0.0005, ):
         with arg_scope([ops.conv2d], stddev=0.1, activation=tf.nn.relu, batch_norm_params=batch_norm_params):
-            end_points['conv1'] = ops.repeat_op(2, inputs, ops.conv2d, 64, [3, 3], scope='conv1')
+            end_points['conv1'] = ops.conv2d(inputs, 12, [6, 6], scope='conv1')
             end_points['pool1'] = ops.max_pool(end_points['conv1'], [2, 2], scope='pool1')
-            end_points['conv2'] = ops.repeat_op(2, end_points['pool1'], ops.conv2d, 128, [3, 3], scope='conv2')
+            end_points['conv2'] = ops.conv2d(inputs, 12, [6, 6], scope='conv2')
             end_points['pool2'] = ops.max_pool(end_points['conv2'], [2, 2], scope='pool2')
-            end_points['conv3'] = ops.repeat_op(3, end_points['pool2'], ops.conv2d, 256, [3, 3], scope='conv3')
-            end_points['pool3'] = ops.max_pool(end_points['conv3'], [2, 2], scope='pool3')
-            end_points['conv4'] = ops.repeat_op(3, end_points['pool3'], ops.conv2d, 512, [3, 3], scope='conv4')
-            end_points['pool4'] = ops.max_pool(end_points['conv4'], [2, 2], scope='pool4')
-            end_points['conv5'] = ops.repeat_op(3, end_points['pool4'], ops.conv2d, 512, [3, 3], scope='conv5')
-            end_points['pool5'] = ops.max_pool(end_points['conv5'], [2, 2], scope='pool5')
-            flatten = ops.flatten(end_points['pool5'], scope='flatten5')
-            end_points['fc6'] = ops.fc(flatten, 4096, scope='fc6')
-            end_points['drop6'] = ops.dropout(end_points['fc6'], 0.5, scope='dropout6')
-            end_points['fc7'] = ops.fc(end_points['drop6'], 4096, scope='fc7')
-            end_points['drop7'] = ops.dropout(end_points['fc7'], 0.5, scope='dropout7')
-            end_points['logits'] = ops.fc(end_points["drop7"], num_classes, activation=None, scope='logits')
+            end_points['conv3'] = ops.conv2d(inputs, 12, [6, 6], scope='conv3')
+
+            end_points['pool3'] = ops.max_pool(end_points['conv2'], [141, 1], scope='pool3')
+
+            flatten = ops.flatten(end_points['pool3'], scope='flatten4')
+            end_points['logits'] = ops.fc(flatten, num_classes, activation=None, scope='logits')
             # Softmax is happening in loss function
+
+            for endpoint in end_points:
+                print tf.shape(endpoint)
 
 
             return end_points['logits'], end_points

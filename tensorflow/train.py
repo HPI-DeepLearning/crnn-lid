@@ -5,7 +5,8 @@ import os.path
 from datetime import datetime
 from yaml import load
 import model
-import tfrecord_loader
+# import tfrecord_loader
+import csv_loader
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -26,7 +27,7 @@ def train():
 
         # Init Data Loader
         image_shape = [dataset_config["image_width"], dataset_config["image_height"], dataset_config["image_depth"]]
-        images, labels = tfrecord_loader.get(dataset_config["train_dir"], image_shape, dataset_config["batch_size"], "train")
+        images, labels = csv_loader.get(dataset_config["data_dir"], image_shape, dataset_config["batch_size"], "train")
 
 
         # Init Model
@@ -81,7 +82,7 @@ def train():
                                     examples_per_sec, duration))
 
             # Save the summary periodically
-            if step % 100 == 0:
+            if step % 1 == 0:
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)
 
