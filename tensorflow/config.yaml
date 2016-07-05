@@ -1,0 +1,16 @@
+train_data_dir: "/Users/tomherold/datasets/2016-01-26_melfilter/train_youtube_en_de_fr_es.csv"
+test_data_dir: "/Users/tomherold/datasets/2016-01-26_melfilter/test_youtube_en_de_fr_es.csv"
+
+batch_size: 32
+learning_rate: 0.001
+max_train_steps: 100000
+
+num_train_files: 24000
+num_test_files: 6000
+
+image_width: 600
+image_height: 39
+image_depth: 3
+
+label_names: ["EN", "DE", "FR", "ES"]
+num_classes: 4

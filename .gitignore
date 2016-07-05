@@ -65,3 +65,4 @@ target/
 **/snapshots
 **/model.ckpt-157585
 .idea/**
+*/log/**

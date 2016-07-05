@@ -1,9 +1,0 @@
-data_dir: "/Users/therold/Uni/master-thesis/2016-01-26_melfilter/english.csv"
-batch_size: 32
-num_classes: 4
-learning_rate: 0.001
-max_steps: 100000
-
-image_width: 600
-image_height: 39
-image_depth: 3

@@ -1,4 +1,6 @@
 import tensorflow as tf
+from tensorflow.python.framework.errors import InvalidArgumentError
+import numpy as np
 import os
 
 FLAGS = tf.app.flags.FLAGS
@@ -10,20 +12,30 @@ tf.app.flags.DEFINE_integer('input_queue_memory_factor', 16,
                             """comments in code for more details.""")
 
 
-def decode_image(image_buffer, data_shape):
-    image = tf.image.decode_png(image_buffer, channels=3)
+def decode_image(image_path, data_shape):
 
-    # After this point, all image pixels reside in [0,1)
-    # until the very end, when they're rescaled to (-1, 1).  The various
-    # adjust_* ops all require this range for dtype float.
-    image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-    image.set_shape(data_shape)
+    try:
+        image_buffer = tf.read_file(image_path)
+        print image_path
+        image = tf.image.decode_png(image_buffer, channels=3)
+
+        # After this point, all image pixels reside in [0,1)
+        # until the very end, when they're rescaled to (-1, 1).  The various
+        # adjust_* ops all require this range for dtype float.
+        image = tf.image.convert_image_dtype(image, dtype=tf.float32)
+        image.set_shape(data_shape)
 
 
-# Finally, rescale to [-1,1] instead of [0, 1)
-    image = tf.sub(image, 0.5)
-    image = tf.mul(image, 2.0)
-    return image
+        # Finally, rescale to [-1,1] instead of [0, 1)
+        image = tf.sub(image, 0.5)
+        image = tf.mul(image, 2.0)
+
+    except Exception as e:
+        print("Invalid PNG file {0}. ({1})".format(image_path, e))
+        image = np.zeros(data_shape)
+
+    finally:
+        return image
 
 
 def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num_readers=1):
@@ -74,8 +86,7 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
 
             # load images
             image_path, label_index = image_path_label
-            image_buffer = tf.read_file(image_path)
-            image = decode_image(image_buffer, data_shape)
+            image = decode_image(image_path, data_shape)
 
             images_and_labels.append([image, label_index])
 
@@ -94,7 +105,7 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
         return images, tf.reshape(label_index_batch, [batch_size])
 
 
-def get(csv_path, data_shape, batch_size=32, subset="train"):
+def get(csv_path, data_shape, batch_size=32):
     # Generates image, label batches
 
     if not os.path.isfile(csv_path):
