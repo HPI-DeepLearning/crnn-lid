@@ -16,7 +16,6 @@ def decode_image(image_path, data_shape):
 
     try:
         image_buffer = tf.read_file(image_path)
-        print image_path
         image = tf.image.decode_png(image_buffer, channels=3)
 
         # After this point, all image pixels reside in [0,1)
@@ -38,7 +37,7 @@ def decode_image(image_path, data_shape):
         return image
 
 
-def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num_readers=1):
+def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num_readers=2):
     with tf.name_scope('batch_processing'):
 
         # load csv content
@@ -62,16 +61,16 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
         if num_readers > 1:
             enqueue_ops = []
             for _ in range(num_readers):
-                reader = tf.TFRecordReader()
-                _, value = reader.read(filename_queue)
-                enqueue_ops.append(examples_queue.enqueue([value]))
+                reader = tf.TextLineReader()
+                _, csv_content = reader.read(file_path)
+                decode_op = tf.decode_csv(csv_content, record_defaults=[[""], [0]])
+                enqueue_ops.append(examples_queue.enqueue(decode_op))
 
             tf.train.queue_runner.add_queue_runner(
                 tf.train.queue_runner.QueueRunner(examples_queue, enqueue_ops))
-            example_serialized = examples_queue.dequeue()
+            image_path_label = examples_queue.dequeue()
 
         else:
-
             textReader = tf.TextLineReader()
             _, csv_content = textReader.read(file_path)
             image_path_label = tf.decode_csv(csv_content, record_defaults=[[""], [0]])
@@ -93,7 +92,9 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
         images, label_index_batch = tf.train.batch_join(
             images_and_labels,
             batch_size=batch_size,
-            capacity=2 * num_preprocess_threads * batch_size)
+            capacity=2 * num_preprocess_threads * batch_size,
+            shapes=[data_shape, []]
+        )
 
         # Reshape images into these desired dimensions.
         height, width, depth = data_shape
