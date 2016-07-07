@@ -1,16 +1,14 @@
-import numpy as np
+from collections import OrderedDict
+
 import tensorflow as tf
+from tensorflowslim.scopes import arg_scope
 from tensorflowslim import losses
 from tensorflowslim import ops
-from tensorflowslim.scopes import arg_scope
-from tensorflowslim import scopes
-from tensorflowslim import variables
-from collections import OrderedDict
 
 FLAGS = tf.app.flags.FLAGS
 
 
-def create_model(inputs, num_classes, dropout_keep_prob=0.8):
+def create_model(inputs, config, dropout_keep_prob=0.8):
     batch_norm_params = {
         # Decay for the moving averages
         'decay': 0.9997,
@@ -32,7 +30,7 @@ def create_model(inputs, num_classes, dropout_keep_prob=0.8):
             end_points['batch_norm3'] = ops.batch_norm(end_points['pool3'])
             flatten = ops.flatten(end_points['batch_norm3'], scope='flatten4')
             end_points['fc4'] = ops.fc(flatten, 1024, scope='fc4')
-            end_points['logits'] = ops.fc(end_points['fc4'], num_classes, activation=None, scope='logits')
+            end_points['logits'] = ops.fc(end_points['fc4'], config["num_classes"], activation=None, scope='logits')
             # Softmax is happening in loss function
 
             for key, endpoint in end_points.iteritems():
@@ -42,8 +40,8 @@ def create_model(inputs, num_classes, dropout_keep_prob=0.8):
             return end_points['logits'], end_points
 
 
-def inference(images, num_classes):
-    logits, endpoints = create_model(images, num_classes=num_classes)
+def inference(images, config):
+    logits, endpoints = create_model(images, config)
 
     # Add summaries for viewing model statistics on TensorBoard.
     with tf.name_scope('summaries'):

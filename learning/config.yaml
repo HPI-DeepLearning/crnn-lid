@@ -1,5 +1,8 @@
 train_data_dir: "/Users/tomherold/datasets/2016-01-26_melfilter/train_youtube_en_de_fr_es_shuffled.csv"
 test_data_dir: "/Users/tomherold/datasets/2016-01-26_melfilter/test_youtube_en_de_fr_es_shuffled.csv"
+#train_data_dir: "/Users/tomherold/datasets/news/train_youtube_de.csv"
+#test_data_dir: "/Users/tomherold/datasets/news/train_youtube_de.csv"
+
 
 batch_size: 32
 learning_rate: 0.001

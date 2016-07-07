@@ -1,10 +1,14 @@
-import numpy as np
-import tensorflow as tf
-import time
 import os.path
+import time
 from datetime import datetime
+
+import numpy as np
 from yaml import load
-import model
+
+import tensorflow as tf
+from models import cnn_model
+from models import lstm_model
+
 # import tfrecord_loader
 import csv_loader
 # import sound_loader
@@ -34,7 +38,8 @@ def train():
 
 
             # Init Model
-            logits = model.inference(images, config["num_classes"])
+            model = lstm_model
+            logits = model.inference(images, config)
             loss_op = model.loss(logits, labels, config["batch_size"])
             prediction_op = tf.cast(tf.argmax(logits, 1), tf.int32) # For evaluation
             tf.scalar_summary("loss", loss_op)

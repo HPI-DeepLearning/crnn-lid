@@ -1,15 +1,16 @@
 from __future__ import division
 
-import numpy as np
-import tensorflow as tf
-import math
 import os.path
 import time
 from datetime import datetime
-from yaml import load
-import model
-import csv_loader
+
+import numpy as np
 from sklearn.metrics import accuracy_score, classification_report, precision_recall_fscore_support, confusion_matrix
+from yaml import load
+
+import csv_loader
+import tensorflow as tf
+from models import cnn_model
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -56,7 +57,7 @@ def evaluate():
         images, labels = csv_loader.get(config["test_data_dir"], image_shape, config["batch_size"])
 
         # Init Model
-        logits = model.inference(images, config["num_classes"])
+        logits = cnn_model.inference(images, config["num_classes"])
         predictions_op = tf.cast(tf.argmax(logits, 1), tf.int32)
 
         sess = tf.Session()
