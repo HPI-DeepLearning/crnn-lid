@@ -26,12 +26,13 @@ def create_model(inputs, num_classes, dropout_keep_prob=0.8):
             end_points['pool1'] = ops.max_pool(end_points['conv1'], [2, 2], scope='pool1')
             end_points['conv2'] = ops.conv2d(end_points['pool1'], 12, [6, 6], scope='conv2')
             end_points['pool2'] = ops.max_pool(end_points['conv2'], [2, 2], scope='pool2')
+            end_points['batch_norm2'] = ops.batch_norm(end_points['pool2'])
             end_points['conv3'] = ops.conv2d(end_points['pool2'], 12, [6, 6], scope='conv3')
-
-            end_points['pool3'] = ops.max_pool(end_points['conv3'], [1, 1], scope='pool3')
-
-            flatten = ops.flatten(end_points['pool3'], scope='flatten4')
-            end_points['logits'] = ops.fc(flatten, num_classes, activation=None, scope='logits')
+            end_points['pool3'] = ops.max_pool(end_points['conv3'], [2, 2], scope='pool3')
+            end_points['batch_norm3'] = ops.batch_norm(end_points['pool3'])
+            flatten = ops.flatten(end_points['batch_norm3'], scope='flatten4')
+            end_points['fc4'] = ops.fc(flatten, 1024, scope='fc4')
+            end_points['logits'] = ops.fc(end_points['fc4'], num_classes, activation=None, scope='logits')
             # Softmax is happening in loss function
 
             for key, endpoint in end_points.iteritems():

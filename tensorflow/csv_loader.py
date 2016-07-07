@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.python.framework.errors import InvalidArgumentError
 import numpy as np
 import os
 
