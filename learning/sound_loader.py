@@ -19,7 +19,7 @@ FLAGS = tf.app.flags.FLAGS
 #                             """4, 2 or 1, if host memory is constrained. See """
 #                             """comments in code for more details.""")
 
-def wav_to_spectrogram(sound_file, generate_mel_images):
+def wav_to_spectrogram((sound_file, data_shape, generate_mel_images)):
     # filenames of the generated images
     window_size = 600  # MFCC sliding window
 
@@ -110,8 +110,7 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
 
             # load images
             sound_path, label_index = sound_path_label
-            buf = tf.read_file(sound_path)
-            image = wav_to_spectrogram(sound_path, data_shape)
+            image = tf.py_func(wav_to_spectrogram([sound_path, data_shape, True]), [tf.float32])
 
             images_and_labels.append([image, label_index])
 

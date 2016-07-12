@@ -6,8 +6,9 @@ import numpy as np
 from yaml import load
 
 import tensorflow as tf
-from models import cnn_model
-from models import lstm_model
+# from models import cnn_model
+from models import crnn_model
+# from models import lstm_model
 
 # import tfrecord_loader
 import csv_loader
@@ -38,7 +39,7 @@ def train():
 
 
             # Init Model
-            model = lstm_model
+            model = crnn_model
             logits = model.inference(images, config)
             loss_op = model.loss(logits, labels, config["batch_size"])
             prediction_op = tf.cast(tf.argmax(logits, 1), tf.int32) # For evaluation

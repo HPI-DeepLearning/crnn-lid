@@ -17,3 +17,6 @@ image_depth: 3
 
 label_names: ["EN", "DE", "FR", "ES"]
 num_classes: 4
+
+# LSTM Params
+
