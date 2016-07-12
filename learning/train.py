@@ -6,13 +6,13 @@ import numpy as np
 from yaml import load
 
 import tensorflow as tf
-# from models import cnn_model
-from models import crnn_model
+from models import cnn_model
+# from models import crnn_model
 # from models import lstm_model
 
 # import tfrecord_loader
-import csv_loader
-# import sound_loader
+# import csv_loader
+import sound_loader
 from evaluate import evaluation_metrics
 
 FLAGS = tf.app.flags.FLAGS
@@ -35,16 +35,14 @@ def train():
 
             # Init Data Loader
             image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-            images, labels = csv_loader.get(config["train_data_dir"], image_shape, config["batch_size"])
-
+            images, labels = sound_loader.get(config["train_data_dir"], image_shape, config["batch_size"])
 
             # Init Model
-            model = crnn_model
+            model = cnn_model
             logits = model.inference(images, config)
             loss_op = model.loss(logits, labels, config["batch_size"])
             prediction_op = tf.cast(tf.argmax(logits, 1), tf.int32) # For evaluation
             tf.scalar_summary("loss", loss_op)
-
 
             # Adam optimizer already does LR decay
             train_op = tf.train.AdamOptimizer(learning_rate=config["learning_rate"], beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False,

@@ -19,13 +19,14 @@ FLAGS = tf.app.flags.FLAGS
 #                             """4, 2 or 1, if host memory is constrained. See """
 #                             """comments in code for more details.""")
 
-def wav_to_spectrogram((sound_file, data_shape, generate_mel_images)):
+def wav_to_spectrogram(sound_file): #, data_shape, generate_mel_images)
     # filenames of the generated images
     window_size = 600  # MFCC sliding window
+    generate_mel_images = True
 
 
     # f, signal, samplerate = read_wav_dirty(sound_file)
-    signal, samplerate = librosa.core.load(sound_file)
+    signal, samplerate = librosa.core.load(sound_file[0])
     #f = os.path.basename(sound_file)
     f = ""
     segments = sliding_audio(f, signal, samplerate)
@@ -110,7 +111,7 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
 
             # load images
             sound_path, label_index = sound_path_label
-            image = tf.py_func(wav_to_spectrogram([sound_path, data_shape, True]), [tf.float32])
+            image = tf.py_func(wav_to_spectrogram, [sound_path], [tf.float32])
 
             images_and_labels.append([image, label_index])
 
