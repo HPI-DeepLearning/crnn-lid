@@ -125,21 +125,21 @@ def inference(images, config):
 def loss(logits, labels,  sess, batch_size=None):
     # Adds all losses for the model.
 
-    _logits = tf.Print(logits, [logits], message="Logits")
-    _labels = tf.Print(labels, [labels], message="Labels")
+    _logits = tf.Print(logits, [logits], message="Logits", summarize=10000)
+    _labels = tf.Print(labels, [labels], message="Labels", summarize=10000)
     # Create a label for every sequence based on the true label of the whole file
     sequence_length = 35
     sequence_labels = tf.mul(np.ones([batch_size, sequence_length], dtype=np.int32), tf.reshape(_labels, [batch_size, 1]))
     sequence_labels = tf.reshape(sequence_labels, [batch_size * sequence_length])
-    _seq_labels = tf.Print(sequence_labels, [sequence_labels], message="Seq Labels")
+    _seq_labels = tf.Print(sequence_labels, [sequence_labels], message="Seq Labels", summarize=10000)
 
     # Since technically our array is not sparse, create an index for every single entry [batch_size * sequence_length, 2]
     # [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], ...
     indices = tf.constant([[j, i] for j in range(batch_size) for i in range(sequence_length)], tf.int64)
-    tf.Print(indices, [indices], message="Indicies")
+    _idx = tf.Print(indices, [indices], message="Indicies", summarize=10000)
 
     # Cross entropy loss for the main softmax prediction.
-    sparse_labels = tf.SparseTensor(indices, _seq_labels, tf.constant([batch_size, sequence_length], tf.int64))
+    sparse_labels = tf.SparseTensor(_idx, _seq_labels, tf.constant([batch_size, sequence_length], tf.int64))
     #tf.Print(sparse_labels, [sparse_labels], message="sparse labels")
 
     logits3d = tf.pack(_logits)
