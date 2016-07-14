@@ -9,17 +9,26 @@ FLAGS = tf.app.flags.FLAGS
 
 def BiLSTM(x, config):
 
+    # x = [batch_size, num_steps, features]
+
     num_hidden = 256
     num_classes = config["num_classes"]
 
+    batch_size = int(x._shape[0])
     max_length = num_steps = int(x._shape[1]) # = 35 see Conv7 layer
     num_input = int(x._shape[2]) # = 512 See Conv7 layer
 
     # Hidden layer weights => 2*n_hidden because of forward + backward cells
-    weights_hidden = tf.Variable(tf.truncated_normal([num_input, 2 * num_hidden]))
-    weights_out = tf.Variable(tf.truncated_normal([2 * num_hidden, num_classes]))
+    # weights_hidden = tf.Variable(tf.truncated_normal([num_input, 2 * num_hidden]))
+    # weights_out = tf.Variable(tf.truncated_normal([2 * num_hidden, num_classes]))
+    #
+    # bias_hidden = tf.Variable(tf.truncated_normal([2 * num_hidden]))
+    # bias_out = tf.Variable(tf.truncated_normal([num_classes]))
 
-    bias_hidden = tf.Variable(tf.truncated_normal([2 * num_hidden]))
+    weights_hidden = tf.Variable(tf.truncated_normal([2, num_hidden], stddev=np.sqrt(2.0 / (2 * num_hidden))))
+    weights_out = tf.Variable(tf.truncated_normal([num_hidden, num_classes], stddev=np.sqrt(2.0 / num_hidden)))
+
+    bias_hidden = tf.Variable(tf.truncated_normal([num_hidden]))
     bias_out = tf.Variable(tf.truncated_normal([num_classes]))
 
     # Prepare data shape to match `bidirectional_rnn` function requirements
@@ -35,20 +44,26 @@ def BiLSTM(x, config):
 
     # Define lstm cells with tensorflow
     # Forward direction cell
-    lstm_fw_cell = tf.nn.rnn_cell.BasicLSTMCell(num_hidden, forget_bias=1.0)
+    lstm_fw_cell = tf.nn.rnn_cell.LSTMCell(num_hidden, use_peepholes=True, state_is_tuple=True, forget_bias=1.0)
     # Backward direction cell
-    lstm_bw_cell = tf.nn.rnn_cell.BasicLSTMCell(num_hidden, forget_bias=1.0)
+    lstm_bw_cell = tf.nn.rnn_cell.LSTMCell(num_hidden, use_peepholes=True, state_is_tuple=True, forget_bias=1.0)
 
     # Get lstm cell output
     outputs, output_state_fw, output_state_bw = tf.nn.bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32)
 
     # Linear activation, using rnn inner loop last output
-    x_fc1 = tf.reshape(outputs, [-1, 2 * num_hidden])
-    logits = tf.matmul(x_fc1, weights_out) + bias_out
 
-    #  Reshaping to share weights accross timesteps
-    logits = tf.reshape(logits, [-1, max_length, num_classes])
-    logits = tf.transpose(logits, (1, 0, 2))
+    fbH1rs = [tf.reshape(t, [batch_size, 2, num_hidden]) for t in outputs]
+    outH1 = [tf.reduce_sum(tf.mul(t, weights_hidden), reduction_indices=1) + bias_hidden for t in fbH1rs]
+
+    logits = [tf.matmul(t, weights_out) + bias_out for t in outH1]
+
+    # x_fc1 = tf.reshape(outputs, [-1, 2 * num_hidden])
+    # logits = tf.matmul(x_fc1, weights_out) + bias_out
+    #
+    # #  Reshaping to share weights accross timesteps
+    # logits = tf.reshape(logits, [-1, max_length, num_classes])
+    # logits = tf.transpose(logits, (1, 0, 2))
 
     return logits
 
@@ -86,14 +101,12 @@ def create_model(inputs, config):
             assert len(map_to_sequence._shape) == 3
 
             # Bidirectional LSTM
-            end_points['logits'] = BiLSTM(map_to_sequence, config)
+            logits = BiLSTM(map_to_sequence, config)
 
             for key, endpoint in end_points.iteritems():
                 print "{0}: {1}".format(key, endpoint._shape)
 
-            return end_points['logits'], end_points
-
-    return logits
+            return logits, end_points
 
 
 def inference(images, config):
@@ -109,19 +122,28 @@ def inference(images, config):
     return logits
 
 
-def loss(logits, labels, batch_size=None):
+def loss(logits, labels,  sess, batch_size=None):
     # Adds all losses for the model.
 
+    _logits = tf.Print(logits, [logits], message="Logits")
+    _labels = tf.Print(labels, [labels], message="Labels")
     # Create a label for every sequence based on the true label of the whole file
     sequence_length = 35
-    sequence_labels = tf.mul(np.ones([batch_size, sequence_length], dtype=np.int32), tf.reshape(labels, [batch_size, 1]))
+    sequence_labels = tf.mul(np.ones([batch_size, sequence_length], dtype=np.int32), tf.reshape(_labels, [batch_size, 1]))
+    sequence_labels = tf.reshape(sequence_labels, [batch_size * sequence_length])
+    _seq_labels = tf.Print(sequence_labels, [sequence_labels], message="Seq Labels")
 
     # Since technically our array is not sparse, create an index for every single entry [batch_size * sequence_length, 2]
     # [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], ...
     indices = tf.constant([[j, i] for j in range(batch_size) for i in range(sequence_length)], tf.int64)
+    tf.Print(indices, [indices], message="Indicies")
 
     # Cross entropy loss for the main softmax prediction.
-    sparse_labels = tf.SparseTensor(indices, tf.reshape(sequence_labels, [batch_size * sequence_length]), tf.constant([batch_size, sequence_length], tf.int64))
-    loss = ctc_loss(logits, sparse_labels, batch_size * [sequence_length])
+    sparse_labels = tf.SparseTensor(indices, _seq_labels, tf.constant([batch_size, sequence_length], tf.int64))
+    #tf.Print(sparse_labels, [sparse_labels], message="sparse labels")
+
+    logits3d = tf.pack(_logits)
+
+    loss = ctc_loss(logits3d, sparse_labels, batch_size * [sequence_length])
 
     return tf.reduce_mean(loss)

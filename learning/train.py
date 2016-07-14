@@ -6,13 +6,13 @@ import numpy as np
 from yaml import load
 
 import tensorflow as tf
-from models import cnn_model
-# from models import crnn_model
+# from models import cnn_model
+from models import crnn_model
 # from models import lstm_model
 
 # import tfrecord_loader
-# import csv_loader
-import sound_loader
+import csv_loader
+# import sound_loader
 from evaluate import evaluation_metrics
 
 FLAGS = tf.app.flags.FLAGS
@@ -30,17 +30,17 @@ def train():
 
     with tf.Graph().as_default():
 
-        sess = tf.Session()
+        sess = tf.InteractiveSession()
         with sess.as_default():
 
             # Init Data Loader
             image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-            images, labels = sound_loader.get(config["train_data_dir"], image_shape, config["batch_size"])
+            images, labels = csv_loader.get(config["train_data_dir"], image_shape, config["batch_size"])
 
             # Init Model
-            model = cnn_model
+            model = crnn_model
             logits = model.inference(images, config)
-            loss_op = model.loss(logits, labels, config["batch_size"])
+            loss_op = model.loss(logits, labels, sess, config["batch_size"])
             prediction_op = tf.cast(tf.argmax(logits, 1), tf.int32) # For evaluation
             tf.scalar_summary("loss", loss_op)
 
