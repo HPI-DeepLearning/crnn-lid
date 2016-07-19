@@ -34,9 +34,9 @@ def wav_to_spectrogram(sound_file):
     mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
     mel_image = graphic.histeq.clamp_and_equalize(mel_image)
-    # image = graphic.windowing.cut_or_pad_window(mel_image, window_size)
+    image = graphic.windowing.cut_or_pad_window(mel_image, window_size)
 
-    return [mel_image, mel_image.shape]
+    return [image]
 
 
 def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num_readers=1):
@@ -88,14 +88,28 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
 
             # load images
             sound_path, label_index = sound_path_label
-            image, image_shape = tf.py_func(wav_to_spectrogram, [sound_path], [tf.double, tf.int32])
+            image, image_shape = tf.py_func(wav_to_spectrogram, [sound_path], [tf.double])
 
             image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-            tf.reshape(image, image_shape)
+            tf.set_shape(image, [600, 39]) # TODO Which way is it?
 
             # Finally, rescale to [-1,1] instead of [0, 1)
             image = tf.sub(image, 0.5)
             image = tf.mul(image, 2.0)
+
+            # Create a label for every sequence based on the true label of the whole file
+            sequence_length = 35
+            sequence_label = tf.mul(np.ones([sequence_length], dtype=np.int32), label_index)
+
+            # Since technically our array is not sparse, create an index for every single entry [batch_size * sequence_length, 2]
+            # [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], ...
+            indices = tf.constant([[j, i] for j in range(batch_size) for i in range(sequence_length)], tf.int64)
+            _idx = tf.Print(indices, [indices], message="Indicies", summarize=10000)
+
+            # Cross entropy loss for the main softmax prediction.
+            sparse_labels = tf.SparseTensor(_idx, _seq_labels, tf.constant([batch_size, sequence_length], tf.int64))
+            # tf.Print(sparse_labels, [sparse_labels], message="sparse labels")
+
 
             images_and_labels.append([image, label_index])
 

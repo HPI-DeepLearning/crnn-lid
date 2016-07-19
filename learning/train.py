@@ -36,11 +36,12 @@ def train():
             # Init Data Loader
             image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
             images, labels = csv_loader.get(config["train_data_dir"], image_shape, config["batch_size"])
+            #images, labels, sequence_lengths = sound_loader.get(config["train_data_dir"], image_shape, config["batch_size"])
 
             # Init Model
             model = crnn_model
             logits = model.inference(images, config)
-            loss_op = model.loss(logits, labels, sess, config["batch_size"])
+            loss_op = model.loss(logits, labels, config["batch_size"])
             prediction_op = tf.cast(tf.argmax(logits, 1), tf.int32) # For evaluation
             tf.scalar_summary("loss", loss_op)
 
