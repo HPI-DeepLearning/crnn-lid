@@ -1,7 +1,7 @@
-train_data_dir: "/Users/tomherold/datasets/2016-01-26_melfilter/train_youtube_en_de_fr_es_shuffled.csv"
-test_data_dir: "/Users/tomherold/datasets/2016-01-26_melfilter/test_youtube_en_de_fr_es_shuffled.csv"
-#train_data_dir: "/Users/tomherold/datasets/news/train_youtube_de.csv"
-#test_data_dir: "/Users/tomherold/datasets/news/train_youtube_de.csv"
+#train_data_dir: "/Users/tomherold/datasets/2016-01-26_melfilter/train_youtube_en_de_fr_es_shuffled.csv"
+#test_data_dir: "/Users/tomherold/datasets/2016-01-26_melfilter/test_youtube_en_de_fr_es_shuffled.csv"
+train_data_dir: "/Users/therold/Uni/master-thesis/datasets/dubsmash/english_files.csv"
+test_data_dir: "/Users/therold/Uni/master-thesis/datasets/dubsmash/english_files.csv"
 
 
 batch_size: 32
@@ -13,7 +13,7 @@ num_test_files: 24000
 
 image_width: 600
 image_height: 39
-image_depth: 3
+image_depth: 1
 
 label_names: ["EN", "DE", "FR", "ES"]
 num_classes: 4

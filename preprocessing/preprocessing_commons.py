@@ -68,7 +68,7 @@ def wav_to_images(sound_file, output_path):
     spectro_image = graphic.colormapping.to_rgb(spectro_image, colormap="jet", bytes=True)
     spectro_image = graphic.histeq.histeq(spectro_image)
     spectro_image = graphic.histeq.clamp_and_equalize(spectro_image)
-    spectro_image = graphic.windowing.cut_or_pad_window(spectro_image, 500)
+    spectro_image = graphic.windowing.cut_or_pad_window(spectro_image, window_size)
 
     mel_filename = "melfilter_%s" % os.path.basename(filename)
     spectro_filename = "spectrogram_%s" % os.path.basename(filename)
