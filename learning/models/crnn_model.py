@@ -3,6 +3,7 @@ import numpy as np
 from tensorflow.contrib.ctc import ctc_loss
 from tensorflowslim.scopes import arg_scope
 from tensorflowslim import ops
+from tensorflowslim import losses
 from collections import OrderedDict
 
 FLAGS = tf.app.flags.FLAGS
@@ -50,7 +51,7 @@ def BiLSTM(x, config):
 
     logits = [tf.matmul(t, weights_out) + bias_out for t in outH1]
 
-    return tf.pack(logits)
+    return logits
 
 
 def create_model(inputs, config):
@@ -87,12 +88,11 @@ def create_model(inputs, config):
 
             # Bidirectional LSTM
             logits = BiLSTM(map_to_sequence, config)
-            logits3d = tf.pack(logits)
 
             for key, endpoint in end_points.iteritems():
                 print "{0}: {1}".format(key, endpoint._shape)
 
-            return logits3d, end_points
+            return logits, end_points
 
 
 def inference(images, config):
@@ -110,10 +110,32 @@ def inference(images, config):
 
 def loss(logits, labels, batch_size):
 
+    # Use the last state of the LSTM as output
+    last_state = logits[-1]
+
+
+    # Reshape the labels into a dense Tensor of shape [FLAGS.batch_size, num_classes].
+    sparse_labels = tf.reshape(labels, [batch_size, 1])
+    indices = tf.reshape(tf.range(batch_size), [batch_size, 1])
+    concated = tf.concat(1, [indices, sparse_labels])
+    num_classes = last_state.get_shape()[-1].value
+    dense_labels = tf.sparse_to_dense(concated, [batch_size, num_classes], 1.0, 0.0)
+
+    _dense = tf.Print(dense_labels, [dense_labels], "dense_labels", )
+
+    # Cross entropy loss for the main softmax prediction.
+    loss = losses.cross_entropy_loss(last_state, _dense, label_smoothing=0.1, weight=1.0)
+
+    return tf.reduce_mean(loss)
+
+
+def ctc_loss():
+
+    pass
     # # Create a label for every sequence based on the true label of the whole file
     # sequence_length = 35 # logits.get_shape(0)
-    # # sequence_label = tf.mul(np.ones([batch_size, sequence_length], dtype=np.int32), tf.reshape(labels, [batch_size, 1]))
-    # sequence_label = tf.constant(np.random.randint(4, size=(batch_size, sequence_length)), tf.int32)
+    # sequence_label = tf.mul(np.ones([batch_size, sequence_length], dtype=np.int32), tf.reshape(labels, [batch_size, 1]))
+    # # sequence_label = tf.constant(np.random.randint(4, size=(batch_size, sequence_length)), tf.int32)
     # seq_labels = tf.Print(sequence_label, [sequence_label], message="Sequence Labels", summarize=10000)
     #
     # # Since technically our array is not sparse, create an index for every single entry [batch_size * sequence_length, 2]
@@ -126,22 +148,5 @@ def loss(logits, labels, batch_size):
     # # tf.Print(sparse_labels, [sparse_labels], message="sparse labels")
     #
     #
-    #
-    # a = np.random.randint(3, size=(32, 35)).tolist()
-    #
-    # indices = []
-    # vals = []
-    # for tI, target in enumerate(a):
-    #     for seqI, val in enumerate(target):
-    #         indices.append([tI, seqI])
-    #         vals.append(val)
-    # shape = [len(a), np.asarray(indices).max(0)[1]+1]
-    # sparse_labels = tf.SparseTensor(np.array(indices), np.array(vals).astype(np.int32), np.array(shape))
-
-
-    _logits = tf.Print(logits, [logits], message="logits", summarize=10000)
+    # _logits = tf.Print(logits, [logits], message="logits", summarize=10000)
     # loss = ctc_loss(_logits , sparse_labels, batch_size * [sequence_length])
-
-    loss = tf.nn.softmax_cross_entropy_with_logits(logits, tf.to_float(labels))
-
-    return tf.reduce_mean(loss)

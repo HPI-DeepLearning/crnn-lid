@@ -91,7 +91,7 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             image, image_shape = tf.py_func(wav_to_spectrogram, [sound_path], [tf.double])
 
             image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-            tf.set_shape(image, [600, 39]) # TODO Which way is it?
+            tf.set_shape(image, [-1, 39]) # TODO Which way is it?
 
             # Finally, rescale to [-1,1] instead of [0, 1)
             image = tf.sub(image, 0.5)
