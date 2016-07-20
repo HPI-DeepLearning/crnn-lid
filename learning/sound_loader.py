@@ -2,10 +2,11 @@ import tensorflow as tf
 import numpy as np
 import os
 import sys
-import librosa
+# import librosa
+# from tensorflow.contrib import ffmpeg
 
 lib_dir = os.path.join(os.path.abspath(__file__), "..", "preprocessing")
-sys.path.insert(0, lib_dir)
+sys.path.append(lib_dir)
 
 from preprocessing.preprocessing_commons import apply_melfilter, generate_spectrograms, read_wav_dirty, sliding_audio, downsample
 from preprocessing import audio
@@ -19,48 +20,24 @@ FLAGS = tf.app.flags.FLAGS
 #                             """4, 2 or 1, if host memory is constrained. See """
 #                             """comments in code for more details.""")
 
-def wav_to_spectrogram(sound_file): #, data_shape, generate_mel_images)
+def wav_to_spectrogram(sound_file):
     # filenames of the generated images
     window_size = 600  # MFCC sliding window
-    generate_mel_images = True
 
 
-    # f, signal, samplerate = read_wav_dirty(sound_file)
-    signal, samplerate = librosa.core.load(sound_file[0])
-    #f = os.path.basename(sound_file)
-    f = ""
-    segments = sliding_audio(f, signal, samplerate)
+    f, signal, samplerate = read_wav_dirty(sound_file)
+    # signal, samplerate = librosa.core.load(sound_file[0])
+    filename = os.path.basename(sound_file)
+    #segments = sliding_audio(f, signal, samplerate)
 
-    output = []
+    _, mel_image = apply_melfilter(filename, signal, samplerate)
+    mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
+    mel_image = graphic.histeq.histeq(mel_image)
+    mel_image = graphic.histeq.clamp_and_equalize(mel_image)
+    image = graphic.windowing.cut_or_pad_window(mel_image, window_size)
 
-    for (filename, signal, samplerate) in segments:
-        _, signal, samplerate = downsample(filename, signal, samplerate)
+    return [image]
 
-        if generate_mel_images:
-            _, mel_image = apply_melfilter(filename, signal, samplerate)
-            mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
-            mel_image = graphic.histeq.histeq(mel_image)
-            mel_image = graphic.histeq.clamp_and_equalize(mel_image)
-            image = graphic.windowing.cut_or_pad_window(mel_image, window_size)
-        else:
-            _, spectro_image = generate_spectrograms(f, signal, samplerate)
-            spectro_image = graphic.colormapping.to_grayscale(spectro_image, bytes=True)
-            spectro_image = graphic.histeq.histeq(spectro_image)
-            spectro_image = graphic.histeq.clamp_and_equalize(spectro_image)
-            image = graphic.windowing.cut_or_pad_window(spectro_image, 500)
-
-
-        shape = image.shape
-        image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-        image.set_shape(shape)
-
-        # Finally, rescale to [-1,1] instead of [0, 1)
-        image = tf.sub(image, 0.5)
-        image = tf.mul(image, 2.0)
-
-        output.append(image)
-
-    return output
 
 def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num_readers=1):
     with tf.name_scope('batch_processing'):
@@ -111,7 +88,28 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
 
             # load images
             sound_path, label_index = sound_path_label
-            image = tf.py_func(wav_to_spectrogram, [sound_path], [tf.float32])
+            image, image_shape = tf.py_func(wav_to_spectrogram, [sound_path], [tf.double])
+
+            image = tf.image.convert_image_dtype(image, dtype=tf.float32)
+            tf.set_shape(image, [600, 39]) # TODO Which way is it?
+
+            # Finally, rescale to [-1,1] instead of [0, 1)
+            image = tf.sub(image, 0.5)
+            image = tf.mul(image, 2.0)
+
+            # Create a label for every sequence based on the true label of the whole file
+            sequence_length = 35
+            sequence_label = tf.mul(np.ones([sequence_length], dtype=np.int32), label_index)
+
+            # Since technically our array is not sparse, create an index for every single entry [batch_size * sequence_length, 2]
+            # [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], ...
+            indices = tf.constant([[j, i] for j in range(batch_size) for i in range(sequence_length)], tf.int64)
+            _idx = tf.Print(indices, [indices], message="Indicies", summarize=10000)
+
+            # Cross entropy loss for the main softmax prediction.
+            sparse_labels = tf.SparseTensor(_idx, _seq_labels, tf.constant([batch_size, sequence_length], tf.int64))
+            # tf.Print(sparse_labels, [sparse_labels], message="sparse labels")
+
 
             images_and_labels.append([image, label_index])
 
@@ -119,14 +117,15 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             images_and_labels,
             batch_size=batch_size,
             capacity=2 * num_preprocess_threads * batch_size,
-            shapes=[data_shape, []]
+            # shapes=[data_shape, []]
+            dynamic_pad=True # TODO Potentially could screw up data with to much 0's
         )
 
         # Reshape images into these desired dimensions.
-        height, width, depth = data_shape
-
-        images = tf.cast(images, tf.float32)
-        images = tf.reshape(images, shape=[batch_size, height, width, depth])
+        # height, width, depth = data_shape
+        #
+        # images = tf.cast(images, tf.float32)
+        # images = tf.reshape(images, shape=[batch_size, height, width, depth])
         tf.image_summary('raw_images', images)
 
         return images, tf.reshape(label_index_batch, [batch_size])

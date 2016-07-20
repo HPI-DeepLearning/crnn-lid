@@ -9,18 +9,20 @@ FLAGS = tf.app.flags.FLAGS
 
 def BiLSTM(x, config):
 
+    # x = [batch_size, num_steps, features]
+
     num_hidden = 256
     num_classes = config["num_classes"]
 
+    batch_size = int(x._shape[0])
     max_length = num_steps = int(x._shape[1]) # = 35 see Conv7 layer
     num_input = int(x._shape[2]) # = 512 See Conv7 layer
 
-    # Hidden layer weights => 2*n_hidden because of forward + backward cells
-    weights_hidden = tf.Variable(tf.truncated_normal([num_input, 2 * num_hidden]))
-    weights_out = tf.Variable(tf.truncated_normal([2 * num_hidden, num_classes]))
+    weights_hidden = tf.Variable(tf.truncated_normal([2, num_hidden], stddev=np.sqrt(2.0 / (2 * num_hidden))))
+    weights_out = tf.Variable(tf.truncated_normal([num_hidden, num_classes], stddev=np.sqrt(2.0 / num_hidden)))
 
-    bias_hidden = tf.Variable(tf.truncated_normal([2 * num_hidden]))
-    bias_out = tf.Variable(tf.truncated_normal([num_classes]))
+    bias_hidden = tf.Variable(tf.zeros([num_hidden]))
+    bias_out = tf.Variable(tf.zeros([num_classes]))
 
     # Prepare data shape to match `bidirectional_rnn` function requirements
     # Current data input shape: (batch_size, num_steps, num_input)
@@ -35,22 +37,20 @@ def BiLSTM(x, config):
 
     # Define lstm cells with tensorflow
     # Forward direction cell
-    lstm_fw_cell = tf.nn.rnn_cell.BasicLSTMCell(num_hidden, forget_bias=1.0)
+    lstm_fw_cell = tf.nn.rnn_cell.LSTMCell(num_hidden, use_peepholes=True, state_is_tuple=True)
     # Backward direction cell
-    lstm_bw_cell = tf.nn.rnn_cell.BasicLSTMCell(num_hidden, forget_bias=1.0)
+    lstm_bw_cell = tf.nn.rnn_cell.LSTMCell(num_hidden, use_peepholes=True, state_is_tuple=True)
 
     # Get lstm cell output
     outputs, output_state_fw, output_state_bw = tf.nn.bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32)
+    # outputs = list:num_steps * (bs, 2*num_hidden)
 
-    # Linear activation, using rnn inner loop last output
-    x_fc1 = tf.reshape(outputs, [-1, 2 * num_hidden])
-    logits = tf.matmul(x_fc1, weights_out) + bias_out
+    fbH1rs = [tf.reshape(t, [batch_size, 2, num_hidden]) for t in outputs]
+    outH1 = [tf.reduce_sum(tf.mul(t, weights_hidden), reduction_indices=1) + bias_hidden for t in fbH1rs]
 
-    #  Reshaping to share weights accross timesteps
-    logits = tf.reshape(logits, [-1, max_length, num_classes])
-    logits = tf.transpose(logits, (1, 0, 2))
+    logits = [tf.matmul(t, weights_out) + bias_out for t in outH1]
 
-    return logits
+    return tf.pack(logits)
 
 
 def create_model(inputs, config):
@@ -77,7 +77,7 @@ def create_model(inputs, config):
             end_points['conv6'] = ops.conv2d(end_points['batch_norm5'], 512, [3, 3], padding='VALID', scope='conv6')
             end_points['batch_norm6'] = ops.batch_norm(end_points['conv6'], scope='batch_norm6')
             end_points['pool6'] = ops.max_pool(end_points['batch_norm6'], [1, 2], scope='pool6') # TODO Correct kernel?
-            end_points['conv7'] = ops.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7')
+            end_points['conv7'] = ops.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7') # (batch_size, 1, 35, 512)
 
             #flatten = ops.flatten(end_points['conv7'], scope='flatten')
             # (32, 1, 35, 512) -> (32, 35, 512)
@@ -86,14 +86,13 @@ def create_model(inputs, config):
             assert len(map_to_sequence._shape) == 3
 
             # Bidirectional LSTM
-            end_points['logits'] = BiLSTM(map_to_sequence, config)
+            logits = BiLSTM(map_to_sequence, config)
+            logits3d = tf.pack(logits)
 
             for key, endpoint in end_points.iteritems():
                 print "{0}: {1}".format(key, endpoint._shape)
 
-            return end_points['logits'], end_points
-
-    return logits
+            return logits3d, end_points
 
 
 def inference(images, config):
@@ -109,19 +108,40 @@ def inference(images, config):
     return logits
 
 
-def loss(logits, labels, batch_size=None):
-    # Adds all losses for the model.
+def loss(logits, labels, batch_size):
 
-    # Create a label for every sequence based on the true label of the whole file
-    sequence_length = 35
-    sequence_labels = tf.mul(np.ones([batch_size, sequence_length], dtype=np.int32), tf.reshape(labels, [batch_size, 1]))
+    # # Create a label for every sequence based on the true label of the whole file
+    # sequence_length = 35 # logits.get_shape(0)
+    # # sequence_label = tf.mul(np.ones([batch_size, sequence_length], dtype=np.int32), tf.reshape(labels, [batch_size, 1]))
+    # sequence_label = tf.constant(np.random.randint(4, size=(batch_size, sequence_length)), tf.int32)
+    # seq_labels = tf.Print(sequence_label, [sequence_label], message="Sequence Labels", summarize=10000)
+    #
+    # # Since technically our array is not sparse, create an index for every single entry [batch_size * sequence_length, 2]
+    # # [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], ...
+    # indices = tf.constant([[j, i] for j in range(batch_size) for i in range(sequence_length)], tf.int64)
+    # _idx = tf.Print(indices, [indices], message="Indicies", summarize=10000)
+    #
+    # # Cross entropy loss for the main softmax prediction.
+    # sparse_labels = tf.SparseTensor(_idx, tf.reshape(seq_labels, [-1]), tf.constant([batch_size, sequence_length], tf.int64))
+    # # tf.Print(sparse_labels, [sparse_labels], message="sparse labels")
+    #
+    #
+    #
+    # a = np.random.randint(3, size=(32, 35)).tolist()
+    #
+    # indices = []
+    # vals = []
+    # for tI, target in enumerate(a):
+    #     for seqI, val in enumerate(target):
+    #         indices.append([tI, seqI])
+    #         vals.append(val)
+    # shape = [len(a), np.asarray(indices).max(0)[1]+1]
+    # sparse_labels = tf.SparseTensor(np.array(indices), np.array(vals).astype(np.int32), np.array(shape))
 
-    # Since technically our array is not sparse, create an index for every single entry [batch_size * sequence_length, 2]
-    # [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], ...
-    indices = tf.constant([[j, i] for j in range(batch_size) for i in range(sequence_length)], tf.int64)
 
-    # Cross entropy loss for the main softmax prediction.
-    sparse_labels = tf.SparseTensor(indices, tf.reshape(sequence_labels, [batch_size * sequence_length]), tf.constant([batch_size, sequence_length], tf.int64))
-    loss = ctc_loss(logits, sparse_labels, batch_size * [sequence_length])
+    _logits = tf.Print(logits, [logits], message="logits", summarize=10000)
+    # loss = ctc_loss(_logits , sparse_labels, batch_size * [sequence_length])
+
+    loss = tf.nn.softmax_cross_entropy_with_logits(logits, tf.to_float(labels))
 
     return tf.reduce_mean(loss)
