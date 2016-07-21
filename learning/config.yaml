@@ -12,7 +12,7 @@ max_train_steps: 100000
 num_train_files: 96000
 num_test_files: 24000
 
-image_width: 600
+image_width: 2408
 image_height: 39
 image_depth: 1
 

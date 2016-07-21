@@ -2,14 +2,11 @@ import tensorflow as tf
 import numpy as np
 import os
 import sys
-# import librosa
-# from tensorflow.contrib import ffmpeg
 
 lib_dir = os.path.join(os.path.abspath(__file__), "..", "preprocessing")
 sys.path.append(lib_dir)
 
-from preprocessing.preprocessing_commons import apply_melfilter, generate_spectrograms, read_wav_dirty, sliding_audio, downsample
-from preprocessing import audio
+from preprocessing.preprocessing_commons import apply_melfilter, read_wav_dirty, downsample
 from preprocessing import graphic
 
 FLAGS = tf.app.flags.FLAGS
@@ -21,22 +18,18 @@ FLAGS = tf.app.flags.FLAGS
 #                             """comments in code for more details.""")
 
 def wav_to_spectrogram(sound_file):
-    # filenames of the generated images
-    window_size = 600  # MFCC sliding window
-
 
     f, signal, samplerate = read_wav_dirty(sound_file)
-    # signal, samplerate = librosa.core.load(sound_file[0])
-    filename = os.path.basename(sound_file)
-    #segments = sliding_audio(f, signal, samplerate)
 
-    _, mel_image = apply_melfilter(filename, signal, samplerate)
+    _, mel_image = apply_melfilter(f, signal, samplerate)
     mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
     mel_image = graphic.histeq.clamp_and_equalize(mel_image)
-    image = graphic.windowing.cut_or_pad_window(mel_image, window_size)
+    print sound_file, mel_image.shape
+    mel_image = graphic.windowing.pad_window(mel_image, 2408)
 
-    return [image]
+
+    return np.expand_dims(mel_image, -1)
 
 
 def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num_readers=1):
@@ -86,43 +79,32 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             if data_shape is None:
                 raise ValueError('Please specify the image dimensions')
 
-            # load images
-            sound_path, label_index = sound_path_label
-            image, image_shape = tf.py_func(wav_to_spectrogram, [sound_path], [tf.double])
+            height, width, depth = data_shape
+
+            # Load WAV files and convert them to a sequence of Mel-filtered spectrograms
+            # TF needs static shape, so all images have same shape
+            sound_path, label = sound_path_label
+            image = tf.py_func(wav_to_spectrogram, [sound_path], [tf.double])[0]
 
             image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-            tf.set_shape(image, [-1, 39]) # TODO Which way is it?
+            image.set_shape(data_shape)  # TODO Which way around is it?
 
             # Finally, rescale to [-1,1] instead of [0, 1)
             image = tf.sub(image, 0.5)
             image = tf.mul(image, 2.0)
 
-            # Create a label for every sequence based on the true label of the whole file
-            sequence_length = 35
-            sequence_label = tf.mul(np.ones([sequence_length], dtype=np.int32), label_index)
+            images_and_labels.append([image, label])
 
-            # Since technically our array is not sparse, create an index for every single entry [batch_size * sequence_length, 2]
-            # [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], ...
-            indices = tf.constant([[j, i] for j in range(batch_size) for i in range(sequence_length)], tf.int64)
-            _idx = tf.Print(indices, [indices], message="Indicies", summarize=10000)
-
-            # Cross entropy loss for the main softmax prediction.
-            sparse_labels = tf.SparseTensor(_idx, _seq_labels, tf.constant([batch_size, sequence_length], tf.int64))
-            # tf.Print(sparse_labels, [sparse_labels], message="sparse labels")
-
-
-            images_and_labels.append([image, label_index])
-
+        # Create batches
         images, label_index_batch = tf.train.batch_join(
             images_and_labels,
             batch_size=batch_size,
             capacity=2 * num_preprocess_threads * batch_size,
-            # shapes=[data_shape, []]
-            dynamic_pad=True # TODO Potentially could screw up data with to much 0's
+            #shapes=[data_shape, []],
         )
 
         # Reshape images into these desired dimensions.
-        # height, width, depth = data_shape
+
         #
         # images = tf.cast(images, tf.float32)
         # images = tf.reshape(images, shape=[batch_size, height, width, depth])

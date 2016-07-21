@@ -48,7 +48,7 @@ def wav_to_images(sound_file, output_path):
     "spectros" : [],
     "melfilter" : []
   }
-  window_size = 600 # MFCC sliding window
+  window_size = 2408 # MFCC sliding window
 
   f, signal, samplerate = read_wav_dirty(sound_file)
   segments = sliding_audio(f, signal, samplerate)
