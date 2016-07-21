@@ -8,7 +8,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score, classification_report, precision_recall_fscore_support, confusion_matrix
 from yaml import load
 
-import csv_loader
+import image_loader
 import tensorflow as tf
 from models import cnn_model
 
@@ -54,7 +54,7 @@ def evaluate():
     with tf.Graph().as_default():
 
         image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-        images, labels = csv_loader.get(config["test_data_dir"], image_shape, config["batch_size"])
+        images, labels = image_loader.get(config["test_data_dir"], image_shape, config["batch_size"])
 
         # Init Model
         logits = cnn_model.inference(images, config["num_classes"])

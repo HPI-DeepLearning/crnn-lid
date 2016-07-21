@@ -11,8 +11,8 @@ from models import crnn_model
 # from models import lstm_model
 
 # import tfrecord_loader
-import csv_loader
-# import sound_loader
+# import csv_loader
+import sound_loader
 from evaluate import evaluation_metrics
 
 FLAGS = tf.app.flags.FLAGS
@@ -34,9 +34,9 @@ def train():
         with sess.as_default():
 
             # Init Data Loader
+            loader = sound_loader # image_loader
             image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-            images, labels = csv_loader.get(config["train_data_dir"], image_shape, config["batch_size"])
-            #images, labels, sequence_lengths = sound_loader.get(config["train_data_dir"], image_shape, config["batch_size"])
+            images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"])
 
             # Init Model
             model = crnn_model
@@ -54,8 +54,6 @@ def train():
 
             # Build an initialization operation to run below.
             init = tf.initialize_all_variables()
-
-
             sess.run(init)
 
             # Build the summary operation from all summaries.

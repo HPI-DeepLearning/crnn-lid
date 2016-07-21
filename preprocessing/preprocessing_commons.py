@@ -5,6 +5,7 @@ import output
 import cv2
 import scipy.io.wavfile as wav
 from util import *
+import argparse
 
 def read_wav_dirty(f):
   samplerate, signal = wav.read(f)
@@ -81,7 +82,14 @@ def wav_to_images(sound_file, output_path):
   return image_files
 
 if __name__ == '__main__':
-  wav_to_images("/Users/therold/Downloads/english.wav", "/Users/therold/Downloads/english/")
-  wav_to_images("/Users/therold/Downloads/german.wav", "/Users/therold/Downloads/german/")
-  wav_to_images("/Users/therold/Downloads/french.wav", "/Users/therold/Downloads/french/")
-  wav_to_images("/Users/therold/Downloads/spanish.wav", "/Users/therold/Downloads/spanish/")
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--input', dest='input_path', default=os.getcwd(), help='Input Path to wav file',
+                      required=True)
+  parser.add_argument('--output', dest='output_path', default=os.path.join(os.getcwd(), "spectrograms"),
+                      required=True,
+                      help='Output Path for spectrogram images.')
+
+  args = parser.parse_args()
+
+  wav_to_images(args.input_path, args.output_path)

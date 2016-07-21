@@ -1,6 +1,5 @@
 import tensorflow as tf
 import numpy as np
-from tensorflow.contrib.ctc import ctc_loss
 from tensorflowslim.scopes import arg_scope
 from tensorflowslim import ops
 from tensorflowslim import losses
@@ -43,7 +42,7 @@ def BiLSTM(x, config):
     lstm_bw_cell = tf.nn.rnn_cell.LSTMCell(num_hidden, use_peepholes=True, state_is_tuple=True)
 
     # Get lstm cell output: [(bs, 2*num_hidden)] * num_time_steps
-    outputs, output_state_fw, output_state_bw = tf.nn.bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32)
+    outputs, output_state_fw, output_state_bw = tf.nn.bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32, scope='BiRNN')
 
     # Reshape output state to split forward and backward pass: [(bs, 2, num_hidden)] * num_time_steps
     fb_hidden = [tf.reshape(t, [batch_size, 2, num_hidden]) for t in outputs]
