@@ -10,14 +10,14 @@ FLAGS = tf.app.flags.FLAGS
 
 def BiLSTM(x, config):
 
-    # x = [batch_size, num_steps, features]
+    # x = shape (batch_size, num_time_steps, features)
 
     num_hidden = 256
     num_classes = config["num_classes"]
 
-    batch_size = int(x._shape[0])
-    max_length = num_steps = int(x._shape[1]) # = 35 see Conv7 layer
-    num_input = int(x._shape[2]) # = 512 See Conv7 layer
+    batch_size = int(x._shape[0])                   # 32 see config.yaml
+    max_length = num_time_steps = int(x._shape[1])  # 35 see Conv7 layer
+    num_input = int(x._shape[2])                    # 512 See Conv7 layer
 
     weights_hidden = tf.Variable(tf.truncated_normal([2, num_hidden], stddev=np.sqrt(2.0 / (2 * num_hidden))))
     weights_out = tf.Variable(tf.truncated_normal([num_hidden, num_classes], stddev=np.sqrt(2.0 / num_hidden)))
@@ -26,15 +26,15 @@ def BiLSTM(x, config):
     bias_out = tf.Variable(tf.zeros([num_classes]))
 
     # Prepare data shape to match `bidirectional_rnn` function requirements
-    # Current data input shape: (batch_size, num_steps, num_input)
-    # Required shape: 'num_steps' tensors list of shape (batch_size, num_input)
+    # Current data input shape: (batch_size, num_time_steps, num_input)
+    # Required shape: 'num_time_steps' tensors list of shape (batch_size, num_input)
 
-    # Permuting batch_size and num_steps
+    # Permuting batch_size and num_time_steps
     x = tf.transpose(x, [1, 0, 2])
-    # Reshape to (num_steps * batch_size, num_input)
+    # Reshape to (num_time_steps * batch_size, num_input)
     x = tf.reshape(x, [-1, num_input])
-    # Split to get a list of 'num_steps' tensors of shape (batch_size, num_input)
-    x = tf.split(0, num_steps, x)
+    # Split to get a list of 'num_time_steps' tensors of shape (batch_size, num_input)
+    x = tf.split(0, num_time_steps, x)
 
     # Define lstm cells with tensorflow
     # Forward direction cell
@@ -42,14 +42,17 @@ def BiLSTM(x, config):
     # Backward direction cell
     lstm_bw_cell = tf.nn.rnn_cell.LSTMCell(num_hidden, use_peepholes=True, state_is_tuple=True)
 
-    # Get lstm cell output
+    # Get lstm cell output: [(bs, 2*num_hidden)] * num_time_steps
     outputs, output_state_fw, output_state_bw = tf.nn.bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32)
-    # outputs = list:num_steps * (bs, 2*num_hidden)
 
-    fbH1rs = [tf.reshape(t, [batch_size, 2, num_hidden]) for t in outputs]
-    outH1 = [tf.reduce_sum(tf.mul(t, weights_hidden), reduction_indices=1) + bias_hidden for t in fbH1rs]
+    # Reshape output state to split forward and backward pass: [(bs, 2, num_hidden)] * num_time_steps
+    fb_hidden = [tf.reshape(t, [batch_size, 2, num_hidden]) for t in outputs]
 
-    logits = [tf.matmul(t, weights_out) + bias_out for t in outH1]
+    # Combine forward and backward state by summation: [(bs, num_hidden)] * num_time_steps
+    out = [tf.reduce_sum(tf.mul(t, weights_hidden), reduction_indices=1) + bias_hidden for t in fb_hidden]
+
+    # Reduce hidden states to num_classes: [(bs, num_classes)] * num_time_steps
+    logits = [tf.matmul(t, weights_out) + bias_out for t in out]
 
     return logits
 
@@ -110,6 +113,7 @@ def inference(images, config):
 
 def loss(logits, labels, batch_size):
 
+    # TODO Consider using first state and all states
     # Use the last state of the LSTM as output
     last_state = logits[-1]
 
