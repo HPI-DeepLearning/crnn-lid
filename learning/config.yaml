@@ -2,8 +2,8 @@
 #test_data_dir: "/Users/tomherold/datasets/2016-01-26_melfilter/test_youtube_en_de_fr_es_shuffled.csv"
 #train_data_dir: "/Users/therold/Uni/master-thesis/datasets/dubsmash/english_files.csv"
 #test_data_dir: "/Users/therold/Uni/master-thesis/datasets/dubsmash/english_files.csv"
-train_data_dir: "/Users/tomherold/datasets/news_segmented/train_youtube_small.csv"
-test_data_dir: "/Users/tomherold/datasets/news_segmented/train_youtube_small.csv"
+train_data_dir: "/Users/tomherold/datasets/news_segmented/train_youtube.csv"
+test_data_dir: "/Users/tomherold/datasets/news_segmented/test_youtube.csv"
 
 batch_size: 32
 learning_rate: 0.001
@@ -12,7 +12,7 @@ max_train_steps: 100000
 num_train_files: 96000
 num_test_files: 24000
 
-image_width: 2408
+image_width: 1207 # 10 sec mono audio
 image_height: 39
 image_depth: 1
 

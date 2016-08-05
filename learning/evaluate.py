@@ -22,30 +22,26 @@ config = load(open(FLAGS.config, "rb"))
 
 def evaluation_metrics(true_labels, predicted_labels, summary_writer, global_step):
 
-    try:
 
-        available_labels = range(0, config["num_classes"])
+    available_labels = range(0, config["num_classes"])
 
-        accuracy = accuracy_score(true_labels, predicted_labels)
-        precision, recall, f1, support = precision_recall_fscore_support(true_labels, predicted_labels, labels=available_labels)
+    accuracy = accuracy_score(true_labels, predicted_labels)
+    precision, recall, f1, support = precision_recall_fscore_support(true_labels, predicted_labels, labels=available_labels)
 
-        print("Accuracy %s" % (accuracy))
-        print(classification_report(true_labels, predicted_labels, labels=available_labels, target_names=config["label_names"]))
-        print(confusion_matrix(true_labels, predicted_labels, labels=available_labels))
+    print("Accuracy %s" % (accuracy))
+    print(classification_report(true_labels, predicted_labels, labels=available_labels, target_names=config["label_names"]))
+    print(confusion_matrix(true_labels, predicted_labels, labels=available_labels))
 
-        summary = tf.Summary()
-        summary.value.add(tag="Accuracy", simple_value=accuracy)
+    summary = tf.Summary()
+    summary.value.add(tag="Accuracy", simple_value=accuracy)
 
-        for i, label_name in enumerate(config["label_names"]):
-            summary.value.add(tag="Precision  %s" % label_name, simple_value=precision[i])
-            summary.value.add(tag="Recall %s" % label_name, simple_value=recall[i])
-            summary.value.add(tag="F1 %s" % label_name, simple_value=f1[i])
+    for i, label_name in enumerate(config["label_names"]):
+        summary.value.add(tag="Precision  %s" % label_name, simple_value=precision[i])
+        summary.value.add(tag="Recall %s" % label_name, simple_value=recall[i])
+        summary.value.add(tag="F1 %s" % label_name, simple_value=f1[i])
 
-        summary_writer.add_summary(summary, global_step)
+    summary_writer.add_summary(summary, global_step)
 
-    except Exception as e:
-        "UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples."
-        pass
 
 
 def evaluate():

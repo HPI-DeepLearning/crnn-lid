@@ -42,7 +42,7 @@ def train():
             model = crnn_model
             logits = model.inference(images, config)
             loss_op = model.loss(logits, labels, config["batch_size"])
-            prediction_op = tf.cast(tf.argmax(logits, 1), tf.int32) # For evaluation
+            prediction_op = tf.cast(tf.argmax(logits[-1], 1), tf.int32) # For evaluation
             tf.scalar_summary("loss", loss_op)
 
             # Adam optimizer already does LR decay
@@ -70,7 +70,9 @@ def train():
             # Start the queue runners.
             tf.train.start_queue_runners(sess=sess)
 
-            summary_writer = tf.train.SummaryWriter(FLAGS.log_dir, sess.graph)
+            log_dir = os.path.join(FLAGS.log_dir, datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+            os.mkdir(log_dir)
+            summary_writer = tf.train.SummaryWriter(log_dir, sess.graph)
 
             # Learning Loop
             for step in range(config["max_train_steps"]):
@@ -87,12 +89,12 @@ def train():
                     print(format_str % (datetime.now(), step, loss_value, examples_per_sec, duration))
 
                 # Evaluate a test batch periodically
-                if step % 100 == 0:
+                if step % 10 == 0:
                     predicted_labels, true_labels = sess.run([prediction_op, labels])
                     evaluation_metrics(true_labels, predicted_labels, summary_writer, step)
 
                 # Save the summary periodically
-                if step % 100 == 0:
+                if step % 1 == 0:
                     summary_str = sess.run(summary_op)
                     summary_writer.add_summary(summary_str, step)
 

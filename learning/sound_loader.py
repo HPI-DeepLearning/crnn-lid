@@ -24,9 +24,9 @@ def wav_to_spectrogram(sound_file):
     _, mel_image = apply_melfilter(f, signal, samplerate)
     mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
-    mel_image = graphic.histeq.clamp_and_equalize(mel_image)
+    # mel_image = graphic.histeq.clamp_and_equalize(mel_image)
     print sound_file, mel_image.shape
-    mel_image = graphic.windowing.pad_window(mel_image, 2408)
+    mel_image = graphic.windowing.pad_window(mel_image, 1207) # 1207
 
 
     return np.expand_dims(mel_image, -1)
@@ -108,7 +108,7 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
         #
         # images = tf.cast(images, tf.float32)
         # images = tf.reshape(images, shape=[batch_size, height, width, depth])
-        tf.image_summary('raw_images', images)
+        tf.image_summary('raw_images', images, max_images=10)
 
         return images, tf.reshape(label_index_batch, [batch_size])
 
