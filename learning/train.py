@@ -71,7 +71,7 @@ def train():
             tf.train.start_queue_runners(sess=sess)
 
             log_dir = os.path.join(FLAGS.log_dir, datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
-            os.mkdir(log_dir)
+            os.makedirs(log_dir)
             summary_writer = tf.train.SummaryWriter(log_dir, sess.graph)
 
             # Learning Loop
@@ -89,12 +89,12 @@ def train():
                     print(format_str % (datetime.now(), step, loss_value, examples_per_sec, duration))
 
                 # Evaluate a test batch periodically
-                if step % 10 == 0:
+                if step % 100 == 0:
                     predicted_labels, true_labels = sess.run([prediction_op, labels])
                     evaluation_metrics(true_labels, predicted_labels, summary_writer, step)
 
                 # Save the summary periodically
-                if step % 1 == 0:
+                if step % 100 == 0:
                     summary_str = sess.run(summary_op)
                     summary_writer.add_summary(summary_str, step)
 

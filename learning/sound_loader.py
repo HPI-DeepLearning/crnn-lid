@@ -3,7 +3,7 @@ import numpy as np
 import os
 import sys
 
-lib_dir = os.path.join(os.path.abspath(__file__), "..", "preprocessing")
+lib_dir = os.path.join(os.getcwd(), "..")
 sys.path.append(lib_dir)
 
 from preprocessing.preprocessing_commons import apply_melfilter, read_wav_dirty, downsample
@@ -25,7 +25,7 @@ def wav_to_spectrogram(sound_file):
     mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
     # mel_image = graphic.histeq.clamp_and_equalize(mel_image)
-    print sound_file, mel_image.shape
+    # print sound_file, mel_image.shape
     mel_image = graphic.windowing.pad_window(mel_image, 1207) # 1207
 
 

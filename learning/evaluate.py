@@ -10,7 +10,7 @@ from yaml import load
 
 import image_loader
 import tensorflow as tf
-from models import cnn_model
+from models import crnn_model
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -53,7 +53,7 @@ def evaluate():
         images, labels = image_loader.get(config["test_data_dir"], image_shape, config["batch_size"])
 
         # Init Model
-        logits = cnn_model.inference(images, config["num_classes"])
+        logits = crnn_model.inference(images, config)
         predictions_op = tf.cast(tf.argmax(logits, 1), tf.int32)
 
         sess = tf.Session()
