@@ -100,7 +100,7 @@ def train():
 
                 # Save the model checkpoint periodically.
                 if step % 1000 == 0 or (step + 1) == config["max_train_steps"]:
-                    checkpoint_path = os.path.join(FLAGS.log_dir, "model.ckpt")
+                    checkpoint_path = os.path.join(log_dir, "model.ckpt")
                     saver.save(sess, checkpoint_path, global_step=step)
 
 

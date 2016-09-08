@@ -8,7 +8,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score, classification_report, precision_recall_fscore_support, confusion_matrix
 from yaml import load
 
-import image_loader
+import sound_loader
 import tensorflow as tf
 from models import crnn_model
 
@@ -50,11 +50,12 @@ def evaluate():
     with tf.Graph().as_default():
 
         image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-        images, labels = image_loader.get(config["test_data_dir"], image_shape, config["batch_size"])
+        images, labels = sound_loader.get(config["test_data_dir"], image_shape, config["batch_size"])
 
         # Init Model
         logits = crnn_model.inference(images, config)
-        predictions_op = tf.cast(tf.argmax(logits, 1), tf.int32)
+        # Use the last state of the LSTM as output
+        predictions_op = tf.cast(tf.argmax(logits[-1], 1), tf.int32)
 
         sess = tf.Session()
         init = tf.initialize_all_variables()
