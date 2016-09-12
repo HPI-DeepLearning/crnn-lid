@@ -55,7 +55,7 @@ def evaluate():
         # Init Model
         logits = crnn_model.inference(images, config)
         # Use the last state of the LSTM as output
-        predictions_op = tf.cast(tf.argmax(logits[-1], 1), tf.int32)
+        predictions_op = tf.cast(tf.argmax(tf.nn.softmax(logits[-1]), 1), tf.int32)
 
         sess = tf.Session()
         init = tf.initialize_all_variables()

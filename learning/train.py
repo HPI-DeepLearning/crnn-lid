@@ -42,7 +42,7 @@ def train():
             model = crnn_model
             logits = model.inference(images, config)
             loss_op = model.loss(logits, labels, config["batch_size"])
-            prediction_op = tf.cast(tf.argmax(logits[-1], 1), tf.int32) # For evaluation
+            prediction_op = tf.cast(tf.argmax(tf.nn.softmax(logits[-1]), 1), tf.int32) # For evaluation
             tf.scalar_summary("loss", loss_op)
 
             # Adam optimizer already does LR decay
