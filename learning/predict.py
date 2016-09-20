@@ -51,7 +51,8 @@ def audio_to_spectrogram(file_name):
 
     spectrogram = sound_loader.wav_to_spectrogram(file_name)
 
-    image = spectrogram - 0.5
+    image = np.divide(spectrogram, 255.0)
+    image = image - 0.5
     image = image * 2.0
 
     return image
