@@ -34,9 +34,9 @@ def download(language, source, source_name, source_type):
 
     # Use ffmpeg to convert and split WAV files into 10 second parts
     output_path_segmented = os.path.join(args.output_path, "segmented", language, source_name)
-    if os.path.exists(output_path_segmented):
+    if not os.path.exists(output_path_segmented):
 
-       # os.makedirs(output_path_segmented)
+        os.makedirs(output_path_segmented)
         files = glob.glob(os.path.join(output_path_raw, "*.wav"))
 
         for f in files:

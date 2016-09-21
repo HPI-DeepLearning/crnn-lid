@@ -75,7 +75,8 @@ def create_model(inputs, config):
             end_points['conv3'] = ops.conv2d(end_points['pool2'], 256, [3, 3], scope='conv3')
             end_points['conv4'] = ops.conv2d(end_points['conv3'], 25, [3, 3], scope='conv4')
             end_points['pool4'] = ops.max_pool(end_points['conv4'], [1, 2], scope='pool4') # TODO Correct kernel?
-            end_points['conv5'] = ops.conv2d(end_points['pool4'], 512, [3, 3], scope='conv5')
+            end_points['dropout4'] = ops.dropout(end_points['pool4'], 0.5, scope='dropout4')
+            end_points['conv5'] = ops.conv2d(end_points['dropout4'], 512, [3, 3], scope='conv5')
             end_points['batch_norm5'] = ops.batch_norm(end_points['conv5'], scope='batch_norm5')
             end_points['conv6'] = ops.conv2d(end_points['batch_norm5'], 512, [3, 3], padding='VALID', scope='conv6')
             end_points['batch_norm6'] = ops.batch_norm(end_points['conv6'], scope='batch_norm6')
