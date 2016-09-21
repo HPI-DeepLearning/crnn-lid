@@ -28,7 +28,7 @@ def download(language, source, source_name, source_type):
         print "skipping {0} because the target folder already exists".format(output_path_raw)
     else:
         print "Downloading {0} {1} to {2}".format(source_type, source_name, output_path_raw)
-        command = """youtube-dl -i --max-downloads 1200 --extract-audio --audio-format wav {0} -o "{1}/%(title)s.%(ext)s" """.format(source, output_path_raw)
+        command = """youtube-dl -i --max-downloads {} --extract-audio --audio-format wav {} -o "{}/%(title)s.%(ext)s" """.format(args.max_downloads, source, output_path_raw)
         subprocess.call(command, shell=True)
 
 
@@ -63,6 +63,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', dest='output_path', default=os.getcwd(), required=True)
+    parser.add_argument('--downloads', dest='max_downloads', default=1200)
     args = parser.parse_args()
 
     sources = read_yaml("sources.yml")
