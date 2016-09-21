@@ -15,10 +15,10 @@ def recursive_glob(path, pattern):
 
   for root, dirs, files in os.walk(path):
       for basename in files:
-	  if fnmatch.fnmatch(basename, pattern):
-	      filename = os.path.abspath(os.path.join(root, basename))
-	      if os.path.isfile(filename):
-		yield filename
+        if fnmatch.fnmatch(basename, pattern):
+            filename = os.path.abspath(os.path.join(root, basename))
+            if os.path.isfile(filename):
+              yield filename
 
 
 def get_immediate_subdirectories(path):

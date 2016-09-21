@@ -5,6 +5,7 @@ import glob
 import string
 import yaml
 from collections import Counter
+from create_csv import create_csv
 
 file_counter = Counter()
 
@@ -48,6 +49,8 @@ def download(language, source, source_name, source_type):
             subprocess.call(command)
 
     file_counter[language] += len(glob.glob(os.path.join(output_path_segmented, "*.wav")))
+
+    create_csv(output_path_segmented)
 
 
 def download_user(language, user):
