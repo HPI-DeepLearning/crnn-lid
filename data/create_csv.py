@@ -2,6 +2,7 @@ import os
 import argparse
 import fnmatch
 import math
+import itertools
 from random import shuffle
 
 LABELS = {
@@ -38,7 +39,6 @@ def create_csv(root_dir, train_test_split=0.8):
     num_files = len(files)
 
     file_names[lang] = files
-    shuffle(file_names[lang])
     counter[lang] = num_files
 
   # Calculate train / validation split
@@ -46,23 +46,28 @@ def create_csv(root_dir, train_test_split=0.8):
   num_train = int(smallest_count * train_test_split)
   num_validation = smallest_count - num_train
 
-  # Split dataset and write to CSV
-  train_file_name = os.path.join(root_dir, "training.csv")
-  validation_file_name = os.path.join(root_dir, "validation.csv")
-
-  train_file = open(train_file_name, "w")
-  validation_file = open(validation_file_name, "w")
+  # Split datasets and shuffle languages
+  training_set = []
+  validation_set = []
 
   for lang in languages:
 
-    training_set = file_names[lang][:num_train]
-    validation_set = file_names[lang][num_train:num_train + num_validation]
+    label = LABELS[lang]
+    training_set += zip(file_names[lang][:num_train], itertools.repeat(label))
+    validation_set += zip(file_names[lang][num_train:num_train + num_validation], itertools.repeat(label))
 
-    for f in training_set:
-      train_file.write("{}, {}\n".format(f, LABELS[lang]))
+  shuffle(training_set)
+  shuffle(validation_set)
 
-    for f in validation_set:
-      validation_file.write("{}, {}\n".format(f, LABELS[lang]))
+  # Write to CSV
+  train_file = open(os.path.join(root_dir, "training.csv"), "w")
+  validation_file = open(os.path.join(root_dir, "validation.csv"), "w")
+
+  for (filename, label) in training_set:
+    train_file.write("{}, {}\n".format(filename, label))
+
+  for (filename, label) in validation_set:
+    validation_file.write("{}, {}\n".format(filename, label))
 
   train_file.close()
   validation_file.close()
