@@ -13,16 +13,19 @@ LABELS = {
 
 def recursive_glob(path, pattern):
 
-  for root, dirnames, filenames in os.walk(path):
-      for filename in fnmatch.filter(filenames, pattern):
-          yield os.path.abspath(os.path.join(path, filename))
+  for root, dirs, files in os.walk(path):
+      for basename in files:
+	  if fnmatch.fnmatch(basename, pattern):
+	      filename = os.path.abspath(os.path.join(root, basename))
+	      if os.path.isfile(filename):
+		yield filename
 
 
 def get_immediate_subdirectories(path):
   return [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))]
 
 
-def create_csv():
+def create_csv(root_dir, train_test_split=0.8):
 
   languages = get_immediate_subdirectories(args.root_dir)
   counter = {}
@@ -31,7 +34,7 @@ def create_csv():
   # Count all files for each language
   for lang in languages:
     print lang
-    files = list(recursive_glob(os.path.join(args.root_dir, lang), "*.wav"))
+    files = list(recursive_glob(os.path.join(root_dir, lang), "*.wav"))
     num_files = len(files)
 
     file_names[lang] = files
@@ -40,12 +43,12 @@ def create_csv():
 
   # Calculate train / validation split
   smallest_count = min(counter.values())
-  num_train = int(smallest_count * args.train_test_split)
+  num_train = int(smallest_count * train_test_split)
   num_validation = smallest_count - num_train
 
   # Split dataset and write to CSV
-  train_file_name = os.path.join(args.root_dir, "training.csv")
-  validation_file_name = os.path.join(args.root_dir, "validation.csv")
+  train_file_name = os.path.join(root_dir, "training.csv")
+  validation_file_name = os.path.join(root_dir, "validation.csv")
 
   train_file = open(train_file_name, "w")
   validation_file = open(validation_file_name, "w")
@@ -76,4 +79,4 @@ if __name__ == '__main__':
   parser.add_argument('--split', dest='train_test_split', default=0.8)
   args = parser.parse_args()
 
-  create_csv()
+  create_csv(args.root_dir, args.train_test_split)
