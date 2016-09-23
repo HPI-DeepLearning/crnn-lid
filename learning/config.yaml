@@ -11,7 +11,7 @@ num_train_files: 144000
 num_test_files: 36000
 
 image_width: 1207 # 10 sec mono audio
-image_height: 39
+image_height: 40
 image_depth: 1
 
 label_names: ["EN", "DE", "FR", "ES"]
