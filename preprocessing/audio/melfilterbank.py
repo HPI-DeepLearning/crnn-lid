@@ -7,7 +7,7 @@ import features as speechfeatures
 import numpy as np
 
 def filter(samplerate, signal, winlen=0.02, winstep=0.01,
-            nfilt=40, nfft=512, lowfreq=100, highfreq=5000, preemph=0.97):
+            nfilt=40, nfft=512, lowfreq=40, highfreq=5000, preemph=0.97):
   """extracts mel filterbank energies from a given signal
 
   Args:

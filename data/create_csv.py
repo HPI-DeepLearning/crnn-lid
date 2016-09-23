@@ -28,7 +28,7 @@ def get_immediate_subdirectories(path):
 
 def create_csv(root_dir, train_test_split=0.8):
 
-  languages = get_immediate_subdirectories(args.root_dir)
+  languages = get_immediate_subdirectories(root_dir)
   counter = {}
   file_names = {}
 
