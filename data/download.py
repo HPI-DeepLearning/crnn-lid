@@ -50,7 +50,6 @@ def download(language, source, source_name, source_type):
 
     file_counter[language] += len(glob.glob(os.path.join(output_path_segmented, "*.wav")))
 
-    create_csv(output_path_segmented)
 
 
 def download_user(language, user):
@@ -75,5 +74,7 @@ if __name__ == '__main__':
             download_user(language, user)
         #for playlist_name, playlist_id in categories["playlists"].items():
         #  download_playlist(language, playlist_name, playlist_id)
+
+    create_csv(os.path.join(args.output_path, "segmented"))
 
     print file_counter
