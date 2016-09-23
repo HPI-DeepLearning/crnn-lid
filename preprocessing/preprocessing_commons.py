@@ -19,8 +19,8 @@ def read_wav(f):
   f = filename.truncate_extension(filename.clean(f))
   return (f, signal, samplerate)
 
-def apply_melfilter(f, signal, samplerate):
-  filterbank_energies = audio.melfilterbank.logfilter(samplerate, signal, winlen=0.00833, winstep=0.00833, nfilt=40, lowfreq=0, preemph=1.0)
+def apply_melfilter(f, signal, samplerate, nfilt=40):
+  filterbank_energies = audio.melfilterbank.logfilter(samplerate, signal, winlen=0.00833, winstep=0.00833, nfilt=nfilt, lowfreq=0, preemph=1.0)
   #print f, samplerate, filterbank_energies.shape
   return (f, filterbank_energies)
 
