@@ -1,5 +1,6 @@
 import os.path
 import time
+import subprocess
 from datetime import datetime
 
 import numpy as np
@@ -103,6 +104,8 @@ def train():
                     checkpoint_path = os.path.join(log_dir, "model.ckpt")
                     saver.save(sess, checkpoint_path, global_step=step)
 
+    command = ["python", "evaluate.py", "--checkpoint_dir", log_dir, "--log_dir", "log/test"]
+    subprocess.check_call(command)
 
 if __name__ == "__main__":
     train()
