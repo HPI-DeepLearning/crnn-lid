@@ -42,7 +42,9 @@ def create_csv(root_dir, train_test_split=0.8):
     counter[lang] = num_files
 
   # Calculate train / validation split
+  print(counter)
   smallest_count = min(counter.values())
+
   num_train = int(smallest_count * train_test_split)
   num_validation = smallest_count - num_train
 
