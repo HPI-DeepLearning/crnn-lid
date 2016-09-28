@@ -137,4 +137,7 @@ def evaluate():
 
 
 if __name__ == "__main__":
+
+    config["training_mode"] = True
+
     evaluate()
