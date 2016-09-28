@@ -21,15 +21,33 @@ def wav_to_spectrogram(sound_file):
 
     f, signal, samplerate = read_wav_dirty(sound_file)
 
-    _, mel_image = apply_melfilter(f, signal, samplerate)
+    # REMEMBER: Update config shape, when changing melfilter params
+    _, mel_image = apply_melfilter(f, signal, samplerate, nfilt=40)
     mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
     # mel_image = graphic.histeq.clamp_and_equalize(mel_image)
-    # print sound_file, mel_image.shape
+    # print mel_image.shape
     mel_image = graphic.windowing.pad_window(mel_image, 1207) # 1207
 
 
     return np.expand_dims(mel_image, -1)
+
+
+def reshape_image(image, data_shape):
+
+    _image = tf.image.convert_image_dtype(image, dtype=tf.float32)
+    _image.set_shape(data_shape)
+
+    # Finally, rescale to [-1,1] instead of [0, 1)
+    _image = tf.sub(_image, 0.5)
+    _image = tf.mul(_image, 2.0)
+
+    return _image
+
+
+def augment_image(image):
+
+    return tf.image.flip_left_right(image)
 
 
 def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num_readers=1):
@@ -84,16 +102,16 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             # Load WAV files and convert them to a sequence of Mel-filtered spectrograms
             # TF needs static shape, so all images have same shape
             sound_path, label = sound_path_label
+
             image = tf.py_func(wav_to_spectrogram, [sound_path], [tf.double])[0]
+            image = reshape_image(image, data_shape)
 
-            image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-            image.set_shape(data_shape)  # TODO Which way around is it?
-
-            # Finally, rescale to [-1,1] instead of [0, 1)
-            image = tf.sub(image, 0.5)
-            image = tf.mul(image, 2.0)
+            augmented_image = augment_image(image)
+            augmented_image = reshape_image(augmented_image, data_shape)
 
             images_and_labels.append([image, label])
+            images_and_labels.append([augmented_image, label])
+
 
         # Create batches
         images, label_index_batch = tf.train.batch_join(
@@ -103,11 +121,6 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             #shapes=[data_shape, []],
         )
 
-        # Reshape images into these desired dimensions.
-
-        #
-        # images = tf.cast(images, tf.float32)
-        # images = tf.reshape(images, shape=[batch_size, height, width, depth])
         tf.image_summary('raw_images', images, max_images=10)
 
         return images, tf.reshape(label_index_batch, [batch_size])
