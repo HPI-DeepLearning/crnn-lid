@@ -9,7 +9,7 @@ from yaml import load
 
 from models import crnn_model
 
-from learning.loaders import sound_loader
+from loaders import sound_loader
 from evaluate import evaluation_metrics
 
 FLAGS = tf.app.flags.FLAGS

@@ -9,7 +9,7 @@ import numpy as np
 import tensorflow as tf
 from yaml import load
 
-from learning.loaders import sound_loader
+from loaders import sound_loader
 from models import crnn_model
 
 FLAGS = tf.app.flags.FLAGS

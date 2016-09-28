@@ -9,7 +9,7 @@ import tensorflow as tf
 from sklearn.metrics import accuracy_score, classification_report, precision_recall_fscore_support, confusion_matrix
 from yaml import load
 
-from learning.loaders import sound_loader
+from loaders import sound_loader
 from models import crnn_model
 
 FLAGS = tf.app.flags.FLAGS
