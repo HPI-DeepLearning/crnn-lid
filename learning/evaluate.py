@@ -5,15 +5,16 @@ import time
 from datetime import datetime
 
 import numpy as np
+import tensorflow as tf
 from sklearn.metrics import accuracy_score, classification_report, precision_recall_fscore_support, confusion_matrix
 from yaml import load
 
-import sound_loader
-import tensorflow as tf
+from learning.loaders import sound_loader
 from models import crnn_model
 
 FLAGS = tf.app.flags.FLAGS
 
+tf.app.flags.DEFINE_integer('num_gpus', 2, """How many GPUs to use.""")
 tf.app.flags.DEFINE_string("log_dir", "log", """Directory where to write event logs and checkpoint.""")
 tf.app.flags.DEFINE_string("checkpoint_dir", "log", """Directory where to read model checkpoints.""")
 tf.app.flags.DEFINE_string("config", "config.yaml", """Path to config.yaml file""")
@@ -137,4 +138,6 @@ def evaluate():
 
 
 if __name__ == "__main__":
+
+    config["training_mode"] = False
     evaluate()

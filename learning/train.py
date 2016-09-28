@@ -1,22 +1,19 @@
 import os.path
-import time
 import subprocess
+import time
 from datetime import datetime
 
 import numpy as np
+import tensorflow as tf
 from yaml import load
 
-import tensorflow as tf
-# from models import cnn_model
 from models import crnn_model
-# from models import lstm_model
 
-# import tfrecord_loader
-# import csv_loader
-import sound_loader
+from learning.loaders import sound_loader
 from evaluate import evaluation_metrics
 
 FLAGS = tf.app.flags.FLAGS
+config = load(open(FLAGS.config, "rb"))
 
 # Defines are in 'evaluation.py'
 # tf.app.flags.DEFINE_string("log_dir", "log", """Directory where to write event logs and checkpoint.""")
@@ -27,7 +24,6 @@ def train():
     if FLAGS.config is None:
         print("Please provide a config.")
 
-    config = load(open(FLAGS.config, "rb"))
 
     with tf.Graph().as_default():
 
@@ -35,7 +31,7 @@ def train():
         with sess.as_default():
 
             # Init Data Loader
-            loader = sound_loader # image_loader
+            loader = sound_loader  # image_loader
             image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
             images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"])
 
@@ -57,10 +53,6 @@ def train():
             init = tf.initialize_all_variables()
             sess.run(init)
 
-            # Build the summary operation from all summaries.
-            # Learning Rate is created by AdamOptimizer
-            # lr = tf.get_variable("_lr_t")
-            # tf.scalar_summary("learning_rate", lr)
 
             # Add histograms for trainable variables.
             for var in tf.trainable_variables():
@@ -108,4 +100,6 @@ def train():
     subprocess.check_call(command)
 
 if __name__ == "__main__":
+
+    config["training_mode"] = True
     train()

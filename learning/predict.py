@@ -1,15 +1,15 @@
 from __future__ import division
 
-import os.path
-import subprocess
 import glob
+import os.path
 import shutil
+import subprocess
 
 import numpy as np
+import tensorflow as tf
 from yaml import load
 
-import sound_loader
-import tensorflow as tf
+from learning.loaders import sound_loader
 from models import crnn_model
 
 FLAGS = tf.app.flags.FLAGS
@@ -118,4 +118,6 @@ def predict():
 
 
 if __name__ == "__main__":
+
+    config["training_mode"] = False
     predict()

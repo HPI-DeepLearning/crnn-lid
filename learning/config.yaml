@@ -1,5 +1,5 @@
-train_data_dir: "/extra/tom/news/segmented/training.csv"
-validation_data_dir: "/extra/tom/news/segmented/testing.csv"
+train_data_dir: "/Users/therold/Uni/master-thesis/datasets/wav_segmented/training.csv"
+validation_data_dir: "/Users/therold/Uni/master-thesis/datasets/wav_segmented/testing.csv"
 test_data_dir: "/extra/tom/validation/segmented/testing.csv"
 
 batch_size: 32
@@ -7,7 +7,6 @@ learning_rate: 0.001
 max_train_steps: 100000
 
 num_train_files: 144000
-# num_test_files: 33000
 num_test_files: 36000
 
 image_width: 1207 # 10 sec mono audio

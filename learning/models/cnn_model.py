@@ -1,10 +1,9 @@
 from collections import OrderedDict
 
 import tensorflow as tf
-from tensorflowslim.scopes import arg_scope
-from tensorflowslim import losses
-from tensorflowslim import ops
-
+from tensorflow.contrib.slim import arg_scope
+from tensorflow.contrib.slim import ops
+from tensorflow.contrib.slim import losses
 FLAGS = tf.app.flags.FLAGS
 
 

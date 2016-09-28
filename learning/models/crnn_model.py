@@ -1,8 +1,10 @@
 import tensorflow as tf
 import numpy as np
-from tensorflowslim.scopes import arg_scope
-from tensorflowslim import ops
-from tensorflowslim import losses
+
+import tensorflow.contrib.slim as slim
+from tensorflow.contrib.slim import arg_scope
+from tensorflow.contrib.slim import layers
+from tensorflow.contrib.slim import losses
 from collections import OrderedDict
 
 FLAGS = tf.app.flags.FLAGS
@@ -58,44 +60,49 @@ def BiLSTM(x, config):
 
 def create_model(inputs, config):
 
+    is_training = config["training_mode"]
+    weight_decay = 0.0005
+
     batch_norm_params = {
+        "is_training": is_training,
         # Decay for the moving averages
-        'decay': 0.9997,
+        "decay": 0.9997,
         # epsilon to prevent 0s in variance.
-        'epsilon': 0.001,
+        "epsilon": 0.001,
     }
-    end_points = OrderedDict()
 
-    with arg_scope([ops.conv2d, ops.fc], stddev=0.01, weight_decay=0.0005, ):
-        with arg_scope([ops.conv2d], stddev=0.1, activation=tf.nn.relu, batch_norm_params=batch_norm_params):
-            end_points['conv1'] = ops.conv2d(inputs, 64, [3, 3], scope='conv1')
-            end_points['pool1'] = ops.max_pool(end_points['conv1'], [2, 2], scope='pool1')
-            end_points['conv2'] = ops.conv2d(end_points['pool1'], 128, [3, 3], scope='conv2')
-            end_points['pool2'] = ops.max_pool(end_points['conv2'], [2, 2], scope='pool2')
-            end_points['conv3'] = ops.conv2d(end_points['pool2'], 256, [3, 3], scope='conv3')
-            end_points['conv4'] = ops.conv2d(end_points['conv3'], 25, [3, 3], scope='conv4')
-            end_points['pool4'] = ops.max_pool(end_points['conv4'], [1, 2], scope='pool4') # TODO Correct kernel?
-            end_points['dropout4'] = ops.dropout(end_points['pool4'], 0.5, scope='dropout4')
-            end_points['conv5'] = ops.conv2d(end_points['dropout4'], 512, [3, 3], scope='conv5')
-            end_points['batch_norm5'] = ops.batch_norm(end_points['conv5'], scope='batch_norm5')
-            end_points['conv6'] = ops.conv2d(end_points['batch_norm5'], 512, [3, 3], padding='VALID', scope='conv6')
-            end_points['batch_norm6'] = ops.batch_norm(end_points['conv6'], scope='batch_norm6')
-            end_points['pool6'] = ops.max_pool(end_points['batch_norm6'], [1, 2], scope='pool6') # TODO Correct kernel?
-            end_points['conv7'] = ops.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7') # (batch_size, 1, 35, 512)
+    with arg_scope([layers.conv2d],
+                   activation_fn=tf.nn.relu,
+                   normalizer_params=batch_norm_params,
+                   weights_regularizer=slim.l2_regularizer(weight_decay)
+    ):
+        end_points = OrderedDict()
+        end_points['conv1'] = layers.conv2d(inputs, 64, [3, 3], scope='conv1')
+        end_points['pool1'] = layers.max_pool2d(end_points['conv1'], [2, 2], scope='pool1')
+        end_points['conv2'] = layers.conv2d(end_points['pool1'], 128, [3, 3], scope='conv2')
+        end_points['pool2'] = layers.max_pool2d(end_points['conv2'], [2, 2], scope='pool2')
+        end_points['conv3'] = layers.conv2d(end_points['pool2'], 256, [3, 3], scope='conv3')
+        end_points['conv4'] = layers.conv2d(end_points['conv3'], 25, [3, 3], scope='conv4')
+        end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [1, 2], scope='pool4') # TODO Correct kernel?
+        end_points['dropout4'] = layers.dropout(end_points['pool4'], 0.5, is_training=is_training, scope='dropout4')
+        end_points['conv5'] = layers.conv2d(end_points['dropout4'], 512, [3, 3], normalizer_fn=layers.batch_norm, scope='conv5')
+        end_points['conv6'] = layers.conv2d(end_points['conv5'], 512, [3, 3], padding='VALID', scope='conv6')
+        end_points['pool6'] = layers.max_pool2d(end_points['conv6'], [1, 2], scope='pool6') # TODO Correct kernel?
+        end_points['conv7'] = layers.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7') # (batch_size, 1, 35, 512)
 
-            #flatten = ops.flatten(end_points['conv7'], scope='flatten')
-            # (32, 1, 35, 512) -> (32, 35, 512)
-            map_to_sequence = tf.squeeze(end_points['conv7'])
+        #flatten = layers.flatten(end_points['conv7'], scope='flatten')
+        # (32, 1, 35, 512) -> (32, 35, 512)
+        map_to_sequence = tf.squeeze(end_points['conv7'])
 
-            assert len(map_to_sequence._shape) == 3
+        assert len(map_to_sequence._shape) == 3
 
-            # Bidirectional LSTM
-            logits = BiLSTM(map_to_sequence, config)
+        # Bidirectional LSTM
+        logits = BiLSTM(map_to_sequence, config)
 
-            for key, endpoint in end_points.iteritems():
-                print "{0}: {1}".format(key, endpoint._shape)
+        for key, endpoint in end_points.iteritems():
+            print "{0}: {1}".format(key, endpoint._shape)
 
-            return logits, end_points
+        return logits, end_points
 
 
 def inference(images, config):
@@ -117,17 +124,13 @@ def loss(logits, labels, batch_size):
     # Use the last state of the LSTM as output
     last_state = logits[-1]
 
-
-    # Reshape the labels into a dense Tensor of shape [FLAGS.batch_size, num_classes].
-    sparse_labels = tf.reshape(labels, [batch_size, 1])
-    indices = tf.reshape(tf.range(batch_size), [batch_size, 1])
-    concated = tf.concat(1, [indices, sparse_labels])
+    # Reshape the labels into a dense Tensor of shape [FLAGS.batch_size * num_classes].
     num_classes = last_state.get_shape()[-1].value
-    one_hot_labels = tf.sparse_to_dense(concated, [batch_size, num_classes], 1.0, 0.0)
+    one_hot_labels = layers.one_hot_encoding(labels, num_classes)
 
-
-    # Cross entropy loss for the main softmax prediction.
-    loss = losses.cross_entropy_loss(last_state, one_hot_labels, label_smoothing=0.1, weight=1.0)
+    # Note: label smoothing regularization LSR
+    # https://arxiv.org/pdf/1512.00567.pdf
+    loss = losses.softmax_cross_entropy(last_state, one_hot_labels, label_smoothing=0.1)
 
     return tf.reduce_mean(loss)
 

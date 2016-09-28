@@ -1,34 +1,35 @@
 import os.path
-import time
+import re
 import subprocess
+import time
 from datetime import datetime
 
 import numpy as np
+import tensorflow as tf
 from yaml import load
 
-import tensorflow as tf
 # from models import cnn_model
 from models import crnn_model
 # from models import lstm_model
 
 # import tfrecord_loader
 # import csv_loader
-import sound_loader
-from evaluate import evaluation_metrics
+from learning.loaders import sound_loader
 
+# Defines are in "evaluation.py"
 FLAGS = tf.app.flags.FLAGS
 
-# Defines are in 'evaluation.py'
 # tf.app.flags.DEFINE_string("log_dir", "log", """Directory where to write event logs and checkpoint.""")
 # tf.app.flags.DEFINE_string("config", "config.yaml", """Path to config.yaml file""")
-tf.app.flags.DEFINE_integer('num_gpus', 2, """How many GPUs to use.""")
+
+
 config = load(open(FLAGS.config, "rb"))
 
 
 def tower_loss(scope):
     """Calculate the total loss on a single tower running the CIFAR model.
     Args:
-      scope: unique prefix string identifying the tower, e.g. 'tower_0'
+      scope: unique prefix string identifying the tower, e.g. "tower_0"
     Returns:
        Tensor of shape [] containing the total loss for a batch of data
     """
@@ -49,24 +50,24 @@ def tower_loss(scope):
     _ = model.loss(logits, labels, config["batch_size"])
 
     # Assemble all of the losses for the current tower only.
-    losses = tf.get_collection('losses', scope)
+    losses = tf.get_collection("losses", scope)
 
     # Calculate the total loss for the current tower.
-    total_loss = tf.add_n(losses, name='total_loss')
+    total_loss = tf.add_n(losses, name="total_loss")
 
     # Compute the moving average of all individual losses and the total loss.
-    loss_averages = tf.train.ExponentialMovingAverage(0.9, name='avg')
+    loss_averages = tf.train.ExponentialMovingAverage(0.9, name="avg")
     loss_averages_op = loss_averages.apply(losses + [total_loss])
 
     # Attach a scalar summary to all individual losses and the total loss; do the
     # same for the averaged version of the losses.
     for l in losses + [total_loss]:
-        # Remove 'tower_[0-9]/' from the name in case this is a multi-GPU training
+        # Remove "tower_[0-9]/" from the name in case this is a multi-GPU training
         # session. This helps the clarity of presentation on tensorboard.
-        loss_name = re.sub('%s_[0-9]*/tower', l.op.name)
-        # Name each loss as '(raw)' and name the moving average version of the loss
+        loss_name = re.sub("%s_[0-9]*/tower", "", l.op.name)
+        # Name each loss as "(raw)" and name the moving average version of the loss
         # as the original loss name.
-        tf.scalar_summary(loss_name + ' (raw)', l)
+        tf.scalar_summary(loss_name + " (raw)", l)
         tf.scalar_summary(loss_name, loss_averages.average(l))
 
     with tf.control_dependencies([loss_averages_op]):
@@ -94,15 +95,15 @@ def average_gradients(tower_grads):
             # Add 0 dimension to the gradients to represent the tower.
             expanded_g = tf.expand_dims(g, 0)
 
-            # Append on a 'tower' dimension which we will average over below.
+            # Append on a "tower" dimension which we will average over below.
             grads.append(expanded_g)
 
-        # Average over the 'tower' dimension.
+        # Average over the "tower" dimension.
         grad = tf.concat(0, grads)
         grad = tf.reduce_mean(grad, 0)
 
         # Keep in mind that the Variables are redundant because they are shared
-        # across towers. So .. we will just return the first tower's pointer to
+        # across towers. So .. we will just return the first tower"s pointer to
         # the Variable.
         v = grad_and_vars[0][1]
         grad_and_var = (grad, v)
@@ -115,11 +116,11 @@ def train():
     if FLAGS.config is None:
         print("Please provide a config.")
 
-    with tf.Graph().as_default(), tf.device('/cpu:0'):
+    with tf.Graph().as_default(), tf.device("/cpu:0"):
         # Create a variable to count the number of train() calls. This equals the
         # number of batches processed * FLAGS.num_gpus.
         global_step = tf.get_variable(
-            'global_step', [],
+            "global_step", [],
             initializer=tf.constant_initializer(0), trainable=False)
 
         # Adam optimizer already does LR decay
@@ -129,8 +130,8 @@ def train():
         # Calculate the gradients for each model tower.
         tower_grads = []
         for i in xrange(FLAGS.num_gpus):
-            with tf.device('/gpu:%d' % i):
-                with tf.name_scope('%s_%d' % ("tower", i)) as scope:
+            with tf.device("/gpu:%d" % i):
+                with tf.name_scope("%s_%d" % ("tower", i)) as scope:
                     # Calculate the loss for one tower of the CIFAR model. This function
                     # constructs the entire CIFAR model but shares the variables across
                     # all towers.
@@ -156,7 +157,7 @@ def train():
         for grad, var in grads:
             if grad is not None:
                 summaries.append(
-                    tf.histogram_summary(var.op.name + '/gradients', grad))
+                    tf.histogram_summary(var.op.name + "/gradients", grad))
 
         # Apply the gradients to adjust the shared variables.
         apply_gradient_op = optimizer.apply_gradients(grads, global_step=global_step)
@@ -192,7 +193,7 @@ def train():
         # Start the queue runners.
         tf.train.start_queue_runners(sess=sess)
 
-        log_dir = os.path.join(FLAGS.log_dir, datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+        log_dir = os.path.join(FLAGS.log_dir, datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
         os.makedirs(log_dir)
         summary_writer = tf.train.SummaryWriter(log_dir, sess.graph)
 
@@ -202,7 +203,7 @@ def train():
             duration = time.time() - start_time
 
             assert not np.isnan(
-                loss_value), 'Model diverged with loss = NaN'  # Print the loss & examples/sec periodically
+                loss_value), "Model diverged with loss = NaN"  # Print the loss & examples/sec periodically
 
             if step % 1 == 0:
                 examples_per_sec = config["batch_size"] / float(duration)
