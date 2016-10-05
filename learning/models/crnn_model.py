@@ -74,7 +74,9 @@ def create_model(inputs, config):
     with arg_scope([layers.conv2d],
                    activation_fn=tf.nn.relu,
                    normalizer_params=batch_norm_params,
-                   weights_regularizer=slim.l2_regularizer(weight_decay)
+                   weights_regularizer=slim.l2_regularizer(weight_decay),
+                   weights_initializer=tf.truncated_normal_initializer(stddev=0.01),
+                   normalizer_fn=layers.batch_norm,
     ):
         end_points = OrderedDict()
         end_points['conv1'] = layers.conv2d(inputs, 64, [3, 3], scope='conv1')
@@ -83,15 +85,14 @@ def create_model(inputs, config):
         end_points['pool2'] = layers.max_pool2d(end_points['conv2'], [2, 2], scope='pool2')
         end_points['conv3'] = layers.conv2d(end_points['pool2'], 256, [3, 3], scope='conv3')
         end_points['conv4'] = layers.conv2d(end_points['conv3'], 25, [3, 3], scope='conv4')
-        end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [1, 2], scope='pool4') # TODO Correct kernel?
+        end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [1, 2], scope='pool4')  # TODO Correct kernel?
         end_points['dropout4'] = layers.dropout(end_points['pool4'], 0.5, is_training=is_training, scope='dropout4')
-        end_points['conv5'] = layers.conv2d(end_points['dropout4'], 512, [3, 3], normalizer_fn=layers.batch_norm, scope='conv5')
+        end_points['conv5'] = layers.conv2d(end_points['dropout4'], 512, [3, 3], scope='conv5')
         end_points['conv6'] = layers.conv2d(end_points['conv5'], 512, [3, 3], padding='VALID', scope='conv6')
-        end_points['pool6'] = layers.max_pool2d(end_points['conv6'], [1, 2], scope='pool6') # TODO Correct kernel?
-        end_points['conv7'] = layers.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7') # (batch_size, 1, 35, 512)
+        end_points['pool6'] = layers.max_pool2d(end_points['conv6'], [1, 2], scope='pool6')  # TODO Correct kernel?
+        end_points['conv7'] = layers.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7')  # (batch_size, 1, 73, 512)
 
-        #flatten = layers.flatten(end_points['conv7'], scope='flatten')
-        # (32, 1, 35, 512) -> (32, 35, 512)
+        # (32, 1, 73, 512) -> (32, 73, 512)
         map_to_sequence = tf.squeeze(end_points['conv7'])
 
         assert len(map_to_sequence._shape) == 3
@@ -103,7 +104,6 @@ def create_model(inputs, config):
             print "{0}: {1}".format(key, endpoint._shape)
 
         return logits, end_points
-
 
 def inference(images, config):
     logits, endpoints = create_model(images, config)
@@ -124,7 +124,7 @@ def loss(logits, labels, batch_size):
     # Use the last state of the LSTM as output
     last_state = logits[-1]
 
-    # Reshape the labels into a dense Tensor of shape [FLAGS.batch_size * num_classes].
+    # Reshape the labels into a dense Tensor of shape [FLAGS.batch_size, num_classes].
     num_classes = last_state.get_shape()[-1].value
     one_hot_labels = layers.one_hot_encoding(labels, num_classes)
 
@@ -132,7 +132,7 @@ def loss(logits, labels, batch_size):
     # https://arxiv.org/pdf/1512.00567.pdf
     loss = losses.softmax_cross_entropy(last_state, one_hot_labels, label_smoothing=0.1)
 
-    return tf.reduce_mean(loss)
+    return loss
 
 
 def ctc_loss():
