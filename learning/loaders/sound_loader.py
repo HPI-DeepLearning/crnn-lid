@@ -26,19 +26,20 @@ def wav_to_spectrogram(sound_file):
     mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
     # mel_image = graphic.histeq.clamp_and_equalize(mel_image)
-    # print mel_image.shape
-    mel_image = graphic.windowing.pad_window(mel_image, 1207) # 1207
 
+    mel_image = graphic.windowing.pad_window(mel_image, 1207)
 
     return np.expand_dims(mel_image, -1)
 
 
 def reshape_image(image, data_shape):
 
+
     _image = tf.image.convert_image_dtype(image, dtype=tf.float32)
     _image.set_shape(data_shape)
 
     # Finally, rescale to [-1,1] instead of [0, 1)
+    _image = tf.div(_image, 255.0)
     _image = tf.sub(_image, 0.5)
     _image = tf.mul(_image, 2.0)
 
@@ -106,11 +107,11 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             image = tf.py_func(wav_to_spectrogram, [sound_path], [tf.double])[0]
             image = reshape_image(image, data_shape)
 
-            augmented_image = augment_image(image)
-            augmented_image = reshape_image(augmented_image, data_shape)
+            # augmented_image = augment_image(image)
+            # augmented_image = reshape_image(augmented_image, data_shape)
 
             images_and_labels.append([image, label])
-            images_and_labels.append([augmented_image, label])
+            # images_and_labels.append([augmented_image, label])
 
 
         # Create batches
