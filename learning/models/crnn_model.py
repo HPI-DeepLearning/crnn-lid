@@ -72,6 +72,7 @@ def create_model(inputs, config):
     }
 
     with arg_scope([layers.conv2d],
+                   trainable=True,
                    activation_fn=tf.nn.relu,
                    normalizer_params=batch_norm_params,
                    weights_regularizer=slim.l2_regularizer(weight_decay),
@@ -109,11 +110,12 @@ def inference(images, config):
     logits, endpoints = create_model(images, config)
 
     # Add summaries for viewing model statistics on TensorBoard.
-    with tf.name_scope('summaries'):
-        for act in endpoints.values():
-            tensor_name = act.op.name
-            tf.histogram_summary(tensor_name + '/activations', act)
-            tf.scalar_summary(tensor_name + '/sparsity', tf.nn.zero_fraction(act))
+    # Make sure they are named uniquely
+    summaries = {}
+    for act in endpoints.values():
+        summaries[act.op.name] = act
+
+    slim.summarize_tensors(summaries.values())
 
     return logits
 

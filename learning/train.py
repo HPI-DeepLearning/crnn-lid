@@ -87,7 +87,7 @@ def train():
                     evaluation_metrics(true_labels, predicted_labels, summary_writer, step)
 
                 # Save the summary periodically
-                if step % 100 == 0:
+                if step % 1 == 0:
                     summary_str = sess.run(summary_op)
                     summary_writer.add_summary(summary_str, step)
 
