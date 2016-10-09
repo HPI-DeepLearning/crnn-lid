@@ -96,7 +96,7 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
         for thread_id in range(num_preprocess_threads):
 
             if data_shape is None:
-                raise ValueError('Please specify the image dimensions')
+                raise ValueError("Please specify the image dimensions")
 
             height, width, depth = data_shape
 
@@ -122,7 +122,8 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             #shapes=[data_shape, []],
         )
 
-        tf.image_summary('raw_images', images, max_images=10)
+        prefix = os.path.basename(csv_path)
+        tf.image_summary("%s raw_images" % prefix, images, max_images=10)
 
         return images, tf.reshape(label_index_batch, [batch_size])
 

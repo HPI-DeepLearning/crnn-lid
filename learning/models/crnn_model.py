@@ -20,11 +20,11 @@ def BiLSTM(x, config):
     max_length = num_time_steps = int(x._shape[1])  # 35 see Conv7 layer
     num_input = int(x._shape[2])                    # 512 See Conv7 layer
 
-    weights_hidden = tf.Variable(tf.truncated_normal([2, num_hidden], stddev=np.sqrt(2.0 / (2 * num_hidden))))
-    weights_out = tf.Variable(tf.truncated_normal([2 * num_hidden, num_classes], stddev=np.sqrt(2.0 / (2 * num_hidden))))
+    # weights_hidden = tf.Variable(tf.truncated_normal([2, num_hidden], stddev=np.sqrt(2.0 / (2 * num_hidden))))
+    # weights_out = tf.Variable(tf.truncated_normal([2 * num_hidden, num_classes], stddev=np.sqrt(2.0 / (2 * num_hidden))))
 
-    bias_hidden = tf.Variable(tf.zeros([num_hidden]))
-    bias_out = tf.Variable(tf.zeros([num_classes]))
+    # bias_hidden = tf.Variable(tf.zeros([num_hidden]))
+    # bias_out = tf.Variable(tf.zeros([num_classes]))
 
     # Prepare data shape to match `bidirectional_rnn` function requirements
     # Current data input shape: (batch_size, num_time_steps, num_input)

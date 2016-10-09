@@ -29,10 +29,10 @@ def train():
 
     with tf.Graph().as_default():
 
-        sess = tf.InteractiveSession()
+        sess = tf.InteractiveSession(config=tf.ConfigProto(allow_soft_placement=True))
         with sess.as_default():
 
-            deployment_config = model_deploy.DeploymentConfig(num_clones=FLAGS.num_gpus, clone_on_cpu=True)
+            deployment_config = model_deploy.DeploymentConfig(num_clones=FLAGS.num_gpus, clone_on_cpu=False)
 
             # Create the global step on the device storing the variables.
             with tf.device(deployment_config.variables_device()):

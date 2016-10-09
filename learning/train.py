@@ -25,96 +25,97 @@ def train():
     if FLAGS.config is None:
         print("Please provide a config.")
 
-
     with tf.Graph().as_default():
+        with tf.device("/gpu:0"):
 
-        sess = tf.InteractiveSession()
-        with sess.as_default():
+            sess = tf.InteractiveSession(config=tf.ConfigProto(allow_soft_placement=True))
+            with sess.as_default():
 
-            # Init Data Loader
-            loader = sound_loader  # image_loader
-            image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-            images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"])
+                # Init Data Loader
+                loader = sound_loader  # image_loader
+                image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
+                images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"])
 
-            validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"])
+                validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"])
 
-            # Init Model
-            model = crnn_model
+                # Init Model
+                model = crnn_model
 
-            with tf.variable_scope("training") as vs:
-                logits, endpoints = model.create_model(images, config, is_training=True)
-                loss_op = model.loss(logits, labels)
-                tf.scalar_summary("loss", loss_op)
+                with tf.variable_scope("training") as vs:
+                    logits, endpoints = model.create_model(images, config, is_training=True)
+                    loss_op = model.loss(logits, labels)
+                    tf.scalar_summary("loss", loss_op)
 
-                # Add summaries for viewing model statistics on TensorBoard.
-                # Make sure they are named uniquely
-                summaries = {}
-                for act in endpoints.values():
-                    summaries[act.op.name] = act
+                    # Add summaries for viewing model statistics on TensorBoard.
+                    # Make sure they are named uniquely
+                    summaries = {}
+                    for act in endpoints.values():
+                        summaries[act.op.name] = act
 
-                slim.summarize_tensors(summaries.values())
+                    slim.summarize_tensors(summaries.values())
 
-            with tf.variable_scope(vs, reuse=True):
-                validation_logits, _ = model.create_model(validation_images, config, is_training=False)
-                validation_loss_op = model.loss(validation_logits, validation_labels)
-                prediction_op = tf.cast(tf.argmax(tf.nn.softmax(validation_logits), 1), tf.int32)  # For evaluation
-                tf.scalar_summary("validation_loss", validation_loss_op)
+                with tf.variable_scope(vs, reuse=True):
+                    validation_logits, _ = model.create_model(validation_images, config, is_training=False)
+                    validation_loss_op = model.loss(validation_logits, validation_labels)
+                    prediction_op = tf.cast(tf.argmax(tf.nn.softmax(validation_logits), 1), tf.int32)  # For evaluation
+                    tf.scalar_summary("validation_loss", validation_loss_op)
 
-            # Adam optimizer already does LR decay
-            train_op = tf.train.AdamOptimizer(learning_rate=config["learning_rate"], beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False,
-                                               name="AdamOptimizer").minimize(loss_op)
+                # Adam optimizer already does LR decay
+                train_op = tf.train.AdamOptimizer(learning_rate=config["learning_rate"], beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False,
+                                                   name="AdamOptimizer").minimize(loss_op)
 
-            # Create a saver.
-            saver = tf.train.Saver(tf.all_variables())
+                # Create a saver.
+                saver = tf.train.Saver(tf.all_variables())
 
-            # Build an initialization operation to run below.
-            init = tf.initialize_all_variables()
-            sess.run(init)
+                # Build an initialization operation to run below.
+                init = tf.initialize_all_variables()
+                sess.run(init)
 
 
-            # Add histograms for trainable variables.
-            for var in tf.trainable_variables():
-                tf.histogram_summary(var.op.name, var)
+                # Add histograms for trainable variables.
+                for var in tf.trainable_variables():
+                    tf.histogram_summary(var.op.name, var)
 
-            summary_op = tf.merge_all_summaries()
+                summary_op = tf.merge_all_summaries()
 
-            # Start the queue runners.
-            tf.train.start_queue_runners(sess=sess)
+                # Start the queue runners.
+                tf.train.start_queue_runners(sess=sess)
 
-            log_dir = os.path.join(FLAGS.log_dir, datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
-            os.makedirs(log_dir)
-            summary_writer = tf.train.SummaryWriter(log_dir, sess.graph)
+                log_dir = os.path.join(FLAGS.log_dir, datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+                os.makedirs(log_dir)
+                summary_writer = tf.train.SummaryWriter(log_dir, sess.graph)
 
-            # Learning Loop
-            for step in range(config["max_train_steps"]):
-                start_time = time.time()
-                _, loss_value = sess.run([train_op, loss_op])
-                duration = time.time() - start_time
+                # Learning Loop
+                for step in range(config["max_train_steps"]):
+                    start_time = time.time()
+                    _, loss_value = sess.run([train_op, loss_op])
+                    duration = time.time() - start_time
 
-                assert not np.isnan(loss_value), "Model diverged with loss = NaN"
+                    assert not np.isnan(loss_value), "Model diverged with loss = NaN"
 
-                # Print the loss & examples/sec periodically
-                if step % 1 == 0:
-                    examples_per_sec = config["batch_size"] / float(duration)
-                    format_str = "%s: step %d, loss = %.2f (%.1f examples/sec; %.3f sec/batch)"
-                    print(format_str % (datetime.now(), step, loss_value, examples_per_sec, duration))
+                    # Print the loss & examples/sec periodically
+                    if step % 1 == 0:
+                        examples_per_sec = config["batch_size"] / float(duration)
+                        format_str = "%s: step %d, loss = %.2f (%.1f examples/sec; %.3f sec/batch)"
+                        print(format_str % (datetime.now(), step, loss_value, examples_per_sec, duration))
 
-                # Evaluate a test batch periodically
-                if step % 500 == 0:
-                    eval_results = map(lambda x: sess.run([validation_loss_op, prediction_op, validation_labels]), range(0, 100))
-                    validation_loss, predicted_labels, true_labels = map(list, zip(*eval_results))
-                    evaluation_metrics(true_labels, predicted_labels, summary_writer, step)
-                    print("Validation loss: ", np.mean(validation_loss))
+                    # Evaluate a test batch periodically
+                    if step % 500 == 0:
+                        eval_results = map(lambda x: sess.run([validation_loss_op, prediction_op, validation_labels]), range(0, 100))
+                        validation_loss, predicted_labels, true_labels = map(list, zip(*eval_results))
+                        print(validation_loss, np.concatenate(predicted_labels), np.concatenate(true_labels))
+                        evaluation_metrics(np.concatenate(true_labels), np.concatenate(predicted_labels), summary_writer, step)
+                        print("Validation loss: ", np.mean(validation_loss))
 
-                # Save the summary periodically
-                if step % 500 == 0:
-                    summary_str = sess.run(summary_op)
-                    summary_writer.add_summary(summary_str, step)
+                    # Save the summary periodically
+                    if step % 500 == 0:
+                        summary_str = sess.run(summary_op)
+                        summary_writer.add_summary(summary_str, step)
 
-                # Save the model checkpoint periodically.
-                if step % 1000 == 0 or (step + 1) == config["max_train_steps"]:
-                    checkpoint_path = os.path.join(log_dir, "model.ckpt")
-                    saver.save(sess, checkpoint_path, global_step=step)
+                    # Save the model checkpoint periodically.
+                    if step % 1000 == 0 or (step + 1) == config["max_train_steps"]:
+                        checkpoint_path = os.path.join(log_dir, "model.ckpt")
+                        saver.save(sess, checkpoint_path, global_step=step)
 
     command = ["python", "evaluate.py", "--checkpoint_dir", log_dir, "--log_dir", "log/test"]
     subprocess.check_call(command)
