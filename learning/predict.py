@@ -75,7 +75,7 @@ def predict():
         # Init Model
         logits = crnn_model.inference(image_batch, config)
         # Use the last state of the LSTM as output
-        predictions_op = tf.nn.softmax(logits[-1])
+        predictions_op = tf.nn.softmax(logits)
 
         sess = tf.Session()
         init = tf.initialize_all_variables()

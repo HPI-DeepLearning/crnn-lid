@@ -21,7 +21,7 @@ def BiLSTM(x, config):
     num_input = int(x._shape[2])                    # 512 See Conv7 layer
 
     weights_hidden = tf.Variable(tf.truncated_normal([2, num_hidden], stddev=np.sqrt(2.0 / (2 * num_hidden))))
-    weights_out = tf.Variable(tf.truncated_normal([num_hidden, num_classes], stddev=np.sqrt(2.0 / num_hidden)))
+    weights_out = tf.Variable(tf.truncated_normal([2 * num_hidden, num_classes], stddev=np.sqrt(2.0 / (2 * num_hidden))))
 
     bias_hidden = tf.Variable(tf.zeros([num_hidden]))
     bias_out = tf.Variable(tf.zeros([num_classes]))
@@ -45,22 +45,26 @@ def BiLSTM(x, config):
 
     # Get lstm cell output: [(bs, 2*num_hidden)] * num_time_steps
     outputs, output_state_fw, output_state_bw = tf.nn.bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32, scope='BiRNN')
+    #
+    # # Reshape output state to split forward and backward pass: [(bs, 2, num_hidden)] * num_time_steps
+    # fb_hidden = [tf.reshape(t, [batch_size, 2, num_hidden]) for t in outputs]
+    #
+    # # Combine forward and backward state by summation: [(bs, num_hidden)] * num_time_steps
+    # out = [tf.reduce_sum(tf.mul(t, weights_hidden), reduction_indices=1) + bias_hidden for t in fb_hidden]
+    #
+    # # Reduce hidden states to num_classes: [(bs, num_classes)] * num_time_steps
+    # logits = [tf.matmul(t, weights_out) + bias_out for t in out]
 
-    # Reshape output state to split forward and backward pass: [(bs, 2, num_hidden)] * num_time_steps
-    fb_hidden = [tf.reshape(t, [batch_size, 2, num_hidden]) for t in outputs]
 
-    # Combine forward and backward state by summation: [(bs, num_hidden)] * num_time_steps
-    out = [tf.reduce_sum(tf.mul(t, weights_hidden), reduction_indices=1) + bias_hidden for t in fb_hidden]
-
-    # Reduce hidden states to num_classes: [(bs, num_classes)] * num_time_steps
-    logits = [tf.matmul(t, weights_out) + bias_out for t in out]
+    combined_final_states = tf.concat(1, [output_state_fw.c, output_state_bw.c])
+    # logits = tf.matmul(a, weights_out) + bias_out
+    logits = layers.fully_connected(combined_final_states, num_classes, activation_fn=tf.identity)
 
     return logits
 
 
-def create_model(inputs, config):
+def create_model(inputs, config, is_training=True):
 
-    is_training = config["training_mode"]
     weight_decay = 0.0005
 
     batch_norm_params = {
@@ -106,33 +110,16 @@ def create_model(inputs, config):
 
         return logits, end_points
 
-def inference(images, config):
-    logits, endpoints = create_model(images, config)
 
-    # Add summaries for viewing model statistics on TensorBoard.
-    # Make sure they are named uniquely
-    summaries = {}
-    for act in endpoints.values():
-        summaries[act.op.name] = act
-
-    slim.summarize_tensors(summaries.values())
-
-    return logits
-
-
-def loss(logits, labels, batch_size):
-
-    # TODO Consider using first state and all states
-    # Use the last state of the LSTM as output
-    last_state = logits[-1]
+def loss(logits, labels):
 
     # Reshape the labels into a dense Tensor of shape [FLAGS.batch_size, num_classes].
-    num_classes = last_state.get_shape()[-1].value
+    num_classes = logits.get_shape()[-1]
     one_hot_labels = layers.one_hot_encoding(labels, num_classes)
 
     # Note: label smoothing regularization LSR
     # https://arxiv.org/pdf/1512.00567.pdf
-    loss = losses.softmax_cross_entropy(last_state, one_hot_labels, label_smoothing=0.1)
+    loss = losses.softmax_cross_entropy(logits, one_hot_labels, label_smoothing=0.1)
 
     return loss
 

@@ -54,9 +54,9 @@ def evaluate():
         images, labels = sound_loader.get(config["validation_data_dir"], image_shape, config["batch_size"])
 
         # Init Model
-        logits = crnn_model.inference(images, config)
+        logits = crnn_model.create_model(images, config, is_training=False)
         # Use the last state of the LSTM as output
-        predictions_op = tf.cast(tf.argmax(tf.nn.softmax(logits[-1]), 1), tf.int32)
+        predictions_op = tf.cast(tf.argmax(tf.nn.softmax(logits), 1), tf.int32)
 
         sess = tf.Session()
         init = tf.initialize_all_variables()
@@ -138,7 +138,5 @@ def evaluate():
 
 
 if __name__ == "__main__":
-
-    config["training_mode"] = False
 
     evaluate()

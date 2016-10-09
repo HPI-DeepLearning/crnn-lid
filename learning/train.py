@@ -5,6 +5,7 @@ from datetime import datetime
 
 import numpy as np
 import tensorflow as tf
+import tensorflow.contrib.slim as slim
 from yaml import load
 
 from models import crnn_model
@@ -35,12 +36,29 @@ def train():
             image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
             images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"])
 
+            validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"])
+
             # Init Model
             model = crnn_model
-            logits = model.inference(images, config)
-            loss_op = model.loss(logits, labels, config["batch_size"])
-            prediction_op = tf.cast(tf.argmax(tf.nn.softmax(logits[-1]), 1), tf.int32) # For evaluation
-            tf.scalar_summary("loss", loss_op)
+
+            with tf.variable_scope("training") as vs:
+                logits, endpoints = model.create_model(images, config, is_training=True)
+                loss_op = model.loss(logits, labels)
+                tf.scalar_summary("loss", loss_op)
+
+                # Add summaries for viewing model statistics on TensorBoard.
+                # Make sure they are named uniquely
+                summaries = {}
+                for act in endpoints.values():
+                    summaries[act.op.name] = act
+
+                slim.summarize_tensors(summaries.values())
+
+            with tf.variable_scope(vs, reuse=True):
+                validation_logits, _ = model.create_model(validation_images, config, is_training=False)
+                validation_loss_op = model.loss(validation_logits, validation_labels)
+                prediction_op = tf.cast(tf.argmax(tf.nn.softmax(validation_logits), 1), tf.int32)  # For evaluation
+                tf.scalar_summary("validation_loss", validation_loss_op)
 
             # Adam optimizer already does LR decay
             train_op = tf.train.AdamOptimizer(learning_rate=config["learning_rate"], beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False,
@@ -82,12 +100,14 @@ def train():
                     print(format_str % (datetime.now(), step, loss_value, examples_per_sec, duration))
 
                 # Evaluate a test batch periodically
-                if step % 100 == 0:
-                    predicted_labels, true_labels = sess.run([prediction_op, labels])
+                if step % 500 == 0:
+                    eval_results = map(lambda x: sess.run([validation_loss_op, prediction_op, validation_labels]), range(0, 100))
+                    validation_loss, predicted_labels, true_labels = map(list, zip(*eval_results))
                     evaluation_metrics(true_labels, predicted_labels, summary_writer, step)
+                    print("Validation loss: ", np.mean(validation_loss))
 
                 # Save the summary periodically
-                if step % 100 == 0:
+                if step % 500 == 0:
                     summary_str = sess.run(summary_op)
                     summary_writer.add_summary(summary_str, step)
 
