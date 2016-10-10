@@ -103,12 +103,11 @@ def train():
                     if step % 500 == 0:
                         eval_results = map(lambda x: sess.run([validation_loss_op, prediction_op, validation_labels]), range(0, 100))
                         validation_loss, predicted_labels, true_labels = map(list, zip(*eval_results))
-                        print(validation_loss, np.concatenate(predicted_labels), np.concatenate(true_labels))
                         evaluation_metrics(np.concatenate(true_labels), np.concatenate(predicted_labels), summary_writer, step)
                         print("Validation loss: ", np.mean(validation_loss))
 
                     # Save the summary periodically
-                    if step % 500 == 0:
+                    if step % 100 == 0:
                         summary_str = sess.run(summary_op)
                         summary_writer.add_summary(summary_str, step)
 

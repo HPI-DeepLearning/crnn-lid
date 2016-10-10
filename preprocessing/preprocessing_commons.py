@@ -10,7 +10,7 @@ import argparse
 def read_wav_dirty(f):
   samplerate, signal = wav.read(f)
   f = filename.truncate_extension(f)
-  return (f, signal, samplerate)
+  return (signal, samplerate)
 
 def read_wav(f):
   samplerate, signal = wav.read(f)
@@ -19,10 +19,10 @@ def read_wav(f):
   f = filename.truncate_extension(filename.clean(f))
   return (f, signal, samplerate)
 
-def apply_melfilter(f, signal, samplerate, nfilt=40):
+def apply_melfilter(signal, samplerate, nfilt=40):
   filterbank_energies = audio.melfilterbank.logfilter(samplerate, signal, winlen=0.00833, winstep=0.00833, nfilt=nfilt, lowfreq=0, preemph=1.0)
   #print f, samplerate, filterbank_energies.shape
-  return (f, filterbank_energies)
+  return filterbank_energies
 
 def generate_spectrograms(f, signal, samplerate):
   Sxx = audio.spectrogram.spectrogram_cutoff(samplerate, signal, winlen=0.00833, winstep=0.00833)
