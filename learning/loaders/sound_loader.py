@@ -19,10 +19,10 @@ tf.app.flags.DEFINE_integer('input_queue_memory_factor', 16,
 
 def wav_to_spectrogram(sound_file):
 
-    f, signal, samplerate = read_wav_dirty(sound_file)
+    signal, sample_rate = read_wav_dirty(sound_file)
 
     # REMEMBER: Update config shape, when changing melfilter params
-    _, mel_image = apply_melfilter(f, signal, samplerate, nfilt=40)
+    mel_image = apply_melfilter(signal, sample_rate, nfilt=40)
     mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
     # mel_image = graphic.histeq.clamp_and_equalize(mel_image)
