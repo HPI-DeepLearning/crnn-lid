@@ -19,7 +19,7 @@ tf.app.flags.DEFINE_integer('input_queue_memory_factor', 16,
 
 def wav_to_spectrogram(sound_file):
 
-    f, signal, sample_rate = read_wav_dirty(sound_file)
+    signal, sample_rate = read_wav_dirty(sound_file)
 
     # REMEMBER: Update config shape, when changing melfilter params
     mel_image = apply_melfilter(signal, sample_rate, nfilt=40)
