@@ -17,17 +17,17 @@ tf.app.flags.DEFINE_integer('input_queue_memory_factor', 16,
                             """4, 2 or 1, if host memory is constrained. See """
                             """comments in code for more details.""")
 
-def wav_to_spectrogram(sound_file):
+def wav_to_spectrogram(sound_file, data_shape):
 
     sample_rate, signal = wav.read(sound_file)
 
     # REMEMBER: Update config shape, when changing melfilter params
-    mel_image = audio.filterbank_energies = audio.melfilterbank.logfilter(sample_rate, signal, winlen=0.00833, winstep=0.00833, nfilt=40, lowfreq=0, preemph=1.0)
-    mel_image = graphic.colormapping.to_rgba(mel_image, bytes=True)
+    mel_image = audio.filterbank_energies = audio.melfilterbank.logfilter(sample_rate, signal, winlen=0.00833, winstep=0.00833, nfilt=data_shape[0], lowfreq=0, preemph=1.0)
+    mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
     # mel_image = graphic.histeq.clamp_and_equalize(mel_image)
 
-    mel_image = graphic.windowing.pad_window(mel_image, 1207)
+    mel_image = graphic.windowing.pad_window(mel_image, data_shape[1])
 
     return np.expand_dims(mel_image, -1)
 
@@ -104,7 +104,7 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             # TF needs static shape, so all images have same shape
             sound_path, label = sound_path_label
 
-            image = tf.py_func(wav_to_spectrogram, [sound_path], [tf.double])[0]
+            image = tf.py_func(wav_to_spectrogram, [sound_path, data_shape], [tf.double])[0]
             image = reshape_image(image, data_shape)
 
             # augmented_image = augment_image(image)
