@@ -17,19 +17,32 @@ tf.app.flags.DEFINE_integer('input_queue_memory_factor', 16,
                             """4, 2 or 1, if host memory is constrained. See """
                             """comments in code for more details.""")
 
+def create_spectrogram(sample_rate, signal, num_filter):
+    mel_image = audio.filterbank_energies = audio.melfilterbank.logfilter(sample_rate, signal, winlen=0.00833,
+                                                                          winstep=0.00833, nfilt=num_filter,
+                                                                          lowfreq=0, preemph=1.0)
+    mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
+    mel_image = graphic.histeq.histeq(mel_image)
+    return np.expand_dims(mel_image, -1)
+
+
 def wav_to_spectrogram(sound_file, data_shape):
 
     sample_rate, signal = wav.read(sound_file)
+    image_height, image_width = data_shape[:2]
 
     # REMEMBER: Update config shape, when changing melfilter params
-    mel_image = audio.filterbank_energies = audio.melfilterbank.logfilter(sample_rate, signal, winlen=0.00833, winstep=0.00833, nfilt=data_shape[0], lowfreq=0, preemph=1.0)
-    mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
-    mel_image = graphic.histeq.histeq(mel_image)
-    # mel_image = graphic.histeq.clamp_and_equalize(mel_image)
 
-    mel_image = graphic.windowing.pad_window(mel_image, data_shape[1])
+    # Augment spectrograms by creating various length ones
+    mel_images = [
+        create_spectrogram(sample_rate, signal, image_height),
+        create_spectrogram(0.9 * sample_rate, signal, image_height),
+        create_spectrogram(1.1 * sample_rate, signal, image_height)
+    ]
 
-    return np.expand_dims(mel_image, -1)
+    mel_images_normal = map(lambda image: graphic.windowing.cut_or_pad_window(image, image_width), mel_images)
+
+    return np.array(mel_images_normal)
 
 
 def reshape_image(image, data_shape):
@@ -104,14 +117,11 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             # TF needs static shape, so all images have same shape
             sound_path, label = sound_path_label
 
-            image = tf.py_func(wav_to_spectrogram, [sound_path, data_shape], [tf.double])[0]
-            image = reshape_image(image, data_shape)
+            images = tf.py_func(wav_to_spectrogram, [sound_path, data_shape], [tf.double])[0]
+            images = reshape_image(images, [3] + data_shape)
 
-            # augmented_image = augment_image(image)
-            # augmented_image = reshape_image(augmented_image, data_shape)
-
-            images_and_labels.append([image, label])
-            # images_and_labels.append([augmented_image, label])
+            for image in tf.unpack(images, axis=0):
+                images_and_labels.append([image, label])
 
 
         # Create batches
