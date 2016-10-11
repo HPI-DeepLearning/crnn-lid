@@ -6,8 +6,8 @@ import sys
 lib_dir = os.path.join(os.getcwd(), "..")
 sys.path.append(lib_dir)
 
-from preprocessing.preprocessing_commons import apply_melfilter, read_wav_dirty, downsample
-from preprocessing import graphic
+import scipy.io.wavfile as wav
+from preprocessing import graphic, audio
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -19,11 +19,11 @@ tf.app.flags.DEFINE_integer('input_queue_memory_factor', 16,
 
 def wav_to_spectrogram(sound_file):
 
-    signal, sample_rate = read_wav_dirty(sound_file)
+    sample_rate, signal = wav.read(sound_file)
 
     # REMEMBER: Update config shape, when changing melfilter params
-    mel_image = apply_melfilter(signal, sample_rate, nfilt=40)
-    mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
+    mel_image = audio.filterbank_energies = audio.melfilterbank.logfilter(sample_rate, signal, winlen=0.00833, winstep=0.00833, nfilt=40, lowfreq=0, preemph=1.0)
+    mel_image = graphic.colormapping.to_rgba(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
     # mel_image = graphic.histeq.clamp_and_equalize(mel_image)
 
