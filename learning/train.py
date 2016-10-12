@@ -44,6 +44,7 @@ def train():
                 with tf.variable_scope("training") as vs:
                     logits, endpoints = model.create_model(images, config, is_training=True)
                     loss_op = model.loss(logits, labels)
+                    prediction_op = tf.cast(tf.argmax(tf.nn.softmax(logits), 1), tf.int32)
                     tf.scalar_summary("loss", loss_op)
 
                     # Add summaries for viewing model statistics on TensorBoard.
@@ -57,7 +58,7 @@ def train():
                 with tf.variable_scope(vs, reuse=True):
                     validation_logits, _ = model.create_model(validation_images, config, is_training=False)
                     validation_loss_op = model.loss(validation_logits, validation_labels)
-                    prediction_op = tf.cast(tf.argmax(tf.nn.softmax(validation_logits), 1), tf.int32)  # For evaluation
+                    validation_prediction_op = tf.cast(tf.argmax(tf.nn.softmax(validation_logits), 1), tf.int32)
                     tf.scalar_summary("validation_loss", validation_loss_op)
 
                 # Adam optimizer already does LR decay
@@ -99,12 +100,19 @@ def train():
                         format_str = "%s: step %d, loss = %.2f (%.1f examples/sec; %.3f sec/batch)"
                         print(format_str % (datetime.now(), step, loss_value, examples_per_sec, duration))
 
-                    # Evaluate a test batch periodically
+                    # Evaluate a training batch periodically
+                    if step % 100 == 0:
+                        predicted_labels, true_labels = sess.run([prediction_op, labels])
+                        with tf.variable_scope("training"):
+                            evaluation_metrics(true_labels, predicted_labels, summary_writer, step)
+
+                    # Run a validation set of 100*batch_size samples periodically
                     if step % 500 == 0:
-                        eval_results = map(lambda x: sess.run([validation_loss_op, prediction_op, validation_labels]), range(0, 100))
+                        eval_results = map(lambda x: sess.run([validation_loss_op, validation_prediction_op, validation_labels]), range(0, 100))
                         validation_loss, predicted_labels, true_labels = map(list, zip(*eval_results))
-                        evaluation_metrics(np.concatenate(true_labels), np.concatenate(predicted_labels), summary_writer, step)
-                        print("Validation loss: ", np.mean(validation_loss))
+                        with tf.variable_scope("validation"):
+                            evaluation_metrics(np.concatenate(true_labels), np.concatenate(predicted_labels), summary_writer, step)
+                            print("Validation loss: ", np.mean(validation_loss))
 
                     # Save the summary periodically
                     if step % 100 == 0:

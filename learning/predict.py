@@ -104,12 +104,12 @@ def predict():
         probability = sess.run(predictions_op, feed_dict={image_batch: image_data})
 
         # Use median, so outlies don't interfere as much
-        median_probabilies = np.median(probability, axis=0)
-        label_index = np.argmax(median_probabilies)
+        median_probabilities = np.median(probability, axis=0)
+        label_index = np.argmax(median_probabilities)
         label = config["label_names"][label_index]
 
         print("Probability raw", probability)
-        print("Probability: ", median_probabilies)
+        print("Probability: ", median_probabilities)
         print("Label: ", label, label_index)
 
         shutil.rmtree(temp_directory, ignore_errors=True)
