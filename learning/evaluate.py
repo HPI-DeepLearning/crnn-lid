@@ -21,27 +21,30 @@ tf.app.flags.DEFINE_string("config", "config.yaml", """Path to config.yaml file"
 
 config = load(open(FLAGS.config, "rb"))
 
-def evaluation_metrics(true_labels, predicted_labels, summary_writer, global_step):
+def evaluation_metrics(true_labels, predicted_labels, summary_writer, global_step, prefix=None):
 
 
-    available_labels = range(0, config["num_classes"])
+    prefix = "{}/".format(prefix) if prefix else ""
+    with tf.name_scope(prefix):
 
-    accuracy = accuracy_score(true_labels, predicted_labels)
-    precision, recall, f1, support = precision_recall_fscore_support(true_labels, predicted_labels, labels=available_labels)
+        available_labels = range(0, config["num_classes"])
 
-    print("Accuracy %s" % (accuracy))
-    print(classification_report(true_labels, predicted_labels, labels=available_labels, target_names=config["label_names"]))
-    print(confusion_matrix(true_labels, predicted_labels, labels=available_labels))
+        accuracy = accuracy_score(true_labels, predicted_labels)
+        precision, recall, f1, support = precision_recall_fscore_support(true_labels, predicted_labels, labels=available_labels)
 
-    summary = tf.Summary()
-    summary.value.add(tag="Accuracy", simple_value=accuracy)
+        print("%sAccuracy %s" % (prefix, accuracy))
+        print(classification_report(true_labels, predicted_labels, labels=available_labels, target_names=config["label_names"]))
+        print(confusion_matrix(true_labels, predicted_labels, labels=available_labels))
 
-    for i, label_name in enumerate(config["label_names"]):
-        summary.value.add(tag="Precision  %s" % label_name, simple_value=precision[i])
-        summary.value.add(tag="Recall %s" % label_name, simple_value=recall[i])
-        summary.value.add(tag="F1 %s" % label_name, simple_value=f1[i])
+        summary = tf.Summary()
+        summary.value.add(tag="Accuracy", simple_value=accuracy)
 
-    summary_writer.add_summary(summary, global_step)
+        for i, label_name in enumerate(config["label_names"]):
+            summary.value.add(tag="%sPrecision  %s" % (prefix, label_name), simple_value=precision[i])
+            summary.value.add(tag="%sRecall %s" % (prefix, label_name), simple_value=recall[i])
+            summary.value.add(tag="%sF1 %s" % (prefix, label_name), simple_value=f1[i])
+
+        summary_writer.add_summary(summary, global_step)
 
 
 
