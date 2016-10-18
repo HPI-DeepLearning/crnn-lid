@@ -46,7 +46,7 @@ def create_model(inputs, config, is_training=True):
 
         # (32, 1, 73, 512) -> (32, 73*512)
         flattened = layers.flatten(end_points['conv7'])
-        logits = end_points['fc8'] = layers.fully_connected(flattened, 4, activation_fn=tf.identity, scope='fc8')
+        logits = end_points['fc8'] = layers.fully_connected(flattened, 4, activation_fn=None, scope='fc8')
 
         for key, endpoint in end_points.iteritems():
             print "{0}: {1}".format(key, endpoint._shape)
