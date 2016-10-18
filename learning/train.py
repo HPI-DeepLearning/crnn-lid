@@ -95,27 +95,25 @@ def train():
                     assert not np.isnan(loss_value), "Model diverged with loss = NaN"
 
                     # Print the loss & examples/sec periodically
-                    if step % 1 == 0:
+                    if step % 1 == 0 and step > 0:
                         examples_per_sec = config["batch_size"] / float(duration)
                         format_str = "%s: step %d, loss = %.2f (%.1f examples/sec; %.3f sec/batch)"
                         print(format_str % (datetime.now(), step, loss_value, examples_per_sec, duration))
 
                     # Evaluate a training batch periodically
-                    if step % 100 == 0:
+                    if step % 100 == 0 and step > 0:
                         predicted_labels, true_labels = sess.run([prediction_op, labels])
-                        with tf.name_scope("training"):
-                            evaluation_metrics(true_labels, predicted_labels, summary_writer, step)
+                        evaluation_metrics(true_labels, predicted_labels, summary_writer, step, prefix="training")
 
                     # Run a validation set of 100*batch_size samples periodically
-                    if step % 500 == 0:
+                    if step % 500 == 0 and step > 0:
                         eval_results = map(lambda x: sess.run([validation_loss_op, validation_prediction_op, validation_labels]), range(0, 100))
                         validation_loss, predicted_labels, true_labels = map(list, zip(*eval_results))
-                        with tf.name_scope("validation"):
-                            evaluation_metrics(np.concatenate(true_labels), np.concatenate(predicted_labels), summary_writer, step)
-                            print("Validation loss: ", np.mean(validation_loss))
+                        evaluation_metrics(np.concatenate(true_labels), np.concatenate(predicted_labels), summary_writer, step, prefix="validation")
+                        print("Validation loss: ", np.mean(validation_loss))
 
                     # Save the summary periodically
-                    if step % 100 == 0:
+                    if step % 100 == 0 and step > 0:
                         summary_str = sess.run(summary_op)
                         summary_writer.add_summary(summary_str, step)
 

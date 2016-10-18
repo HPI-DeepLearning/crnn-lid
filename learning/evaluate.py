@@ -37,7 +37,7 @@ def evaluation_metrics(true_labels, predicted_labels, summary_writer, global_ste
         print(confusion_matrix(true_labels, predicted_labels, labels=available_labels))
 
         summary = tf.Summary()
-        summary.value.add(tag="Accuracy", simple_value=accuracy)
+        summary.value.add(tag="%sAccuracy" % prefix, simple_value=accuracy)
 
         for i, label_name in enumerate(config["label_names"]):
             summary.value.add(tag="%sPrecision  %s" % (prefix, label_name), simple_value=precision[i])
