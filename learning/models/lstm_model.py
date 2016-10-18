@@ -1,60 +1,67 @@
 import tensorflow as tf
-from tensorflowslim import losses
+import numpy as np
+
+import tensorflow.contrib.slim as slim
+from tensorflow.contrib.slim import arg_scope
+from tensorflow.contrib.slim import layers
+from tensorflow.contrib.slim import losses
+from collections import OrderedDict
 
 FLAGS = tf.app.flags.FLAGS
 
+def BiLSTM(x, config):
 
-def create_model(inputs, config):
+    # x = shape (batch_size, num_time_steps, features)
 
-    num_hidden = 128
-    weights = tf.Variable(tf.random_normal([num_hidden, config["num_classes"]]))
-    biases = tf.Variable(tf.random_normal([config["num_classes"]]))
+    num_hidden = 256
+    num_classes = config["num_classes"]
 
-    # Prepare data shape to match `rnn` function requirements
-    # Current data input shape: (batch_size, n_input, n_steps, channels)
-    # Required shape: 'n_steps' tensors list of shape (batch_size, n_input)
+    num_time_steps = int(x._shape[1])  # 35 see Conv7 layer
+    num_input = int(x._shape[2])                    # 512 See Conv7 layer
 
-    # Permuting batch_size and n_steps
-    x = tf.transpose(inputs, [0, 2, 1, 3])
-    # Reshaping to (n_steps*batch_size, n_input)
-    x = tf.reshape(x, [-1, config["image_width"] * config["image_depth"]])
-    # Split to get a list of 'n_steps' tensors of shape (batch_size, n_input)
-    x = tf.split(0, config["image_height"], x)
+    # Prepare data shape to match `bidirectional_rnn` function requirements
+    # Current data input shape: (batch_size, num_time_steps, num_input)
+    # Required shape: 'num_time_steps' tensors list of shape (batch_size, num_input)
 
-    # Define a lstm cell with tensorflow
-    lstm_cell = tf.nn.rnn_cell.LSTMCell(num_hidden, forget_bias=1.0)
+    # Permuting batch_size and num_time_steps
+    x = tf.transpose(x, [1, 0, 2])
+    # Reshape to (num_time_steps * batch_size, num_input)
+    x = tf.reshape(x, [-1, num_input])
+    # Split to get a list of 'num_time_steps' tensors of shape (batch_size, num_input)
+    x = tf.split(0, num_time_steps, x)
 
-    # Get lstm cell output
-    outputs, states = tf.nn.rnn(lstm_cell, x, dtype=tf.float32)
+    # Define lstm cells with tensorflow
+    # Forward direction cell
+    lstm_fw_cell = tf.nn.rnn_cell.LSTMCell(num_hidden, use_peepholes=True, state_is_tuple=True)
+    # Backward direction cell
+    lstm_bw_cell = tf.nn.rnn_cell.LSTMCell(num_hidden, use_peepholes=True, state_is_tuple=True)
 
-    # Linear activation, using rnn inner loop last output
-    logits = tf.matmul(outputs[-1], weights) + biases
-    return logits
+    # Get lstm cell output: [(bs, 2*num_hidden)] * num_time_steps
+    outputs, output_state_fw, output_state_bw = tf.nn.bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32, scope='BiRNN')
 
-
-def inference(images, config):
-    logits, endpoints = create_model(images, config)
-
-    # Add summaries for viewing model statistics on TensorBoard.
-    with tf.name_scope('summaries'):
-        for act in endpoints.values():
-            tensor_name = act.op.name
-            tf.histogram_summary(tensor_name + '/activations', act)
-            tf.scalar_summary(tensor_name + '/sparsity', tf.nn.zero_fraction(act))
+    combined_final_states = tf.concat(1, [output_state_fw.c, output_state_bw.c])
+    logits = layers.fully_connected(combined_final_states, num_classes, activation_fn=tf.identity)
 
     return logits
 
 
-def loss(logits, labels, batch_size=None):
-    # Adds all losses for the model.
+def create_model(inputs, config, is_training=True):
+
+        # Bidirectional LSTM
+        flattened_input = tf.squeeze(inputs)
+        logits = BiLSTM(flattened_input, config)
+
+        return logits, {}
+
+
+def loss(logits, labels):
 
     # Reshape the labels into a dense Tensor of shape [FLAGS.batch_size, num_classes].
-    sparse_labels = tf.reshape(labels, [batch_size, 1])
-    indices = tf.reshape(tf.range(batch_size), [batch_size, 1])
-    concated = tf.concat(1, [indices, sparse_labels])
-    num_classes = logits.get_shape()[-1].value
-    dense_labels = tf.sparse_to_dense(concated, [batch_size, num_classes], 1.0, 0.0)
+    num_classes = logits.get_shape()[-1]
+    one_hot_labels = layers.one_hot_encoding(labels, num_classes)
 
-    # Cross entropy loss for the main softmax prediction.
-    loss = losses.cross_entropy_loss(logits, dense_labels, label_smoothing=0.1, weight=1.0)
+    # Note: label smoothing regularization LSR
+    # https://arxiv.org/pdf/1512.00567.pdf
+    loss = losses.softmax_cross_entropy(logits, one_hot_labels, label_smoothing=0.1)
+
     return loss

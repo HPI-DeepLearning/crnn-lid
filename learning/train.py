@@ -10,6 +10,7 @@ from yaml import load
 
 from models import crnn_model
 from models import cnn_model
+from models import lstm_model
 
 from loaders import sound_loader
 from evaluate import evaluation_metrics
@@ -40,7 +41,7 @@ def train():
                 validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"])
 
                 # Init Model
-                model = cnn_model
+                model = lstm_model
 
                 with tf.variable_scope("training") as vs:
                     logits, endpoints = model.create_model(images, config, is_training=True)
