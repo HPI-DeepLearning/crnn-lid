@@ -58,7 +58,7 @@ def BiLSTM(x, config):
 
     combined_final_states = tf.concat(1, [output_state_fw.c, output_state_bw.c])
     # logits = tf.matmul(a, weights_out) + bias_out
-    logits = layers.fully_connected(combined_final_states, num_classes, activation_fn=tf.identity)
+    logits = layers.fully_connected(combined_final_states, num_classes, activation_fn=None)
 
     return logits
 

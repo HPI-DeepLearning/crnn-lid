@@ -40,7 +40,7 @@ def BiLSTM(x, config):
     outputs, output_state_fw, output_state_bw = tf.nn.bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32, scope='BiRNN')
 
     combined_final_states = tf.concat(1, [output_state_fw.c, output_state_bw.c])
-    logits = layers.fully_connected(combined_final_states, num_classes, activation_fn=tf.identity)
+    logits = layers.fully_connected(combined_final_states, num_classes, activation_fn=None)
 
     return logits
 
