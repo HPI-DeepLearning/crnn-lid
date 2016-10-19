@@ -89,7 +89,7 @@ def create_model(inputs, config, is_training=True):
         end_points['conv2'] = layers.conv2d(end_points['pool1'], 128, [3, 3], scope='conv2')
         end_points['pool2'] = layers.max_pool2d(end_points['conv2'], [2, 2], scope='pool2')
         end_points['conv3'] = layers.conv2d(end_points['pool2'], 256, [3, 3], scope='conv3')
-        end_points['conv4'] = layers.conv2d(end_points['conv3'], 25, [3, 3], scope='conv4')
+        end_points['conv4'] = layers.conv2d(end_points['conv3'], 256, [3, 3], scope='conv4')
         end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [1, 2], scope='pool4')  # TODO Correct kernel?
         #end_points['dropout4'] = layers.dropout(end_points['pool4'], 0.5, is_training=is_training, scope='dropout4')
         end_points['conv5'] = layers.conv2d(end_points['pool4'], 512, [3, 3], scope='conv5')
