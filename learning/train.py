@@ -64,8 +64,12 @@ def train():
                     tf.scalar_summary("validation_loss", validation_loss_op)
 
                 # Adam optimizer already does LR decay
-                train_op = tf.train.AdamOptimizer(learning_rate=config["learning_rate"], beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False,
-                                                   name="AdamOptimizer").minimize(loss_op)
+                # train_op = tf.train.AdamOptimizer(learning_rate=config["learning_rate"], beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False,
+                #                                    name="AdamOptimizer").minimize(loss_op)
+                global_step = tf.Variable(0, trainable=False)
+                learning_rate = tf.train.exponential_decay(config["learning_rate"], global_step, 1000, 0.96, staircase=False, name="LearningRate")
+                train_op = tf.train.MomentumOptimizer(learning_rate, 0.9).minimize(loss_op, global_step=global_step)
+                tf.scalar_summary("learning rate", learning_rate)
 
                 # Create a saver.
                 saver = tf.train.Saver(tf.all_variables())
