@@ -1,0 +1,79 @@
+\documentclass[
+        a4paper,     % Format A4
+        titlepage,   % mit Titelseite
+        twoside,     % zweiseitig
+        parskip      % mit Durchschuss
+                                 % (= Abstand zwischen Absätzen, statt Einrückung)
+        ]{scrartcl} %{} % KOMA-Script Grundklasse     texdoc scrguide
+
+\usepackage[american]{babel}             
+\usepackage[T1]{fontenc}          % Schriftkodierung mit Umlauten
+\usepackage{textcomp,amsmath}     % Mathezeichen etc.
+\usepackage{graphicx}             % Graphiken einbinden
+
+\usepackage{acro}                 % List of abbriviations 
+
+% probably a good idea for the nomenclature entries:
+\acsetup{first-style=short}
+
+% bibtex
+\usepackage{url}
+\bibliographystyle{plaindin}      % BibTeX Styles nach Norm DIN 1505
+
+\titlehead{
+\includegraphics{hpi_logo_cmyk_wb_sl2}
+} \subject{Master Thesis}
+\title{Language Identification using Deep Convolutional Recurrent Neural Networks
+\\ \bigskip 
+\large{<Deutscher Titel bei englischer Arbeit> }}
+\author{Tom Herold\\{\small{\url{tom.herold@student.hpi.uni-potsdam.de}}}}
+\date{XX.12.2015}
+\publishers{
+Supverisors \\ Prof. Dr. Christoph Meinel \\ Dr. Haojin Yang \\
+\bigskip 
+Internet-Technologies and Systems \\
+Hasso Plattner Institute \\
+University of Potsdam, Germany 
+}
+
+
+
+\pagestyle{headings}    % Seitenstil mit Kapitelüberschriften in der Kopfzeile
+
+\include{other/abbriviations}
+
+\begin{document}
+
+    \maketitle    %  Titelseite erzeugen
+
+    \cleardoublepage % neue Doppelseite
+
+    \pagenumbering{roman}
+    \include{other/abstract}
+    \cleardoublepage
+    \include{other/zusammenfassung}
+    \cleardoublepage
+    \include{other/acknowledgments}
+    \cleardoublepage
+    
+    \tableofcontents
+    \clearpage
+    \printacronyms[include-classes=abbrev,name=Abbreviations]
+    
+    \ac{lstm}
+
+    \pagenumbering{arabic}
+    \include{sections/intro}
+    \include{sections/problem}
+    \include{sections/background}
+    \include{sections/related_work}
+    \include{sections/dataset}
+    \include{sections/implementation}
+    \include{sections/evaluation}
+    \include{sections/conclusion}
+
+    % Inhaltsverzeichnis
+    \clearpage % auf neuer Seite
+    \bibliography{referenzen}
+
+\end{document}

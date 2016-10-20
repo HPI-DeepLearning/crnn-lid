@@ -1,0 +1,81 @@
+\section{Related Work}
+
+    \subsubsection{A UNIFIED DEEP NEURAL NETWORK FOR SPEAKER AND LANGUAGE RECOGNITION}
+    \begin{itemize}
+        \item \cite{richardson2015unified}
+        \item Almost identical: Deep Neural Network Approaches to Speaker and Language Recognition \cite{richardson2015deep}
+        \item high level overview of i-vector system
+        \item Task: Language Recogniton + Speaker Recognition
+        \item use bottleneck feature in the second to last layer
+        \item input 7 static cepstra appended with 49 SDC
+        \item DNN has 7 hidden layers of 1024 nodes each with the exception of the 6th bottleneck layer which has 64 nodes
+        \item LRE11
+    \end{itemize}
+    
+    \subsubsection{EXTRACTING DEEP NEURAL NETWORK BOTTLENECK FEATURES USING LOW-RANK MATRIX FACTORIZATION
+    }
+    \begin{itemize}
+        \item \cite{zhang2014extracting}
+        \item bottle neck feature improve classification results
+        \item Task: Automatc Speech Recogniton (ASR)
+        \item get bottleneck feature by low rank matrix factorization
+        \item this is done by replacing the usual softmax layer weights by a linear layer with a small number of hidden units followed by a softmax layer
+        \item BN laier is always last layer
+        \item linear layer = FC without activation func
+        \item uses DNN with 5 FCs with 1024 hidden units each + sigmoid activations + 1 BN layer
+        \item softmax cross entropy loss 
+        \item 23 critical-band energies are obtained from a Mel filter-bank, with conversation-side-based mean subtraction = 150 dimensions
+        \item further reduciton of output by PCA
+        \item hybrid system of DNN + BN feeding into DNN + BN
+        
+    \end{itemize}
+
+\subsection{LRE 2015}
+
+    \subsubsection{BAT System Description for NIST LRE 2015}
+    \begin{itemize}
+        \item \cite{plchot2016bat}
+        \item participate in the "Fixed" and "Open" LRE Challenge
+        \item segment data using automated Voice Activity Detection = previously trained NN
+        \item 3042 segments (248 hours of speech) in train set and 42295 segments (146 hours of speech) in dev set.
+        \item inputs 24 log Mel-scale filter bank outputs augmented with fundamental frequency features from 4 different f0 esti- mators
+        \item used i-vector system
+        
+    \end{itemize}
+    
+    \subsubsection{Discriminating Languages in a Probabilistic Latent Subspace}
+    \begin{itemize}
+        \item \cite{sizovdiscriminating}
+        \item Probabilistic Linear Discriminant Analysis (PLDA) model
+        \item In this paper, we review state-of-the-art generative methods, based on the Total Variability (TV) model [10], with the aim to improve their performance with discriminative fine-tuning of each language cluster at a time.
+        \item TV maps audio into single low-dimensional vector, i-vector, that contains speaker, channel, and phonetic variability
+        
+    \end{itemize}
+    
+    \subsubsection{Evaluation of an LSTM-RNN System in Different NIST Language Recognition Frameworks}
+    \begin{itemize}
+        \item \cite{zazo2016evaluation}
+        \item used a one directional LSTM
+        \item perform significantly better than i-vectors systems in LRE
+        \item nice high level description of how LSTMs work
+        \item inputs: random chunks of 2 seconds from which MFCC-SDC (Shifted Delta Coefficients) 
+        \item softmax cross entropy loss
+        \item use last frame for scoring
+        \item comparison if i-vector baseline to LSTM
+        \item only used training data for 8 languages with more than 200hours of data
+        \item US English (eng), Span- ish (spa), Dari (dar), French (fre), Pashto (pas), Russian (rus), Urdu (urd), Chinese Mandarin (chi)
+        \item data split into 3, 10 and 30 seconds
+        \item model: two hidden layers of 512 units followed by an output layer. The hidden layers are uni-directional LSTM layers while the output layer is a softmax with as many units as languages in the cluster
+        \item LSTM os only better for short utterance (<= 10s)
+        \item LSTM uses less parameters than i-vector
+        
+    \end{itemize}
+    
+    \subsubsection{Frame-by-frame language identification in short utterances using deep neural networks}
+    \begin{itemize}
+        \item \cite{gonzalez2015frame}
+        \item highlights the downsides/disadvantages of i-vector systems
+        
+    \end{itemize}
+    
+    
