@@ -1,6 +1,7 @@
 import os.path
 import subprocess
 import time
+import shutil
 from datetime import datetime
 
 import numpy as np
@@ -88,8 +89,6 @@ def train():
                 # Start the queue runners.
                 tf.train.start_queue_runners(sess=sess)
 
-                log_dir = os.path.join(FLAGS.log_dir, datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
-                os.makedirs(log_dir)
                 summary_writer = tf.train.SummaryWriter(log_dir, sess.graph)
 
                 # Learning Loop
@@ -132,6 +131,13 @@ def train():
     subprocess.check_call(command)
 
 if __name__ == "__main__":
+
+    log_dir = os.path.join(FLAGS.log_dir, datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+
+    # copy models & config for later
+    shutil.copytree("models", log_dir)  # creates the log_dir
+    shutil.copy("config.yaml", log_dir)
+
 
     config["training_mode"] = True
     train()
