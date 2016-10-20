@@ -80,7 +80,7 @@ def create_model(inputs, config, is_training=True):
                    activation_fn=tf.nn.relu,
                    normalizer_params=batch_norm_params,
                    weights_regularizer=slim.l2_regularizer(weight_decay),
-                   weights_initializer=tf.truncated_normal_initializer(stddev=0.01),
+                   weights_initializer=tf.truncated_normal_initializer(stddev=0.005),
                    normalizer_fn=layers.batch_norm,
     ):
         end_points = OrderedDict()
