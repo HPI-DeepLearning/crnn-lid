@@ -54,7 +54,7 @@ def evaluate():
     with tf.Graph().as_default():
 
         image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-        images, labels = sound_loader.get(config["validation_data_dir"], image_shape, config["batch_size"])
+        images, labels = sound_loader.get(config["validation_data_dir"], image_shape, config["batch_size"], config["segment_length"])
 
         # Init Model
         logits = crnn_model.create_model(images, config, is_training=False)

@@ -1,5 +1,5 @@
 train_data_dir: "/Users/therold/Uni/master-thesis/datasets/wav_segmented/training.csv"
-validation_data_dir: "/Users/therold/Uni/master-thesis/datasets/wav_segmented/testing.csv"
+validation_data_dir: "/Users/therold/Uni/master-thesis/datasets/wav_segmented/validation.csv"
 test_data_dir: "/extra/tom/validation/segmented/testing.csv"
 
 batch_size: 32
@@ -9,9 +9,11 @@ max_train_steps: 100000
 num_train_files: 144000
 num_test_files: 36000
 
-image_width: 1207 # 10 sec mono audio
+image_width: 121 # 1 sec mono audio
 image_height: 40
 image_depth: 1
+
+segment_length: 1 # sec
 
 label_names: ["EN", "DE", "FR", "ES"]
 num_classes: 4

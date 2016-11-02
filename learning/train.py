@@ -37,9 +37,9 @@ def train():
                 # Init Data Loader
                 loader = sound_loader  # image_loader
                 image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-                images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"])
+                images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"], config["segment_length"])
 
-                validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"])
+                validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"], config["segment_length"])
 
                 # Init Model
                 model = cnn_model
