@@ -143,8 +143,7 @@ def batch_inputs(csv_path, batch_size, data_shape, segment_length, num_preproces
         prefix = os.path.basename(csv_path)
         tf.image_summary("%s_raw" % prefix, images_normalized, max_images=10)
 
-        return tf.Print(images_normalized, [images_normalized], message="Image: ", summarize=100), tf.Print(labels, [labels], message="Labels: ", summarize=100)# labels #tf.reshape(labels, [batch_size])
-
+        return images_normalized, labels
 
 def get(csv_path, data_shape, batch_size=32, segment_length=10):
     # Generates image, label batches

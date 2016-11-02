@@ -9,7 +9,7 @@ max_train_steps: 100000
 num_train_files: 144000
 num_test_files: 36000
 
-image_width: 121 # 1 sec mono audio
+image_width: 121 # 1 sec mono audio; automatically calculated: segement_length * 121px
 image_height: 40
 image_depth: 1
 
