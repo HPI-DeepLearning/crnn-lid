@@ -26,45 +26,49 @@ def create_spectrogram(sample_rate, signal, num_filter):
     return np.expand_dims(mel_image, -1)
 
 
-def wav_to_spectrogram(sound_file, data_shape):
+def wav_to_spectrogram(sound_file, label, data_shape, segment_length=1):
 
     sample_rate, signal = wav.read(sound_file)
     image_height, image_width = data_shape[:2]
 
-    # REMEMBER: Update config shape, when changing melfilter params
+    signal_duration = len(signal) / sample_rate  # seconds
+
+    # Segment signal into smaller chunks
+    mel_images = []
+    for i in np.arange(0, signal_duration, segment_length):
+        start_chunk = i * sample_rate
+        end_chunk = start_chunk + sample_rate
+
+        if end_chunk > len(signal):
+            break
+
+        signal_chunk = signal[start_chunk:end_chunk]
+
+        # REMEMBER: Update config shape, when changing melfilter params
+        img = create_spectrogram(sample_rate, signal_chunk, image_height)
+        mel_images.append(img)
+
+    # If this clip is too short for segmentation, create some dummy data
+    if len(mel_images) == 0:
+        mel_images.append(np.ones(data_shape))
 
     # Augment spectrograms by creating various length ones
-    mel_images = [
-        create_spectrogram(sample_rate, signal, image_height),
-        create_spectrogram(0.9 * sample_rate, signal, image_height),
-        create_spectrogram(1.1 * sample_rate, signal, image_height)
-    ]
+    # mel_images = [
+    #     create_spectrogram(sample_rate, signal, image_height),
+    #     create_spectrogram(0.9 * sample_rate, signal, image_height),
+    #     create_spectrogram(1.1 * sample_rate, signal, image_height)
+    # ]
 
-    mel_images_normal = map(lambda image: graphic.windowing.cut_or_pad_window(image, image_width), mel_images)
+    mel_images_normal = map(lambda image: graphic.windowing.cut_or_pad_window(image, image_width).astype(np.float32), mel_images)
+    labels = [label] * len(mel_images_normal)
 
-    return np.array(mel_images_normal)
+    if len(mel_images) == 0:
+        print(sound_file)
 
-
-def reshape_image(image, data_shape):
-
-
-    _image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-    _image.set_shape(data_shape)
-
-    # Finally, rescale to [-1,1] instead of [0, 1)
-    _image = tf.div(_image, 255.0)
-    _image = tf.sub(_image, 0.5)
-    _image = tf.mul(_image, 2.0)
-
-    return _image
+    return [mel_images_normal, labels]
 
 
-def augment_image(image):
-
-    return tf.image.flip_left_right(image)
-
-
-def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num_readers=1):
+def batch_inputs(csv_path, batch_size, data_shape, segment_length, num_preprocess_threads=4, num_readers=1):
     with tf.name_scope('batch_processing'):
 
         # load csv content
@@ -103,42 +107,45 @@ def batch_inputs(csv_path, batch_size, data_shape, num_preprocess_threads=4, num
             _, csv_content = textReader.read(file_path)
             sound_path_label = tf.decode_csv(csv_content, record_defaults=[[""], [0]])
 
-
-
-        images_and_labels = []
         for thread_id in range(num_preprocess_threads):
 
             if data_shape is None:
                 raise ValueError("Please specify the image dimensions")
 
-            height, width, depth = data_shape
-
             # Load WAV files and convert them to a sequence of Mel-filtered spectrograms
             # TF needs static shape, so all images have same shape
             sound_path, label = sound_path_label
 
-            images = tf.py_func(wav_to_spectrogram, [sound_path, data_shape], [tf.double])[0]
-            images = reshape_image(images, [3] + data_shape)
-
-            for image in tf.unpack(images, axis=0):
-                images_and_labels.append([image, label])
-
+            [image_list, label_list] = tf.py_func(wav_to_spectrogram, [sound_path, label, data_shape, segment_length], [tf.float32, tf.int32])
 
         # Create batches
-        images, label_index_batch = tf.train.batch_join(
-            images_and_labels,
+        images = tf.train.batch_join(
+            [[image_list]],
             batch_size=batch_size,
             capacity=2 * num_preprocess_threads * batch_size,
-            #shapes=[data_shape, []],
+            shapes=[data_shape],
+            enqueue_many=True
         )
 
+        labels = tf.train.batch_join(
+            [[label_list]],
+            batch_size=batch_size,
+            capacity=2 * num_preprocess_threads * batch_size,
+            shapes=[[]],
+            enqueue_many=True
+        )
+
+        # Finally, rescale to [-1,1] instead of [0, 1)
+        images_normalized = tf.div(images, 255.0)
+        images_normalized = tf.sub(images_normalized, 0.5)
+        images_normalized = tf.mul(images_normalized, 2.0)
+
         prefix = os.path.basename(csv_path)
-        tf.image_summary("%s raw_images" % prefix, images, max_images=10)
+        tf.image_summary("%s_raw" % prefix, images_normalized, max_images=10)
 
-        return images, tf.reshape(label_index_batch, [batch_size])
+        return images_normalized, labels
 
-
-def get(csv_path, data_shape, batch_size=32):
+def get(csv_path, data_shape, batch_size=32, segment_length=10):
     # Generates image, label batches
 
     if not os.path.isfile(csv_path):
@@ -147,7 +154,7 @@ def get(csv_path, data_shape, batch_size=32):
 
 
     with tf.device('/cpu:0'):
-        images, labels = batch_inputs(csv_path, batch_size, data_shape)
+        images, labels = batch_inputs(csv_path, batch_size, data_shape, segment_length)
 
     return images, labels
 

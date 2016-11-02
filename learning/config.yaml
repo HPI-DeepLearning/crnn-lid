@@ -9,9 +9,11 @@ max_train_steps: 100000
 num_train_files: 2187144
 num_test_files: 546788
 
-image_width: 137 #1207 # 10 sec mono audio
+image_width: 121 # 1 sec mono audio; automatically calculated: segement_length * 121px
 image_height: 40
 image_depth: 1
+
+segment_length: 1 # sec
 
 label_names: ["EN", "DE", "FR", "ES"]
 num_classes: 4

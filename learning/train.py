@@ -3,6 +3,7 @@ import subprocess
 import time
 import shutil
 from datetime import datetime
+from math import ceil
 
 import numpy as np
 import tensorflow as tf
@@ -35,11 +36,11 @@ def train():
             with sess.as_default():
 
                 # Init Data Loader
-                loader = sound_loader  # image_loader
-                image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-                images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"])
+                loader = sound_loader
+                image_shape = [config["image_height"], ceil(121 * config["segment_length"]), config["image_depth"]]
+                images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"], config["segment_length"])
 
-                validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"])
+                validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"], config["segment_length"])
 
                 # Init Model
                 model = cnn_model
