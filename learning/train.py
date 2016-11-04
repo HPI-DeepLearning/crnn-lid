@@ -37,7 +37,7 @@ def train():
 
                 # Init Data Loader
                 loader = sound_loader
-                image_shape = [config["image_height"], ceil(121 * config["segment_length"]), config["image_depth"]]
+                image_shape = [config["image_height"], ceil(config["image_width"] * config["segment_length"]), config["image_depth"]]
                 images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"], config["segment_length"])
 
                 validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"], config["segment_length"])

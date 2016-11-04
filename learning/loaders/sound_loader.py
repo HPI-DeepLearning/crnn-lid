@@ -17,13 +17,19 @@ tf.app.flags.DEFINE_integer('input_queue_memory_factor', 16,
                             """4, 2 or 1, if host memory is constrained. See """
                             """comments in code for more details.""")
 
-def create_spectrogram(sample_rate, signal, num_filter):
+def create_mel_spectrogram(sample_rate, signal, num_filter):
     mel_image = audio.filterbank_energies = audio.melfilterbank.logfilter(sample_rate, signal, winlen=0.00833,
                                                                           winstep=0.00833, nfilt=num_filter,
                                                                           lowfreq=0, preemph=1.0)
     mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
     mel_image = graphic.histeq.histeq(mel_image)
     return np.expand_dims(mel_image, -1)
+
+
+def create_spectrogram(sample_rate, signal):
+    spectrogram_image = audio.spectrogram.spectrogram_cutoff(sample_rate, signal, winlen=0.00833, winstep=0.00833)
+    spectrogram_image = graphic.colormapping.to_grayscale(spectrogram_image, bytes=True)
+    return np.expand_dims(spectrogram_image, -1)
 
 
 def wav_to_spectrogram(sound_file, label, data_shape, segment_length=1):
@@ -34,38 +40,40 @@ def wav_to_spectrogram(sound_file, label, data_shape, segment_length=1):
     signal_duration = len(signal) / sample_rate  # seconds
 
     # Segment signal into smaller chunks
-    mel_images = []
+    images = []
     for i in np.arange(0, signal_duration, segment_length):
-        start_chunk = i * sample_rate
-        end_chunk = start_chunk + sample_rate
+        chunk_duration = sample_rate * segment_length
+        chunk_start = i * chunk_duration
+        chunk_end = chunk_start + chunk_duration
 
-        if end_chunk > len(signal):
+        if chunk_end > len(signal):
             break
 
-        signal_chunk = signal[start_chunk:end_chunk]
+        signal_chunk = signal[chunk_start:chunk_end]
 
         # REMEMBER: Update config shape, when changing melfilter params
-        img = create_spectrogram(sample_rate, signal_chunk, image_height)
-        mel_images.append(img)
+        # img = create_mel_spectrogram(sample_rate, signal_chunk, image_height)
+        img = create_spectrogram(sample_rate, signal_chunk)
+        images.append(img)
 
     # If this clip is too short for segmentation, create some dummy data
-    if len(mel_images) == 0:
-        mel_images.append(np.ones(data_shape))
+    if len(images) == 0:
+        images.append(np.ones(data_shape))
 
     # Augment spectrograms by creating various length ones
-    # mel_images = [
+    # images = [
     #     create_spectrogram(sample_rate, signal, image_height),
     #     create_spectrogram(0.9 * sample_rate, signal, image_height),
     #     create_spectrogram(1.1 * sample_rate, signal, image_height)
     # ]
 
-    mel_images_normal = map(lambda image: graphic.windowing.cut_or_pad_window(image, image_width).astype(np.float32), mel_images)
-    labels = [label] * len(mel_images_normal)
+    images_normal = map(lambda image: graphic.windowing.cut_or_pad_window(image, image_width).astype(np.float32), images)
+    labels = [label] * len(images_normal)
 
-    if len(mel_images) == 0:
+    if len(images) == 0:
         print(sound_file)
 
-    return [mel_images_normal, labels]
+    return [images_normal, labels]
 
 
 def batch_inputs(csv_path, batch_size, data_shape, segment_length, num_preprocess_threads=4, num_readers=1):

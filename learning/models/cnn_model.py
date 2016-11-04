@@ -40,12 +40,12 @@ def create_model(inputs, config, is_training=True):
         end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [1, 2], scope='pool4')  # TODO Correct kernel?
         end_points['dropout4'] = layers.dropout(end_points['pool4'], 0.5, is_training=is_training, scope='dropout4')
         end_points['conv5'] = layers.conv2d(end_points['dropout4'], 512, [3, 3], scope='conv5')
-        # end_points['conv6'] = layers.conv2d(end_points['conv5'], 512, [3, 3], padding='VALID', scope='conv6')
-        # end_points['pool6'] = layers.max_pool2d(end_points['conv6'], [1, 2], scope='pool6')  # TODO Correct kernel?
-        # end_points['conv7'] = layers.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7')  # (batch_size, 1, 73, 512)
+        end_points['conv6'] = layers.conv2d(end_points['conv5'], 512, [3, 3], padding='VALID', scope='conv6')
+        end_points['pool6'] = layers.max_pool2d(end_points['conv6'], [1, 2], scope='pool6')  # TODO Correct kernel?
+        end_points['conv7'] = layers.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7')  # (batch_size, 1, 73, 512)
 
         # (32, 1, 73, 512) -> (32, 73*512)
-        flattened = layers.flatten(end_points['conv5'])
+        flattened = layers.flatten(end_points['conv7'])
         logits = end_points['fc8'] = layers.fully_connected(flattened, 4, activation_fn=None, scope='fc8')
 
         for key, endpoint in end_points.iteritems():
