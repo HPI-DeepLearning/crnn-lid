@@ -134,6 +134,7 @@ def train():
 if __name__ == "__main__":
 
     log_dir = os.path.join(FLAGS.log_dir, datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+    print("Logging to {}".format(log_dir))
 
     # copy models & config for later
     shutil.copytree("models", log_dir)  # creates the log_dir
