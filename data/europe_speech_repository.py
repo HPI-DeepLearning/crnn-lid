@@ -62,13 +62,16 @@ if __name__ == '__main__':
 
     urls = defaultdict(list)
 
-    for language, (language_id, max_page_number) in LANGUAGE_ID_MAP.items():
-
-        for i in range(0, max_page_number):
-            urls[language] += get_urls_for_page(DRIVER, language_id, i)
-
-    print urls
+    # for language, (language_id, max_page_number) in LANGUAGE_ID_MAP.items():
+    #
+    #     for i in range(0, max_page_number):
+    #         urls[language] += get_urls_for_page(DRIVER, language_id, i)
+    #
+    # print urls
 
     DRIVER.close()
 
+    import pickle
+
+    urls = pickle.load(open("urls.pickle", "rb"))
     download(urls, args.output_dir)
