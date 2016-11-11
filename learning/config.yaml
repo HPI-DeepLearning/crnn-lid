@@ -10,14 +10,14 @@ num_train_files: 2187144
 num_test_files: 546788
 
 # mel images
-#image_width: 121 # 1 sec mono audio; automatically calculated: segement_length * 121px
-#image_height: 40
-#image_depth: 1
+image_width: 121 # 1 sec mono audio; automatically calculated: segement_length * 121px
+image_height: 40
+image_depth: 3
 
 # full size spectrograms
-image_width: 100 # 1 sec mono audio; automatically calculated: segement_length * 100px
-image_height: 506
-image_depth: 1
+#image_width: 100 # 1 sec mono audio; automatically calculated: segement_length * 100px
+#image_height: 506
+#image_depth: 1
 
 segment_length: 5 # sec
 
