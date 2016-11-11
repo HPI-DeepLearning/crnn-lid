@@ -98,7 +98,8 @@ def create_model(inputs, config, is_training=True):
         end_points['conv7'] = layers.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7')  # (batch_size, 1, 73, 512)
 
         # (32, 1, 73, 512) -> (32, 73, 512)
-        map_to_sequence = tf.squeeze(end_points['conv7'])
+        # map_to_sequence = tf.squeeze(end_points['conv7'])
+        map_to_sequence = tf.reshape(end_points['conv7'], (config["batch_size"], -1, 512))
 
         assert len(map_to_sequence._shape) == 3
 
