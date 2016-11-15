@@ -2,9 +2,9 @@
 # Usage: ./segment_audio_sox.sh output_directory
 
 # Clone directory structure
-#find . -type d -exec mkdir -p -- $1/{} \;
+find . -type d -exec mkdir -p -- $1/{} \;
 
-find . -name "*.wav" -exec sox -V3 {} -c 1 -r 16000 $1/{}.wav silence 1 0.1 3% -1 3.0 3% trim 0 1 : newfile : restart \;
+find . -name "*.wav" -exec sox -V3 {} -c 1 -r 16000 $1/{}.wav silence 1 0.1 3% -1 3.0 3% loudness trim 0 10 : newfile : restart \;
 
 # -c 1 convert to mono
 # trim 0 1 trim for 1 second beginning at 0 sec
