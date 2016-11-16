@@ -19,8 +19,12 @@ spectrogram_image_width: 100 # 1 sec mono audio; automatically calculated: segem
 spectrogram_image_height: 506
 spectrogram_image_depth: 1
 
-image_type: "mel" # "mel" or "spectrogram"
-segment_length: 5 # sec
+spectrogram2_image_width: 31 # 1 sec mono audio; automatically calculated: segement_length * 100px
+spectrogram2_image_height: 128
+spectrogram2_image_depth: 1
+
+image_type: "spectrogram2" # "mel" or "spectrogram" or "spectrogram2"
+segment_length: 1 # sec
 
 label_names: ["EN", "DE", "FR", "ES"]
 num_classes: 4
