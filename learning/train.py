@@ -13,6 +13,7 @@ from yaml import load
 from models import crnn_model
 from models import cnn_model
 from models import lstm_model
+from models import topcoder_model
 
 import loaders
 from evaluate import evaluation_metrics
@@ -41,7 +42,7 @@ def train():
 
                 image_shape = [
                     config[image_type + "_image_height"],
-                    ceil(config[image_type + "_image_width"] * config["segment_length"]),
+                    int(ceil(config[image_type + "_image_width"] * config["segment_length"])),
                     config[image_type + "_image_depth"]
                 ]
 
@@ -50,7 +51,7 @@ def train():
                 validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"], config["segment_length"])
 
                 # Init Model
-                model = cnn_model
+                model = topcoder_model
 
                 with tf.variable_scope("training") as vs:
                     logits, endpoints = model.create_model(images, config, is_training=True)
