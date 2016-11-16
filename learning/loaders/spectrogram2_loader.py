@@ -83,8 +83,7 @@ def create_spectrogram(sample_rate, samples, bin_size=1024, alpha=1):
     ims = np.transpose(ims)
     ims = ims[0:128, :]  # 0-5.5khz
 
-    return ims
-    return np.expand_dims(spectrogram_image, -1)
+    return np.expand_dims(ims, -1)
 
 
 def wav_to_spectrogram(sound_file, label, data_shape, segment_length=1):
