@@ -11,16 +11,6 @@ from preprocessing import graphic, audio
 
 FLAGS = tf.app.flags.FLAGS
 
-def create_mel_spectrogram(sample_rate, signal, num_filter):
-    mel_image = audio.filterbank_energies = audio.melfilterbank.logfilter(sample_rate, signal, winlen=0.00833,
-                                                                          winstep=0.00833, nfilt=num_filter,
-                                                                          lowfreq=0, preemph=1.0)
-    #mel_image = graphic.colormapping.to_grayscale(mel_image, bytes=True)
-    mel_image = graphic.histeq.histeq(mel_image)
-    mel_image = graphic.colormapping.to_rgba(mel_image, colormap="magma", bytes=True)
-    return np.expand_dims(mel_image, -1)
-
-
 def create_spectrogram(sample_rate, signal):
     spectrogram_image = audio.spectrogram.spectrogram_cutoff(sample_rate, signal, winlen=0.00833, winstep=0.00833)
     spectrogram_image = graphic.colormapping.to_grayscale(spectrogram_image, bytes=True)
@@ -47,8 +37,7 @@ def wav_to_spectrogram(sound_file, label, data_shape, segment_length=1):
         signal_chunk = signal[chunk_start:chunk_end]
 
         # REMEMBER: Update config shape, when changing melfilter params
-        img = create_mel_spectrogram(sample_rate, signal_chunk, image_height)
-        # img = create_spectrogram(sample_rate, signal_chunk)
+        img = create_spectrogram(sample_rate, signal_chunk)
         images.append(img)
 
     # If this clip is too short for segmentation, create some dummy data
@@ -62,8 +51,8 @@ def wav_to_spectrogram(sound_file, label, data_shape, segment_length=1):
     #     create_spectrogram(1.1 * sample_rate, signal, image_height)
     # ]
 
-    images_rgb =  map(lambda image: np.squeeze(image[:,:,:3]), images)
-    images_normal = map(lambda image: graphic.windowing.cut_or_pad_window(image, image_width).astype(np.float32), images_rgb)
+    # images =  map(lambda image: np.squeeze(image[:,:,:3]), images)
+    images_normal = map(lambda image: graphic.windowing.cut_or_pad_window(image, image_width).astype(np.float32), images)
     labels = [label] * len(images_normal)
 
     if len(images) == 0:

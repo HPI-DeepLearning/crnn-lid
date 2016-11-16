@@ -18,6 +18,11 @@ tf.app.flags.DEFINE_integer('num_gpus', 2, """How many GPUs to use.""")
 tf.app.flags.DEFINE_string("log_dir", "log", """Directory where to write event logs and checkpoint.""")
 tf.app.flags.DEFINE_string("checkpoint_dir", "log", """Directory where to read model checkpoints.""")
 tf.app.flags.DEFINE_string("config", "config.yaml", """Path to config.yaml file""")
+tf.app.flags.DEFINE_integer('input_queue_memory_factor', 16,
+                            """Size of the queue of preprocessed images. """
+                            """Default is ideal but try smaller values, e.g. """
+                            """4, 2 or 1, if host memory is constrained. See """
+                            """comments in code for more details.""")
 
 config = load(open(FLAGS.config, "rb"))
 

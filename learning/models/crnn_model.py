@@ -84,6 +84,7 @@ def create_model(inputs, config, is_training=True):
                    normalizer_fn=layers.batch_norm,
     ):
         end_points = OrderedDict()
+        end_points['input'] = inputs
         end_points['conv1'] = layers.conv2d(inputs, 64, [3, 3], scope='conv1')
         end_points['pool1'] = layers.max_pool2d(end_points['conv1'], [2, 2], scope='pool1')
         end_points['conv2'] = layers.conv2d(end_points['pool1'], 128, [3, 3], scope='conv2')
