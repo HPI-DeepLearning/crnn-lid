@@ -13,7 +13,7 @@ from yaml import load
 from models import crnn_model
 from models import cnn_model
 from models import lstm_model
-from models import topcoder_model
+from models import topcoder_crnn
 
 import loaders
 from evaluate import evaluation_metrics
@@ -51,7 +51,7 @@ def train():
                 validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"], config["segment_length"])
 
                 # Init Model
-                model = topcoder_model
+                model = topcoder_crnn
 
                 with tf.variable_scope("training") as vs:
                     logits, endpoints = model.create_model(images, config, is_training=True)
