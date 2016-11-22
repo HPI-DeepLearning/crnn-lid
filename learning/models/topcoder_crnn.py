@@ -8,6 +8,7 @@ from tensorflow.contrib.slim import losses
 from collections import OrderedDict
 
 FLAGS = tf.app.flags.FLAGS
+NAME = "Topcoder_CRNN"
 
 def BiLSTM(x, config):
 
@@ -63,7 +64,7 @@ def BiLSTM(x, config):
     return logits
 
 
-def create_model(inputs, config, is_training=True):
+def create_model(inputs, config, is_training=True, scope="default_scope"):
 
     weight_decay = 0.0005
 
@@ -75,41 +76,45 @@ def create_model(inputs, config, is_training=True):
         "epsilon": 0.001,
     }
 
-    with arg_scope([layers.conv2d],
-                   trainable=True,
-                   activation_fn=tf.nn.relu,
-                   normalizer_params=batch_norm_params,
-                   weights_regularizer=slim.l2_regularizer(weight_decay),
-                   weights_initializer=tf.truncated_normal_initializer(stddev=0.005),
-                   normalizer_fn=layers.batch_norm,
-                   ):
+    with tf.variable_scope(scope) as sc:
+        end_points_collection = sc.name + '_end_points'
 
-        end_points = OrderedDict()
-        end_points['input'] = inputs
-        end_points['conv1'] = layers.conv2d(inputs, 16, [7, 7], scope='conv1')
-        end_points['pool1'] = layers.max_pool2d(end_points['conv1'], [3, 3], scope='pool1')
-        end_points['conv2'] = layers.conv2d(end_points['pool1'], 32, [5, 5], scope='conv2')
-        end_points['pool2'] = layers.max_pool2d(end_points['conv2'], [3, 3], scope='pool2')
-        end_points['conv3'] = layers.conv2d(end_points['pool2'], 32, [3, 3], scope='conv3')
-        end_points['pool3'] = layers.max_pool2d(end_points['conv3'], [3, 3], scope='pool3')
-        end_points['conv4'] = layers.conv2d(end_points['pool3'], 32, [3, 3], scope='conv4')
-        end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [3, 3], scope='pool4')
+        with arg_scope([layers.conv2d],
+                       trainable=True,
+                       activation_fn=tf.nn.relu,
+                       normalizer_params=batch_norm_params,
+                       weights_regularizer=slim.l2_regularizer(weight_decay),
+                       weights_initializer=tf.truncated_normal_initializer(stddev=0.005),
+                       normalizer_fn=layers.batch_norm,
+                       outputs_collections=end_points_collection
+                       ):
+
+            end_points = OrderedDict()
+            end_points['input'] = inputs
+            end_points['conv1'] = layers.conv2d(inputs, 16, [7, 7], scope='conv1')
+            end_points['pool1'] = layers.max_pool2d(end_points['conv1'], [3, 3], scope='pool1')
+            end_points['conv2'] = layers.conv2d(end_points['pool1'], 32, [5, 5], scope='conv2')
+            end_points['pool2'] = layers.max_pool2d(end_points['conv2'], [3, 3], scope='pool2')
+            end_points['conv3'] = layers.conv2d(end_points['pool2'], 32, [3, 3], scope='conv3')
+            end_points['pool3'] = layers.max_pool2d(end_points['conv3'], [3, 3], scope='pool3')
+            end_points['conv4'] = layers.conv2d(end_points['pool3'], 32, [3, 3], scope='conv4')
+            end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [3, 3], scope='pool4')
 
 
-        map_to_sequence = tf.transpose(end_points['pool4'], [0, 2, 1, 3])
-        shape = map_to_sequence.get_shape()
-        map_to_sequence = tf.reshape(map_to_sequence, [int(shape[0]), int(shape[1]), int(shape[2]) * int(shape[3])])
+            map_to_sequence = tf.transpose(end_points['pool4'], [0, 2, 1, 3])
+            shape = map_to_sequence.get_shape()
+            map_to_sequence = tf.reshape(map_to_sequence, [int(shape[0]), int(shape[1]), int(shape[2]) * int(shape[3])])
 
 
-        assert len(map_to_sequence._shape) == 3
+            assert len(map_to_sequence._shape) == 3
 
-        # Bidirectional LSTM
-        logits = BiLSTM(map_to_sequence, config)
+            # Bidirectional LSTM
+            logits = BiLSTM(map_to_sequence, config)
 
-        for key, endpoint in end_points.iteritems():
-            print "{0}: {1}".format(key, endpoint._shape)
+            for key, endpoint in end_points.iteritems():
+                print "{0}: {1}".format(key, endpoint._shape)
 
-        return logits, end_points
+            return logits, end_points
 
 
 def loss(logits, labels):

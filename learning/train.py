@@ -51,27 +51,27 @@ def train():
                 validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"], config["segment_length"])
 
                 # Init Model
-                model = topcoder_crnn
+                model = cnn_model
 
-                with tf.variable_scope("training") as vs:
-                    logits, endpoints = model.create_model(images, config, is_training=True)
-                    loss_op = model.loss(logits, labels)
-                    prediction_op = tf.cast(tf.argmax(tf.nn.softmax(logits), 1), tf.int32)
-                    tf.scalar_summary("loss", loss_op)
+                scope = model.NAME
+                logits, endpoints = model.create_model(images, config, is_training=True, scope=scope)
+                loss_op = model.loss(logits, labels)
+                prediction_op = tf.cast(tf.argmax(tf.nn.softmax(logits), 1), tf.int32)
+                tf.scalar_summary("loss", loss_op)
 
-                    # Add summaries for viewing model statistics on TensorBoard.
-                    # Make sure they are named uniquely
-                    summaries = {}
-                    for act in endpoints.values():
-                        summaries[act.op.name] = act
+                # Add summaries for viewing model statistics on TensorBoard.
+                # Make sure they are named uniquely
+                summaries = {}
+                for act in endpoints.values():
+                    summaries[act.op.name] = act
 
-                    slim.summarize_tensors(summaries.values())
+                slim.summarize_tensors(summaries.values())
 
-                with tf.variable_scope(vs, reuse=True):
-                    validation_logits, _ = model.create_model(validation_images, config, is_training=False)
-                    validation_loss_op = model.loss(validation_logits, validation_labels)
-                    validation_prediction_op = tf.cast(tf.argmax(tf.nn.softmax(validation_logits), 1), tf.int32)
-                    tf.scalar_summary("validation_loss", validation_loss_op)
+                scope = tf.VariableScope(reuse=True, name=model.NAME)
+                validation_logits, _ = model.create_model(validation_images, config, is_training=False, scope=scope)
+                validation_loss_op = model.loss(validation_logits, validation_labels)
+                validation_prediction_op = tf.cast(tf.argmax(tf.nn.softmax(validation_logits), 1), tf.int32)
+                tf.scalar_summary("validation_loss", validation_loss_op)
 
                 # Adam optimizer already does LR decay
                 train_op = tf.train.AdamOptimizer(learning_rate=config["learning_rate"], beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False,
