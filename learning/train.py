@@ -37,8 +37,8 @@ def train():
             with sess.as_default():
 
                 # Init Data Loader
-                images, labels = sound_loader.get(config)
-                validation_images, validation_labels = sound_loader.get(config)
+                images, labels = sound_loader.get(config["train_data_dir"], config)
+                validation_images, validation_labels = sound_loader.get(config["validation_data_dir"], config)
 
                 # Init Model
                 model = cnn_model

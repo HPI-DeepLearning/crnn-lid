@@ -4,7 +4,7 @@ from math import ceil
 
 import image_generators
 
-def batch_inputs(csv_path, batch_size, data_shape, segment_length, image_generator, num_preprocess_threads=1):
+def batch_inputs(csv_path, batch_size, data_shape, segment_length, image_generator, num_preprocess_threads=4):
 
     with tf.name_scope('batch_processing'):
 
@@ -49,11 +49,11 @@ def batch_inputs(csv_path, batch_size, data_shape, segment_length, image_generat
 
         return images_normalized, labels
 
-def get(config):
+def get(input_dir, config):
     # Generates image, label batches
 
-    if not os.path.isfile(config["train_data_dir"]):
-        print('No file found for dataset %s' % config["train_data_dir"])
+    if not os.path.isfile(input_dir):
+        print('No file found for dataset %s' % input_dir)
         exit(-1)
 
     image_type = config["image_type"]  # "mel" or "spectrogram" or "spectrogram2"
@@ -66,7 +66,7 @@ def get(config):
     ]
 
     with tf.device('/cpu:0'):
-        images, labels = batch_inputs(config["train_data_dir"], config["batch_size"], data_shape, config["segment_length"], image_generator)
+        images, labels = batch_inputs(input_dir, config["batch_size"], data_shape, config["segment_length"], image_generator)
 
     return images, labels
 
