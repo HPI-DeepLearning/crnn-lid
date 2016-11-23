@@ -3,7 +3,7 @@ import numpy as np
 import os
 import sys
 
-lib_dir = os.path.join(os.getcwd(), "..", "..")
+lib_dir = os.path.join(os.getcwd(), "..")
 sys.path.append(lib_dir)
 
 from numpy.lib import stride_tricks
