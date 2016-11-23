@@ -15,7 +15,7 @@ from models import cnn_model
 from models import lstm_model
 from models import topcoder_crnn
 
-import loaders
+from loaders import sound_loader
 from evaluate import evaluation_metrics
 
 FLAGS = tf.app.flags.FLAGS
@@ -37,18 +37,8 @@ def train():
             with sess.as_default():
 
                 # Init Data Loader
-                image_type = config["image_type"]  # "mel" or "spectrogram"
-                loader = getattr(loaders, image_type + "_loader")
-
-                image_shape = [
-                    config[image_type + "_image_height"],
-                    int(ceil(config[image_type + "_image_width"] * config["segment_length"])),
-                    config[image_type + "_image_depth"]
-                ]
-
-                images, labels = loader.get(config["train_data_dir"], image_shape, config["batch_size"], config["segment_length"])
-
-                validation_images, validation_labels = loader.get(config["validation_data_dir"], image_shape, config["batch_size"], config["segment_length"])
+                images, labels = sound_loader.get(config)
+                validation_images, validation_labels = sound_loader.get(config)
 
                 # Init Model
                 model = cnn_model

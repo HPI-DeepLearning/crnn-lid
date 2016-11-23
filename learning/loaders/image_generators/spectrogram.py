@@ -3,7 +3,7 @@ import numpy as np
 import os
 import sys
 
-lib_dir = os.path.join(os.getcwd(), "..")
+lib_dir = os.path.join(os.getcwd(), "..", "..")
 sys.path.append(lib_dir)
 
 import scipy.io.wavfile as wav
@@ -117,10 +117,10 @@ def batch_inputs(csv_path, batch_size, data_shape, segment_length, num_preproces
         images, labels = tf.train.shuffle_batch_join(
             images_and_labels,
             batch_size=batch_size,
-            capacity=20 * num_preprocess_threads * batch_size,
+            capacity=2 * num_preprocess_threads * batch_size,
             shapes=[data_shape, []],
             enqueue_many=True,
-            min_after_dequeue=1000
+            min_after_dequeue=1000 / segment_length / 2
         )
 
         # Finally, rescale to [-1,1] instead of [0, 1)
@@ -131,7 +131,7 @@ def batch_inputs(csv_path, batch_size, data_shape, segment_length, num_preproces
         prefix = os.path.basename(csv_path)
         tf.image_summary("%s_raw" % prefix, images_normalized, max_images=10)
 
-        return images_normalized, labels
+        return images_normalized, tf.Print(labels, [labels], message="Labels", summarize=32)
 
 def get(csv_path, data_shape, batch_size=32, segment_length=10):
     # Generates image, label batches
