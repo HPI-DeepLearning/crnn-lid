@@ -104,6 +104,7 @@ def batch_inputs(csv_path, batch_size, data_shape, segment_length, num_preproces
             _, csv_content = textReader.read(file_path)
             sound_path_label = tf.decode_csv(csv_content, record_defaults=[[""], [0]])
 
+        images_and_labels = []
         for thread_id in range(num_preprocess_threads):
 
             if data_shape is None:
@@ -114,22 +115,16 @@ def batch_inputs(csv_path, batch_size, data_shape, segment_length, num_preproces
             sound_path, label = sound_path_label
 
             [image_list, label_list] = tf.py_func(wav_to_spectrogram, [sound_path, label, data_shape, segment_length], [tf.float32, tf.int32])
+            images_and_labels.append(image_list, label_list)
 
         # Create batches
-        images = tf.train.batch_join(
-            [[image_list]],
+        images, labels = tf.train.shuffle_batch_join(
+            images_and_labels,
             batch_size=batch_size,
-            capacity=2 * num_preprocess_threads * batch_size,
-            shapes=[data_shape],
-            enqueue_many=True
-        )
-
-        labels = tf.train.batch_join(
-            [[label_list]],
-            batch_size=batch_size,
-            capacity=2 * num_preprocess_threads * batch_size,
-            shapes=[[]],
-            enqueue_many=True
+            capacity=1000 / segment_length,
+            shapes=[data_shape, []],
+            enqueue_many=True,
+            min_after_dequeue=1000 / segment_length
         )
 
         # Finally, rescale to [-1,1] instead of [0, 1)
