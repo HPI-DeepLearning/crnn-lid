@@ -32,11 +32,11 @@ def batch_inputs(csv_path, batch_size, data_shape, segment_length, image_generat
         images, labels = tf.train.shuffle_batch_join(
             images_and_labels,
             batch_size=batch_size,
-            capacity=2 * num_preprocess_threads * batch_size,
+            capacity=2 * 1000 / segment_length,
             shapes=[data_shape, []],
             enqueue_many=True,
-            min_after_dequeue=32,
-            # min_after_dequeue=1000 / segment_length
+            #min_after_dequeue=32,
+            min_after_dequeue=1000 / segment_length
         )
 
         # Finally, rescale to [-1,1] instead of [0, 1)
