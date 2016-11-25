@@ -12,6 +12,8 @@ from yaml import load
 from loaders import sound_loader
 from models import crnn_model
 from models import cnn_model
+from models import lenet
+from models import topcoder_crnn
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -55,11 +57,11 @@ def evaluate():
 
     with tf.Graph().as_default():
 
-	images, labels = sound_loader.get(config["validation_data_dir"], config)
+        images, labels = sound_loader.get(config["validation_data_dir"], config)
 
         # Init Model
-	model = cnn_model
-	logits, endpoints = model.create_model(images, config, is_training=False)
+        model = topcoder_crnn
+        logits, endpoints = model.create_model(images, config, is_training=False, scope=model.NAME)
         # Use the last state of the LSTM as output
         predictions_op = tf.cast(tf.argmax(tf.nn.softmax(logits), 1), tf.int32)
 

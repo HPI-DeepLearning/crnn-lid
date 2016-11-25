@@ -8,9 +8,9 @@ from tensorflow.contrib.slim import losses
 from collections import OrderedDict
 
 FLAGS = tf.app.flags.FLAGS
+NAME = "LeNet"
 
-
-def create_model(inputs, config, scope="letNet  ", is_training=True):
+def create_model(inputs, config, scope="LeNet", is_training=True):
 
     weight_decay = 0.0005
 
