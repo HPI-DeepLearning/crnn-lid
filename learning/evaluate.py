@@ -17,7 +17,6 @@ from models import topcoder_crnn
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_integer('num_gpus', 2, """How many GPUs to use.""")
 tf.app.flags.DEFINE_string("log_dir", "log", """Directory where to write event logs and checkpoint.""")
 tf.app.flags.DEFINE_string("checkpoint_dir", "log", """Directory where to read model checkpoints.""")
 tf.app.flags.DEFINE_string("config", "config.yaml", """Path to config.yaml file""")

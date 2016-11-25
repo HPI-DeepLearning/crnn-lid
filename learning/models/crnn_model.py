@@ -127,9 +127,9 @@ def loss(logits, labels):
 
     # Note: label smoothing regularization LSR
     # https://arxiv.org/pdf/1512.00567.pdf
-    loss = losses.softmax_cross_entropy(logits, one_hot_labels, label_smoothing=0.1)
+    loss_ce = losses.softmax_cross_entropy(logits, one_hot_labels, label_smoothing=0.1)
 
-    return loss
+    return losses.get_total_loss(add_regularization_losses=True, name="total_loss")
 
 
 def ctc_loss():
