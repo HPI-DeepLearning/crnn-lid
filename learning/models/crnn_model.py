@@ -95,16 +95,18 @@ def create_model(inputs, config, is_training=True, scope="default_scope"):
             end_points['conv2'] = layers.conv2d(end_points['pool1'], 128, [3, 3], scope='conv2')
             end_points['pool2'] = layers.max_pool2d(end_points['conv2'], [2, 2], scope='pool2')
             end_points['conv3'] = layers.conv2d(end_points['pool2'], 256, [3, 3], scope='conv3')
-            end_points['conv4'] = layers.conv2d(end_points['conv3'], 256, [3, 3], scope='conv4')
-            end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [1, 2], scope='pool4')  # TODO Correct kernel?
-            #end_points['dropout4'] = layers.dropout(end_points['pool4'], 0.5, is_training=is_training, scope='dropout4')
-            end_points['conv5'] = layers.conv2d(end_points['pool4'], 512, [3, 3], scope='conv5')
-            end_points['conv6'] = layers.conv2d(end_points['conv5'], 512, [3, 3], padding='VALID', scope='conv6')
-            end_points['pool6'] = layers.max_pool2d(end_points['conv6'], [1, 2], scope='pool6')  # TODO Correct kernel?
-            end_points['conv7'] = layers.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7')  # (batch_size, 1, 73, 512)
+            # end_points['conv4'] = layers.conv2d(end_points['conv3'], 256, [3, 3], scope='conv4')
+            # end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [1, 2], scope='pool4')  # TODO Correct kernel?
+            end_points['dropout4'] = layers.dropout(end_points['conv3'], 0.5, is_training=is_training, scope='dropout4')
+            # end_points['conv5'] = layers.conv2d(end_points['pool4'], 512, [3, 3], scope='conv5')
+            # end_points['conv6'] = layers.conv2d(end_points['conv5'], 512, [3, 3], padding='VALID', scope='conv6')
+            # end_points['pool6'] = layers.max_pool2d(end_points['conv6'], [1, 2], scope='pool6')  # TODO Correct kernel?
+            # end_points['conv7'] = layers.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7')  # (batch_size, 1, 73, 512)
 
             # (32, 1, 73, 512) -> (32, 73, 512)
-            map_to_sequence = tf.squeeze(end_points['conv7'])
+            map_to_sequence = tf.transpose(end_points['dropout4'], [0, 2, 1, 3])
+            shape = map_to_sequence.get_shape()
+            end_points['seq'] = map_to_sequence = tf.reshape(map_to_sequence, [int(shape[0]), int(shape[1]), int(shape[2]) * int(shape[3])])
 
             assert len(map_to_sequence._shape) == 3
 
@@ -125,9 +127,9 @@ def loss(logits, labels):
 
     # Note: label smoothing regularization LSR
     # https://arxiv.org/pdf/1512.00567.pdf
-    loss = losses.softmax_cross_entropy(logits, one_hot_labels, label_smoothing=0.1)
+    loss_ce = losses.softmax_cross_entropy(logits, one_hot_labels, label_smoothing=0.1)
 
-    return loss
+    return losses.get_total_loss(add_regularization_losses=True, name="total_loss")
 
 
 def ctc_loss():

@@ -11,18 +11,16 @@ from yaml import load
 
 from loaders import sound_loader
 from models import crnn_model
+from models import cnn_model
+from models import lenet
+from models import topcoder_crnn
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_integer('num_gpus', 2, """How many GPUs to use.""")
 tf.app.flags.DEFINE_string("log_dir", "log", """Directory where to write event logs and checkpoint.""")
 tf.app.flags.DEFINE_string("checkpoint_dir", "log", """Directory where to read model checkpoints.""")
 tf.app.flags.DEFINE_string("config", "config.yaml", """Path to config.yaml file""")
-tf.app.flags.DEFINE_integer('input_queue_memory_factor', 16,
-                            """Size of the queue of preprocessed images. """
-                            """Default is ideal but try smaller values, e.g. """
-                            """4, 2 or 1, if host memory is constrained. See """
-                            """comments in code for more details.""")
+
 
 config = load(open(FLAGS.config, "rb"))
 
@@ -58,18 +56,17 @@ def evaluate():
 
     with tf.Graph().as_default():
 
-        image_shape = [config["image_height"], config["image_width"], config["image_depth"]]
-        images, labels = sound_loader.get(config["validation_data_dir"], image_shape, config["batch_size"], config["segment_length"])
+        images, labels = sound_loader.get(config["validation_data_dir"], config)
 
         # Init Model
-        logits = crnn_model.create_model(images, config, is_training=False)
+        model = topcoder_crnn
+        logits, endpoints = model.create_model(images, config, is_training=False, scope=model.NAME)
         # Use the last state of the LSTM as output
         predictions_op = tf.cast(tf.argmax(tf.nn.softmax(logits), 1), tf.int32)
 
         sess = tf.Session()
         init = tf.initialize_all_variables()
         sess.run(init)
-        sess.run(tf.initialize_local_variables())
 
         # Restore model from checkpoint
         saver = tf.train.Saver()
