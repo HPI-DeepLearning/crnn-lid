@@ -45,7 +45,7 @@ class CSVImageLoader():
             # Reset generator
             if start + self.config["batch_size"] > self.get_num_files():
                 start = 0
-                self.images_label_pairs = shuffle(self.images_label_pairs)
+                shuffle(self.images_label_pairs)
 
             yield image_batch, label_batch
 
