@@ -36,13 +36,14 @@ class CSVImageLoader():
 
                 assert len(image.shape) == 3
 
-                image_batch[i,:,:,:] = image
+                height, width, channels = image.shape
+                image_batch[i, : height, :width, :] = image
                 label_batch[i, :] = to_categorical([label], nb_classes=self.config["num_classes"]) # one-hot encoding
 
             start += self.config["batch_size"]
 
             # Reset generator
-            if start > self.get_num_files():
+            if start + self.config["batch_size"] > self.get_num_files():
                 start = 0
                 self.images_label_pairs = shuffle(self.images_label_pairs)
 
