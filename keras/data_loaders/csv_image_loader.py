@@ -1,6 +1,5 @@
 import numpy as np
 import csv
-from random import shuffle
 
 from scipy.misc import imread
 from keras.utils.np_utils import to_categorical
@@ -38,14 +37,14 @@ class CSVImageLoader():
 
                 height, width, channels = image.shape
                 image_batch[i, : height, :width, :] = image
-                label_batch[i, :] = to_categorical([label], nb_classes=self.config["num_classes"]) # one-hot encoding
+                label_batch[i, :] = to_categorical([int(label)], nb_classes=self.config["num_classes"]) # one-hot encoding
 
             start += self.config["batch_size"]
 
             # Reset generator
             if start + self.config["batch_size"] > self.get_num_files():
                 start = 0
-                shuffle(self.images_label_pairs)
+                np.random.shuffle(self.images_label_pairs)
 
             yield image_batch, label_batch
 
