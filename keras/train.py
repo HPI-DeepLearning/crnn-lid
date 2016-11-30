@@ -55,7 +55,7 @@ def train(log_dir):
         samples_per_epoch=train_data_generator.get_num_files(),
         nb_epoch=1, # config["num_epochs"],
         callbacks=[model_checkpoint_callback, tensorboard_callback, csv_logger_callback, early_stopping_callback],
-        verbose=2,
+        verbose=1,
         validation_data=validation_data_generator.get_data(should_shuffle=False),
         nb_val_samples=validation_data_generator.get_num_files(),
         nb_worker=2,
@@ -69,7 +69,8 @@ def train(log_dir):
         val_samples=validation_data_generator.get_num_files(),
         nb_worker=2,
         max_q_size=config["batch_size"],
-        pickle_safe=True
+        pickle_safe=True,
+        verbose=1
     )
 
     y_true = [label for (data, label) in validation_data_generator.get_data(should_shuffle=False)]
