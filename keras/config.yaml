@@ -6,7 +6,7 @@ batch_size: 32
 learning_rate: 0.001
 num_epochs: 10
 
-data_loader: "CSVImageLoader"
+data_loader: "ImageLoader"
 color_mode: "L" # L = bw or RGB
 input_shape: [256, 936, 1]
 

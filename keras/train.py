@@ -65,7 +65,7 @@ def train(log_dir):
 
     # Detailed statistics after the training has finished
     predictions = model.predict_generator(
-        validation_data_generator.get_data(should_shuffle=False),
+        validation_data_generator.get_data(should_shuffle=False, is_prediction=True),
         val_samples=validation_data_generator.get_num_files(),
         nb_worker=2,
         max_q_size=config["batch_size"],
