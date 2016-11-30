@@ -66,4 +66,7 @@ target/
 **/model.ckpt-157585
 .idea/**
 */log/**
+*/logs/**
 /datasets/**
+
+*.iml

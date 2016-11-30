@@ -1,0 +1,21 @@
+train_data_dir: "/Users/therold/Uni/master-thesis/datasets/eu_speech/training.csv"
+validation_data_dir: "/Users/therold/Uni/master-thesis/datasets/eu_speech/validation.csv"
+test_data_dir: "/extra/tom/validation/segmented/testing.csv"
+
+batch_size: 32
+learning_rate: 0.001
+num_epochs: 10
+
+data_loader: "ImageLoader"
+color_mode: "L" # L = bw or RGB
+input_shape: [256, 936, 1]
+
+model: "topcoder"
+
+segment_length: 10 # sec
+
+label_names: ["EN", "DE", "FR", "ES"]
+num_classes: 4
+
+
+
