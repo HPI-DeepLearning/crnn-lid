@@ -1,16 +1,16 @@
-import tensorflow as tf
+import tensorflw as tf
 import numpy as np
 
-import tensorflow.contrib.slim as slim
-from tensorflow.contrib.slim import arg_scope
-from tensorflow.contrib.slim import layers
-from tensorflow.contrib.slim import losses
+import tensorflw.contrib.slim as slim
+from tensorflw.contrib.slim import arg_scope
+from tensorflw.contrib.slim import layers
+from tensorflw.contrib.slim import losses
 from collections import OrderedDict
 
 FLAGS = tf.app.flags.FLAGS
-NAME = "LeNet"
+NAME = "CNN"
 
-def create_model(inputs, config, scope="LeNet", is_training=True):
+def create_model(inputs, config, is_training=True, scope="default_scope"):
 
     weight_decay = 0.0005
 
@@ -26,26 +26,32 @@ def create_model(inputs, config, scope="LeNet", is_training=True):
         end_points_collection = sc.name + '_end_points'
 
         with arg_scope([layers.conv2d],
-                       trainable=is_training,
+                       trainable=True,
                        activation_fn=tf.nn.relu,
                        normalizer_params=batch_norm_params,
                        weights_regularizer=slim.l2_regularizer(weight_decay),
                        weights_initializer=tf.truncated_normal_initializer(stddev=0.01),
                        normalizer_fn=layers.batch_norm,
                        outputs_collections=end_points_collection
-                       ):
+        ):
             end_points = OrderedDict()
             end_points['input'] = inputs
-            end_points['conv1'] = layers.conv2d(inputs, 32, [5, 5], scope='conv1')
+            end_points['conv1'] = layers.conv2d(inputs, 64, [3, 3], scope='conv1')
             end_points['pool1'] = layers.max_pool2d(end_points['conv1'], [2, 2], scope='pool1')
-            end_points['conv2'] = layers.conv2d(end_points['pool1'], 32, [5, 5], scope='conv2')
+            end_points['conv2'] = layers.conv2d(end_points['pool1'], 128, [3, 3], scope='conv2')
             end_points['pool2'] = layers.max_pool2d(end_points['conv2'], [2, 2], scope='pool2')
+            end_points['conv3'] = layers.conv2d(end_points['pool2'], 256, [3, 3], scope='conv3')
+            end_points['conv4'] = layers.conv2d(end_points['conv3'], 256, [3, 3], scope='conv4')
+            end_points['pool4'] = layers.max_pool2d(end_points['conv4'], [1, 2], scope='pool4')  # TODO Correct kernel?
+            end_points['dropout4'] = layers.dropout(end_points['pool4'], 0.5, is_training=is_training, scope='dropout4')
+            end_points['conv5'] = layers.conv2d(end_points['dropout4'], 512, [3, 3], scope='conv5')
+            end_points['conv6'] = layers.conv2d(end_points['conv5'], 512, [3, 3], padding='VALID', scope='conv6')
+            end_points['pool6'] = layers.max_pool2d(end_points['conv6'], [1, 2], scope='pool6')  # TODO Correct kernel?
+            end_points['conv7'] = layers.conv2d(end_points['pool6'], 512, [2, 2], padding='VALID', scope='conv7')  # (batch_size, 1, 73, 512)
 
-            flattened = layers.flatten(end_points['pool2'])
-            end_points['fc3'] = layers.fully_connected(flattened, 512, scope='fc3')
-            end_points['dropout3'] = layers.dropout(end_points['fc3'], is_training=is_training, scope='dropout3')
-
-            logits = end_points['fc4'] = layers.fully_connected(end_points['dropout3'], 10, activation_fn=None, scope='fc4')
+            # (32, 1, 73, 512) -> (32, 73*512)
+            flattened = layers.flatten(end_points['conv7'])
+            logits = end_points['fc8'] = layers.fully_connected(flattened, 4, activation_fn=None, scope='fc8')
 
             for key, endpoint in end_points.iteritems():
                 print "{0}: {1}".format(key, endpoint._shape)

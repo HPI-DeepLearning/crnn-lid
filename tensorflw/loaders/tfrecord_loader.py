@@ -1,4 +1,4 @@
-import tensorflow as tf
+import tensorflw as tf
 import os
 
 FLAGS = tf.app.flags.FLAGS

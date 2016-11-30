@@ -6,8 +6,8 @@ from datetime import datetime
 from math import ceil
 
 import numpy as np
-import tensorflow as tf
-import tensorflow.contrib.slim as slim
+import tensorflw as tf
+import tensorflw.contrib.slim as slim
 from yaml import load
 
 from models import crnn_model

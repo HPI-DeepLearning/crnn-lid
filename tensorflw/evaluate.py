@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 import numpy as np
-import tensorflow as tf
+import tensorflw as tf
 from sklearn.metrics import accuracy_score, classification_report, precision_recall_fscore_support, confusion_matrix
 from yaml import load
 

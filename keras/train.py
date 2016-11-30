@@ -70,7 +70,6 @@ def train(log_dir):
         nb_worker=2,
         max_q_size=config["batch_size"],
         pickle_safe=True,
-        verbose=1
     )
 
     y_true = [label for (data, label) in validation_data_generator.get_data(should_shuffle=False)]

@@ -1,10 +1,10 @@
-import tensorflow as tf
+import tensorflw as tf
 import numpy as np
 
-import tensorflow.contrib.slim as slim
-from tensorflow.contrib.slim import arg_scope
-from tensorflow.contrib.slim import layers
-from tensorflow.contrib.slim import losses
+import tensorflw.contrib.slim as slim
+from tensorflw.contrib.slim import arg_scope
+from tensorflw.contrib.slim import layers
+from tensorflw.contrib.slim import losses
 from collections import OrderedDict
 
 FLAGS = tf.app.flags.FLAGS
