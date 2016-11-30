@@ -1,5 +1,5 @@
-import os
 import argparse
+import numpy as np
 from yaml import load
 
 import data_loaders

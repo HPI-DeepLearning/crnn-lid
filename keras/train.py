@@ -6,7 +6,7 @@ from yaml import load
 
 import models
 import data_loaders
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from keras.callbacks import ModelCheckpoint, TensorBoard, CSVLogger, EarlyStopping
 from keras.optimizers import Adam
 
@@ -17,6 +17,7 @@ def metrics_report(y_true, y_pred):
 
     available_labels = range(0, config["num_classes"])
 
+    print("Accuracy %s" % accuracy_score(y_true, y_pred))
     print(classification_report(y_true, y_pred, labels=available_labels, target_names=config["label_names"]))
     print(confusion_matrix(y_true, y_pred, labels=available_labels))
 

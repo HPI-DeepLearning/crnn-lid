@@ -1,4 +1,4 @@
-from keras.layers.core import Dense, Flatten
+from keras.layers.core import Dense, Flatten, Dropout
 from keras.layers.convolutional import Convolution2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.pooling import MaxPooling2D
@@ -36,6 +36,8 @@ def create_model(input_shape, config, is_training=True):
     model.add(Convolution2D(256, 3, 3, W_regularizer=l2(weight_decay), activation="relu"))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    model.add(Dropout(0.5))
 
     model.add(Flatten())
     model.add(Dense(1024, W_regularizer=l2(weight_decay), activation="relu"))
