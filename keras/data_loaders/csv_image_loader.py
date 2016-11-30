@@ -16,7 +16,7 @@ class CSVImageLoader():
             for row in csv.reader(csvfile):
                 self.images_label_pairs.append(row)
 
-    def get_data(self):
+    def get_data(self, should_shuffle=True):
 
 
         start = 0
@@ -36,7 +36,7 @@ class CSVImageLoader():
                 assert len(image.shape) == 3
 
                 height, width, channels = image.shape
-                image_batch[i, : height, :width, :] = image
+                image_batch[i, : height, :width, :] = np.divide(image, 255.0) # Normalize imags to 0-1.0
                 label_batch[i, :] = to_categorical([int(label)], nb_classes=self.config["num_classes"]) # one-hot encoding
 
             start += self.config["batch_size"]
@@ -44,7 +44,8 @@ class CSVImageLoader():
             # Reset generator
             if start + self.config["batch_size"] > self.get_num_files():
                 start = 0
-                np.random.shuffle(self.images_label_pairs)
+                if should_shuffle:
+                    np.random.shuffle(self.images_label_pairs)
 
             yield image_batch, label_batch
 
