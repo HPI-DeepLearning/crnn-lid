@@ -21,7 +21,7 @@ def evaluate(cli_args):
 
     # Detailed statistics after the training has finished
     probabilities = model.predict_generator(
-        data_generator.get_data(should_shuffle=False),
+        data_generator.get_data(should_shuffle=False, is_prediction=True),
         val_samples=data_generator.get_num_files(),
         nb_worker=2,
         max_q_size=config["batch_size"],

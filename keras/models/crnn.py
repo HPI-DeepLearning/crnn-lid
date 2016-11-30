@@ -46,8 +46,8 @@ def create_model(input_shape, config, is_training=True):
     # (bs, y, x, c) --> (bs, x, y, c)
     model.add(Permute((2, 1, 3)))
 
-    bs, x, y, c = model.layers[-1].output_shape
     # (bs, x, y, c) --> (bs, x, y * c)
+    bs, x, y, c = model.layers[-1].output_shape
     model.add(Reshape((x, y*c)))
 
     model.add(Bidirectional(LSTM(256, return_sequences=False), merge_mode="concat"))
