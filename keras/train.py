@@ -54,7 +54,7 @@ def train(log_dir):
     history = model.fit_generator(
         train_data_generator.get_data(),
         samples_per_epoch=train_data_generator.get_num_files(),
-        nb_epoch=1, # config["num_epochs"],
+        nb_epoch=config["num_epochs"],
         callbacks=[model_checkpoint_callback, tensorboard_callback, csv_logger_callback, early_stopping_callback],
         verbose=1,
         validation_data=validation_data_generator.get_data(should_shuffle=False),
