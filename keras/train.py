@@ -1,5 +1,6 @@
 import os
 import shutil
+import numpy as np
 from datetime import datetime
 from yaml import load
 
@@ -64,7 +65,7 @@ def train(log_dir):
     )
 
     # Detailed statistics after the training has finished
-    predictions = model.predict_generator(
+    probabilities = model.predict_generator(
         validation_data_generator.get_data(should_shuffle=False, is_prediction=True),
         val_samples=validation_data_generator.get_num_files(),
         nb_worker=2,
@@ -72,8 +73,9 @@ def train(log_dir):
         pickle_safe=True,
     )
 
-    y_true = [label for (data, label) in validation_data_generator.get_data(should_shuffle=False)]
-    metrics_report(y_true, predictions)
+    y_pred = [np.argmax(prob) for prob in probabilities]
+    y_true = validation_data_generator.get_labels()[:len(y_pred)]
+    metrics_report(y_true, y_pred)
 
 
 if __name__ == "__main__":

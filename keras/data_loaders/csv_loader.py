@@ -16,8 +16,8 @@ class CSVLoader(object):
         self.input_shape = tuple(config["input_shape"])
 
         with open(data_dir, "rb") as csvfile:
-            for row in csv.reader(csvfile):
-                self.images_label_pairs.append(row)
+            for (file_path, label)in list(csv.reader(csvfile)):
+                self.images_label_pairs.append((file_path, int(label)))
 
     def get_data(self, should_shuffle=True, is_prediction=False):
 
@@ -33,7 +33,7 @@ class CSVLoader(object):
                 data = self.process_file(file_path)
                 height, width, channels = data.shape
                 data_batch[i, : height, :width, :] = data
-                label_batch[i, :] = to_categorical([int(label)], nb_classes=self.config["num_classes"]) # one-hot encoding
+                label_batch[i, :] = to_categorical([label], nb_classes=self.config["num_classes"]) # one-hot encoding
 
             start += self.config["batch_size"]
 
@@ -55,7 +55,13 @@ class CSVLoader(object):
 
     def get_num_files(self):
 
-        return len(self.images_label_pairs)
+        # Minimum number of data points without overlapping batches
+        return (len(self.images_label_pairs) // self.config["batch_size"]) * self.config["batch_size"]
+
+
+    def get_labels(self):
+
+        return [label for (file_path, label) in self.images_label_pairs]
 
 
     @abc.abstractmethod

@@ -20,7 +20,7 @@ def evaluate(cli_args):
     print(model.summary())
 
     # Detailed statistics after the training has finished
-    predictions = model.predict_generator(
+    probabilities = model.predict_generator(
         data_generator.get_data(should_shuffle=False),
         val_samples=data_generator.get_num_files(),
         nb_worker=2,
@@ -28,8 +28,9 @@ def evaluate(cli_args):
         pickle_safe=True
     )
 
-    y_true = [label for (data, label) in data_generator.get_data(should_shuffle=False)]
-    metrics_report(y_true, predictions)
+    y_pred = [np.argmax(prob) for prob in probabilities]
+    y_true = data_generator.get_labels()[:len(y_pred)]
+    metrics_report(y_true, y_pred)
 
 
 if __name__ == "__main__":
@@ -37,6 +38,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', dest='model_dir', required=True)
     parser.add_argument('--config', dest='config', required=True)
-    args = parser.parse_args()
+    cli_args = parser.parse_args()
 
-    evaluate(args)
+    evaluate(cli_args)
