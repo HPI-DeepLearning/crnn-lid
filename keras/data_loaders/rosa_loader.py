@@ -23,5 +23,5 @@ class RosaLoader(CSVLoader):
 
         mel_spectrogram = np.expand_dims(mel_spectrogram, -1)
 
-        # shape (96, x, 1)
+        # for 10secs shape (96, 469, 1)
         return mel_spectrogram
