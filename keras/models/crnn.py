@@ -11,7 +11,7 @@ NAME = "CRNN"
 
 def create_model(input_shape, config, is_training=True):
 
-    weight_decay = 0.01
+    weight_decay = 0.001
 
     model = Sequential()
 

@@ -3,23 +3,18 @@ import shutil
 import numpy as np
 from datetime import datetime
 from yaml import load
+from collections import namedtuple
 
 import models
 import data_loaders
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from evaluate import evaluate
+
 from keras.callbacks import ModelCheckpoint, TensorBoard, CSVLogger, EarlyStopping
 from keras.optimizers import Adam
 
-config = load(open("config.yaml", "rb"))
+CONFIG_FILE = "config.yaml"
+config = load(open(CONFIG_FILE, "rb"))
 
-
-def metrics_report(y_true, y_pred):
-
-    available_labels = range(0, config["num_classes"])
-
-    print("Accuracy %s" % accuracy_score(y_true, y_pred))
-    print(classification_report(y_true, y_pred, labels=available_labels, target_names=config["label_names"]))
-    print(confusion_matrix(y_true, y_pred, labels=available_labels))
 
 
 def train(log_dir):
@@ -55,7 +50,7 @@ def train(log_dir):
     history = model.fit_generator(
         train_data_generator.get_data(),
         samples_per_epoch=train_data_generator.get_num_files(),
-        nb_epoch=config["num_epochs"],
+        nb_epoch=1, #config["num_epochs"],
         callbacks=[model_checkpoint_callback, tensorboard_callback, csv_logger_callback, early_stopping_callback],
         verbose=1,
         validation_data=validation_data_generator.get_data(should_shuffle=False),
@@ -65,18 +60,11 @@ def train(log_dir):
         pickle_safe=True
     )
 
-    # Detailed statistics after the training has finished
-    probabilities = model.predict_generator(
-        validation_data_generator.get_data(should_shuffle=False, is_prediction=True),
-        val_samples=validation_data_generator.get_num_files(),
-        nb_worker=2,
-        max_q_size=config["batch_size"],
-        pickle_safe=True,
-    )
+    epochs = len(history.history["acc"]) - 1  # zero initialised
+    model_file_name = checkpoint_filename.replace("{epoch:02d}", "epoch{:02d}".format(epochs))
 
-    y_pred = [np.argmax(prob) for prob in probabilities]
-    y_true = validation_data_generator.get_labels()[:len(y_pred)]
-    metrics_report(y_true, y_pred)
+    return model_file_name
+
 
 
 if __name__ == "__main__":
@@ -85,6 +73,10 @@ if __name__ == "__main__":
 
     # copy models & config for later
     shutil.copytree("models", log_dir)  # creates the log_dir
-    shutil.copy("config.yaml", log_dir)
+    shutil.copy(CONFIG_FILE, log_dir)
 
-    train(log_dir)
+    model_file_name = train(log_dir)
+
+    DummyCLIArgs = namedtuple("DummyCLIArgs", ["model_dir", "config"])
+    evaluate(DummyCLIArgs(model_file_name, CONFIG_FILE))
+

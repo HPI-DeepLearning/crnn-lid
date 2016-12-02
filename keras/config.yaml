@@ -1,16 +1,16 @@
-train_data_dir: "/Users/therold/Uni/master-thesis/datasets/eu_speech/training.csv"
-validation_data_dir: "/Users/therold/Uni/master-thesis/datasets/eu_speech/validation.csv"
+train_data_dir: "/Users/therold/Uni/master-thesis/datasets/news/training.csv"
+validation_data_dir: "/Users/therold/Uni/master-thesis/datasets/news/validation.csv"
 test_data_dir: "/extra/tom/validation/segmented/testing.csv"
 
 batch_size: 32
 learning_rate: 0.001
 num_epochs: 10
 
-data_loader: "ImageLoader"
+data_loader: "Spectrogram2Loader"
 color_mode: "L" # L = bw or RGB
-input_shape: [256, 936, 1]
+input_shape: [128, 312, 1]
 
-model: "topcoder"
+model: "topcoder_small"
 
 segment_length: 10 # sec
 

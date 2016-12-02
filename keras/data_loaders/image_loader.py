@@ -8,7 +8,7 @@ class ImageLoader(CSVLoader):
 
         image = imread(file_path, mode=self.config["color_mode"])
 
-        # Image shape should be (rows, cols, channels)
+        # Image shape should be (cols, rows, channels)
         if len(image.shape) == 2:
             image = np.expand_dims(image, -1)
 
