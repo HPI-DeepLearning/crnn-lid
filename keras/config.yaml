@@ -13,6 +13,7 @@ input_shape: [128, 312, 1]
 model: "topcoder_small"
 
 segment_length: 10 # sec
+pixel_per_second: 50
 
 label_names: ["EN", "DE", "FR", "ES"]
 num_classes: 4

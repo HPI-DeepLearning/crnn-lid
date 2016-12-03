@@ -25,7 +25,7 @@ class CSVLoader(object):
 
         while True:
 
-            data_batch = np.zeros((self.config["batch_size"], ) + self.input_shape)  # (batch_size, rows, cols, channels)
+            data_batch = np.zeros((self.config["batch_size"], ) + self.input_shape)  # (batch_size, cols, rows, channels)
             label_batch = np.zeros((self.config["batch_size"], self.config["num_classes"]))  # (batch_size,  num_classes)
 
             for i, (file_path, label) in enumerate(self.images_label_pairs[start:start + self.config["batch_size"]]):
