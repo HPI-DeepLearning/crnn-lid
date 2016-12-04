@@ -3,7 +3,6 @@ import argparse
 import scipy.misc
 import numpy as np
 import sys
-from keras.engine.training import generator_queue
 
 lib_dir = os.path.join(os.getcwd(), "../keras/data_loaders")
 sys.path.append(lib_dir)
@@ -46,6 +45,9 @@ def directory_to_spectrograms(args):
                 scipy.misc.imsave(file_name, np.squeeze(data))
 
             i += 1
+
+            if i % 1000 == 0:
+                print("Processed {} images".format(i))
 
         except StopIteration:
             print("Saved {} images".format(i))
