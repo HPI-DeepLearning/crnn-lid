@@ -1,22 +1,20 @@
 import os
+import random
 import numpy as np
 from PIL import Image
-from StringIO import StringIO
 from glob import glob
 from Queue import Queue
 from subprocess import Popen, PIPE, STDOUT
-from threading import Thread
 
 
 class SpectrogramGenerator(object):
-    def __init__(self, source, config, shuffle=False, max_size=100):
+    def __init__(self, source, config, shuffle=False, max_size=100, run_only_once=False):
 
         self.source = source
         self.config = config
         self.queue = Queue(max_size)
         self.shuffle = shuffle
-
-        self._thread = Thread(target=self._run)
+        self.run_only_once = run_only_once
 
         if os.path.isdir(self.source):
             files = glob(os.path.join(self.source, "*.wav"))
@@ -27,10 +25,8 @@ class SpectrogramGenerator(object):
 
         self.files = files
 
-        # Let's get started
-        self._thread.start()
 
-    def audioToSpectrogram(self, file):
+    def audioToSpectrogram(self, file, pixel_per_sec, height):
 
         '''
         V0 - Verbosity level: ignore everything
@@ -44,18 +40,20 @@ class SpectrogramGenerator(object):
         o - output to stdout (-)
         '''
 
-        command = "sox -V0 '{}' -c 1 -n rate 10k spectrogram -y 129 -X {} -m -r -o -".format(file, self.config[
-            "pixel_per_second"])
+        file_name = "tmp_{}.png".format(random.randint(0, 100000))
+        command = "sox -V0 '{}' -c 1 -n rate 10k spectrogram -y {} -X {} -m -r -o {}".format(file, height, pixel_per_sec, file_name)
         p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
         output, errors = p.communicate()
         if errors:
             print errors
 
-        image = Image.open(StringIO(output))
+        # image = Image.open(StringIO(output))
+        image = Image.open(file_name)
+        os.remove(file_name)
         return np.array(image)
 
-    def _run(self):
+    def get_generator(self):
 
         start = 0
 
@@ -64,45 +62,47 @@ class SpectrogramGenerator(object):
             file = self.files[start]
 
             try:
-                image = self.audioToSpectrogram(file)
+
+                target_height, target_width, target_channels = self.config["input_shape"]
+
+                image = self.audioToSpectrogram(file, self.config["pixel_per_second"], target_height)
                 image = np.expand_dims(image, -1)  # add dimension for mono channel
 
                 height, width, channels = image.shape
-                target_height, target_width, target_channels = self.config["input_shape"]
-                num_segements = width // target_width
 
-                for i in range(0, num_segements):
+                num_segments = width // target_width
+
+                for i in range(0, num_segments):
                     slice_start = i * target_width
                     slice_end = slice_start + target_width
 
                     slice = image[:, slice_start:slice_end]
-                    self.queue.put(slice, block=True)
+                    yield slice
 
-            except:
+            except Exception as e:
+                print("SpectrogramGenerator Exception: ", e, file)
                 pass
 
             finally:
 
                 start += 1
                 if start >= len(self.files):
+
+                    if self.run_only_once:
+                        break
+
                     start = 0
 
                     if self.shuffle:
                         np.random.shuffle(self.files)
 
-    def __iter__(self):
-
-        for value in iter(self.queue.get):
-            yield value
-
-    def next(self):
-
-        return self.queue.get(block=True)
-
-    def stop(self):
-
-        self._thread.join()
 
     def get_num_files(self):
 
         return len(self.files)
+
+
+if __name__ == "__main__":
+
+    a = SpectrogramGenerator("/Users/therold/Downloads/Speech Data/EU Speech/english", {"pixel_per_second": 50, "input_shape": [129, 100, 1], "batch_size": 32, "num_classes": 4}, shuffle=True)
+    gen = a.get_generator()

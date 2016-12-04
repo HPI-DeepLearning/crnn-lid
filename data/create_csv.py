@@ -36,6 +36,7 @@ def create_csv(root_dir, train_test_split=0.8):
   for lang in languages:
     print lang
     files = list(recursive_glob(os.path.join(root_dir, lang), "*.wav"))
+    files.extend(recursive_glob(os.path.join(root_dir, lang), "*.png"))
     num_files = len(files)
 
     file_names[lang] = files
