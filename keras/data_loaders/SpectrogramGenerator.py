@@ -103,6 +103,6 @@ class SpectrogramGenerator(object):
 
         self._thread.join()
 
-    def num_files(self):
+    def get_num_files(self):
 
         return len(self.files)

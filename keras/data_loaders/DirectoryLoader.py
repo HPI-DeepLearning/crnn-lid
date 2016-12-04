@@ -6,7 +6,7 @@ from keras.utils.np_utils import to_categorical
 
 from SpectrogramGenerator import SpectrogramGenerator
 
-class DataLoader(object):
+class DirectoryLoader(object):
 
     def __init__(self, source_directory, config, shuffle=False):
 
@@ -42,7 +42,7 @@ class DataLoader(object):
             for i, label in enumerate(sample_selection):
 
                 data = self.generators[label].next()
-                # data = np.divide(data, 255.0)
+                data = np.divide(data, 255.0)
 
                 height, width, channels = data.shape
                 data_batch[i, : height, :width, :] = data
@@ -51,10 +51,10 @@ class DataLoader(object):
             yield data_batch, label_batch
 
 
-    def num_files(self):
+    def get_num_files(self):
 
         # Number of files per class can vary. Use the smallest set as reference.
-        min_num_files = min(map(lambda x: x.num_files(), self.generators))
+        min_num_files = min(map(lambda x: x.get_num_files(), self.generators))
 
         return len(self.generators) * min_num_files
 
@@ -63,11 +63,18 @@ class DataLoader(object):
 if __name__ == "__main__":
 
     import scipy.misc
-    a = DataLoader("/Users/therold/Downloads/Speech Data/EU Speech", {"pixel_per_second": 10, "input_shape": [129, 100, 1], "batch_size": 32, "num_classes": 4}, shuffle=True)
-    for (data, labels) in a.get_data():
-        # print data, labels
+    a = DirectoryLoader("/Users/therold/Downloads/Speech Data/EU Speech", {"pixel_per_second": 50, "input_shape": [129, 100, 1], "batch_size": 32, "num_classes": 4}, shuffle=True)
+    print a.get_num_files()
 
-        i = 0
-        for image in np.vsplit(data, 32):
-            scipy.misc.imsave("/Users/therold/Downloads/Speech Data/EU Speech/png/%s.png" % i, np.squeeze(image))
-            i += 1
+    gen = a.get_data()
+    # print gen.next()
+    print next(gen)
+    print("done")
+
+    # for (data, labels) in a.get_data():
+    #     # print data, labels
+    #
+    #     i = 0
+    #     for image in np.vsplit(data, 32):
+    #         scipy.misc.imsave("/Users/therold/Downloads/Speech Data/EU Speech/png/%s.png" % i, np.squeeze(image))
+    #         i += 1
