@@ -33,7 +33,7 @@ def train(log_dir):
 
     tensorboard_callback = TensorBoard(log_dir=log_dir, write_images=True)
     csv_logger_callback = CSVLogger(os.path.join(log_dir, "log.csv"))
-    early_stopping_callback = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1, mode="auto")
+    early_stopping_callback = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1, mode="min")
 
     # Model Generation
     model_class = getattr(models, config["model"])
