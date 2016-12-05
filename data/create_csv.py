@@ -76,7 +76,7 @@ def create_csv(root_dir, train_validation_split=0.8):
     for (filename, label) in validation_set:
         validation_file.write("{}, {}\n".format(filename, label))
 
-    for (filename, label) in test_file:
+    for (filename, label) in test_set:
         test_file.write("{}, {}\n".format(filename, label))
 
     train_file.close()
