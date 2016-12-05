@@ -29,7 +29,7 @@ def train(log_dir):
 
     # Training Callbacks
     checkpoint_filename = os.path.join(log_dir, "weights.{epoch:02d}.model")
-    model_checkpoint_callback = ModelCheckpoint(checkpoint_filename)
+    model_checkpoint_callback = ModelCheckpoint(checkpoint_filename, save_best_only=True, verbose=1, monitor="val_acc")
 
     tensorboard_callback = TensorBoard(log_dir=log_dir, write_images=True)
     csv_logger_callback = CSVLogger(os.path.join(log_dir, "log.csv"))
@@ -60,7 +60,8 @@ def train(log_dir):
         pickle_safe=True
     )
 
-    epochs = len(history.history["acc"]) - 1  # zero initialised
+    # Do evaluation on model with best validation accuracy
+    epochs = np.argmax(history.history["val_acc"])
     model_file_name = checkpoint_filename.replace("{epoch:02d}", "{:02d}".format(epochs))
 
     return model_file_name
