@@ -46,7 +46,7 @@ def create_csv(root_dir, train_validation_split=0.8):
     smallest_count = min(counter.values())
 
     num_test = int(smallest_count * 0.1)
-    num_train = int(smallest_count * train_validation_split - 0.1)
+    num_train = int(smallest_count * (train_validation_split - 0.1))
     num_validation = smallest_count - num_train - num_test
 
 
