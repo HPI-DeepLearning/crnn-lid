@@ -2,10 +2,17 @@ import os
 import random
 import numpy as np
 from PIL import Image
-from glob import glob
+import fnmatch
 from Queue import Queue
 from subprocess import Popen, PIPE, STDOUT
 
+def recursive_glob(path, pattern):
+    for root, dirs, files in os.walk(path):
+        for basename in files:
+            if fnmatch.fnmatch(basename, pattern):
+                filename = os.path.abspath(os.path.join(root, basename))
+                if os.path.isfile(filename):
+                    yield filename
 
 class SpectrogramGenerator(object):
     def __init__(self, source, config, shuffle=False, max_size=100, run_only_once=False):
@@ -17,9 +24,9 @@ class SpectrogramGenerator(object):
         self.run_only_once = run_only_once
 
         if os.path.isdir(self.source):
-            files = glob(os.path.join(self.source, "*.wav"))
-            files.extend(glob(os.path.join(self.source, "*.mp3")))
-            files.extend(glob(os.path.join(self.source, "*.m4a")))
+            files = recursive_glob(self.source, "*.wav")
+            files.extend(recursive_glob(self.source, "*.mp3"))
+            files.extend(recursive_glob(self.source, "*.m4a"))
         else:
             files = [self.source]
 
