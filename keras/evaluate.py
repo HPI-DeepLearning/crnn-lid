@@ -25,7 +25,6 @@ def evaluate(cli_args):
 
     # Model Generation
     model = load_model(cli_args.model_dir)
-    print(model.summary())
 
     probabilities = model.predict_generator(
         data_generator.get_data(should_shuffle=False, is_prediction=True),
@@ -38,7 +37,6 @@ def evaluate(cli_args):
     y_pred = np.argmax(probabilities, axis=1)
     y_true = data_generator.get_labels()[:len(y_pred)]
     metrics_report(y_true, y_pred , label_names=config["label_names"])
-    # metrics_report(np.argmax(np.concatenate(labels), axis=1), y_pred)
 
 
 if __name__ == "__main__":

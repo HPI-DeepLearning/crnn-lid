@@ -50,7 +50,7 @@ def directory_to_spectrograms(args):
                 print("Processed {} images".format(i))
 
         except StopIteration:
-            print("Saved {} images".format(i))
+            print("Saved {} images. Stopped on {}".format(i, language))
             break
 
 
