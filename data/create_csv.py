@@ -95,4 +95,4 @@ if __name__ == '__main__':
     parser.add_argument('--split', dest='train_validation_split', default=0.8)
     args = parser.parse_args()
 
-    create_csv(args.root_dir, args.train_test_split)
+    create_csv(args.root_dir, args.train_validation_split)
