@@ -49,7 +49,7 @@ class SpectrogramGenerator(object):
         '''
 
         file_name = "tmp_{}.png".format(random.randint(0, 100000))
-        command = "sox -V0 "{}" -c 1 -n rate 10k spectrogram -y {} -X {} -m -r -o {}".format(file, height, pixel_per_sec, file_name)
+        command = "sox -V0 '{}' -c 1 -n rate 10k spectrogram -y {} -X {} -m -r -o {}".format(file, height, pixel_per_sec, file_name)
         p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
         output, errors = p.communicate()
