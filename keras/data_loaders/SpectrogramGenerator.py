@@ -24,7 +24,8 @@ class SpectrogramGenerator(object):
         self.run_only_once = run_only_once
 
         if os.path.isdir(self.source):
-            files = recursive_glob(self.source, "*.wav")
+            files = []
+            files.extend(recursive_glob(self.source, "*.wav"))
             files.extend(recursive_glob(self.source, "*.mp3"))
             files.extend(recursive_glob(self.source, "*.m4a"))
         else:
@@ -48,7 +49,7 @@ class SpectrogramGenerator(object):
         '''
 
         file_name = "tmp_{}.png".format(random.randint(0, 100000))
-        command = "sox -V0 '{}' -c 1 -n rate 10k spectrogram -y {} -X {} -m -r -o {}".format(file, height, pixel_per_sec, file_name)
+        command = "sox -V0 "{}" -c 1 -n rate 10k spectrogram -y {} -X {} -m -r -o {}".format(file, height, pixel_per_sec, file_name)
         p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
         output, errors = p.communicate()
