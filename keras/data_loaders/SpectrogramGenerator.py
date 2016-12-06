@@ -24,7 +24,8 @@ class SpectrogramGenerator(object):
         self.run_only_once = run_only_once
 
         if os.path.isdir(self.source):
-            files = recursive_glob(self.source, "*.wav")
+            files = []
+            files.extend(recursive_glob(self.source, "*.wav"))
             files.extend(recursive_glob(self.source, "*.mp3"))
             files.extend(recursive_glob(self.source, "*.m4a"))
         else:

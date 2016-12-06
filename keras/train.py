@@ -33,7 +33,7 @@ def train(log_dir):
 
     tensorboard_callback = TensorBoard(log_dir=log_dir, write_images=True)
     csv_logger_callback = CSVLogger(os.path.join(log_dir, "log.csv"))
-    early_stopping_callback = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1, mode="min")
+    early_stopping_callback = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1, mode="min")
 
     # Model Generation
     model_class = getattr(models, config["model"])
@@ -61,8 +61,9 @@ def train(log_dir):
     )
 
     # Do evaluation on model with best validation accuracy
-    epochs = np.argmax(history.history["val_acc"])
-    model_file_name = checkpoint_filename.replace("{epoch:02d}", "{:02d}".format(epochs))
+    best_epoch = np.argmax(history.history["val_acc"])
+    print("Best epoch: ", best_epoch)
+    model_file_name = checkpoint_filename.replace("{epoch:02d}", "{:02d}".format(best_epoch))
 
     return model_file_name
 
