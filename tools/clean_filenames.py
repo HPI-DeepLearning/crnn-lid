@@ -5,6 +5,7 @@ import argparse
 
 def clean(filename):
     withOutIllegalChars = re.sub("[^a-zA-Z0-9\.-_ ]", "", filename)
+    withOutIllegalChars = withOutIllegalChars.replace("'", "")
     return re.sub("[ ]{1,}", "_", withOutIllegalChars)
 
 if __name__ == '__main__':
@@ -20,6 +21,6 @@ if __name__ == '__main__':
             new_filepath = os.path.join(root, new_filename)
             old_filepath = os.path.join(root, filename)
 
-            #print "%s -> %s" % (old_filepath, new_filepath)
+            # print "%s -> %s" % (old_filepath, new_filepath)
             shutil.move(old_filepath, new_filepath)
 
