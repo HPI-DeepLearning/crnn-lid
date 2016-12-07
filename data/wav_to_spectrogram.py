@@ -41,7 +41,7 @@ def directory_to_spectrograms(args):
 
                 data = generator_queues[j].next()
 
-                assert data.shape == args.shape, "Shape mismatch {data.shape} vs {args.shape}"
+                assert data.shape == args.shape, "Shape mismatch {} vs {}".format(data.shape, args.shape)
 
                 file_name = os.path.join(args.destination, language, "{}.png".format(i))
                 scipy.misc.imsave(file_name, np.squeeze(data))
@@ -59,8 +59,8 @@ def directory_to_spectrograms(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--shape', dest='shape', default=[129, 500, 1])
-    parser.add_argument('--pixel', dest='pixel_per_second', default=50)
+    parser.add_argument('--shape', dest='shape', default=[129, 500, 1], type=list)
+    parser.add_argument('--pixel', dest='pixel_per_second', default=50, type=int)
     parser.add_argument('--source', dest='source', required=True)
     parser.add_argument('--destination', dest='destination', required=True)
     cli_args = parser.parse_args()
