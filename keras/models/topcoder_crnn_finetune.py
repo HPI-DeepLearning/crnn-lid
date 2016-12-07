@@ -7,7 +7,7 @@ from keras.layers.recurrent import LSTM
 from keras.models import Sequential, load_model
 from keras.regularizers import l2
 
-NAME = "Topcoder_CRNN"
+NAME = "Topcoder_CRNN_Finetune"
 
 def create_model(input_shape, config):
 
@@ -40,6 +40,7 @@ def create_model(input_shape, config):
         layer = model.get_layer(ref_layer.name)
         if layer:
             layer.set_weights(ref_layer.get_weights())
+            layer.trainable = False
 
     # (bs, y, x, c) --> (bs, x, y, c)
     model.add(Permute((2, 1, 3)))
