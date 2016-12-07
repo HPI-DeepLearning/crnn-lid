@@ -1,6 +1,7 @@
 import os
 import shutil
 import numpy as np
+import argparse
 from datetime import datetime
 from yaml import load
 from collections import namedtuple
@@ -12,12 +13,9 @@ from evaluate import evaluate
 from keras.callbacks import ModelCheckpoint, TensorBoard, CSVLogger, EarlyStopping
 from keras.optimizers import Adam, RMSprop
 
-CONFIG_FILE = "config.yaml"
-config = load(open(CONFIG_FILE, "rb"))
+def train(cli_args, log_dir):
 
-
-
-def train(log_dir):
+    config = load(open(cli_args.config, "rb"))
     if config is None:
         print("Please provide a config.")
 
@@ -40,12 +38,14 @@ def train(log_dir):
     model = model_class.create_model(train_data_generator.get_input_shape(), config)
     print(model.summary())
 
-    # optimizer = Adam(lr=config["learning_rate"], decay=1e-6)
-    optimizer = RMSprop(lr=config["learning_rate"], rho=0.9, epsilon=1e-08, decay=0.95)
+    optimizer = Adam(lr=config["learning_rate"], decay=1e-6)
+    # optimizer = RMSprop(lr=config["learning_rate"], rho=0.9, epsilon=1e-08, decay=0.95)
     model.compile(optimizer=optimizer,
                   loss="categorical_crossentropy",
                   metrics=["accuracy", "recall", "precision", "fmeasure"])
 
+    if cli_args.weights:
+        model.load_weights(cli_args.weights)
 
     # Training
     history = model.fit_generator(
@@ -71,15 +71,21 @@ def train(log_dir):
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--weights', dest='weights')
+    parser.add_argument('--config', dest='config', default="config.yaml")
+    cli_args = parser.parse_args()
+
     log_dir = os.path.join("logs", datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
     print("Logging to {}".format(log_dir))
 
     # copy models & config for later
     shutil.copytree("models", log_dir)  # creates the log_dir
-    shutil.copy(CONFIG_FILE, log_dir)
+    shutil.copy(cli_args.config, log_dir)
 
-    model_file_name = train(log_dir)
+    model_file_name = train(cli_args, log_dir)
 
     DummyCLIArgs = namedtuple("DummyCLIArgs", ["model_dir", "config"])
-    evaluate(DummyCLIArgs(model_file_name, CONFIG_FILE))
+    evaluate(DummyCLIArgs(model_file_name, cli_args.config))
 
