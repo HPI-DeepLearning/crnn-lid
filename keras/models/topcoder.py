@@ -9,7 +9,7 @@ NAME = "Topcoder_CNN"
 
 def create_model(input_shape, config, is_training=True):
 
-    weight_decay = 0.01
+    weight_decay = 0.001
 
     model = Sequential()
 
@@ -22,10 +22,6 @@ def create_model(input_shape, config, is_training=True):
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
     model.add(Convolution2D(64, 3, 3, W_regularizer=l2(weight_decay), activation="relu"))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-
-    model.add(Convolution2D(128, 3, 3, W_regularizer=l2(weight_decay), activation="relu"))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
