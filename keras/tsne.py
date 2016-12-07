@@ -1,27 +1,40 @@
 import argparse
+import os
+import numpy as np
 from yaml import load
 
-from keras.models import load_model
-from sklearn.manifold import TSNE
+import matplotlib
+matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 
+from keras.models import Sequential, load_model
+from sklearn.manifold import TSNE
+from pandas import DataFrame
 import data_loaders
 
-def plot_with_labels(lowDWeights, labels, filename='tsne.png'):
+def plot_with_labels(lowD_Weights, labels, label_names, filename):
 
-    assert lowDWeights.shape[0] >= len(labels), "More labels than weights"
-    plt.figure(figsize=(20, 20))  # in inches
-    for i, label in enumerate(labels):
-        x, y = lowDWeights[i,:]
-        plt.scatter(x, y)
-        plt.annotate(label,
-                     xy=(x, y),
-                     xytext=(5, 2),
-                     textcoords='offset points',
-                     ha='right',
-                     va='bottom')
+    df = DataFrame({"x": lowD_Weights[:, 0], "y": lowD_Weights[:, 1], "label": labels})
+    groups = df.groupby("label")
 
-    plt.savefig(filename)
+    # Plot
+    fig, ax = plt.subplots()
+    ax.margins(0.05) # Optional, just adds 5% padding to the autoscaling
+    for label, group in groups:
+        ax.plot(group.x, group.y, marker='o', linestyle='', ms=6, label=label_names[label])
+    ax.legend(numpoints=1)
+
+    # Hide Axis Labels and Ticks
+    cur_axes = plt.gca()
+    cur_axes.axes.get_xaxis().set_visible(False)
+    cur_axes.axes.get_yaxis().set_visible(False)
+    cur_axes.axes.get_xaxis().set_ticks([])
+    cur_axes.axes.get_yaxis().set_ticks([])
+
+    plt.show()
+
+    fig = plt.gcf()
+    fig.savefig(filename)
 
 def visualize_cluster(cli_args):
 
@@ -32,19 +45,43 @@ def visualize_cluster(cli_args):
     data_generator = DataLoader(config["validation_data_dir"], config)
 
     # Model Generation
-    model = load_model(cli_args.model_dir)
-    final_weights = model.output_layers[0].get_weights()[0] # input weights to final FC
+    ref_model = load_model(cli_args.model_file)
 
-    tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=50)
+    # Create a new model and copy all but the last layer over
+    model = Sequential()
+    for i, layer in enumerate(ref_model.layers[:-1]):
+        model.add(layer)
+        model.layers[i].set_weights(ref_model.layers[i].get_weights())
+    model.compile("adam", "categorical_crossentropy")
 
-    lowD_weights = tsne.fit_transform(final_weights)
-    plot_with_labels(lowD_weights, config["label_names"])
+    probabilities = model.predict_generator(
+        data_generator.get_data(should_shuffle=False, is_prediction=True),
+        val_samples=data_generator.get_num_files(),
+        nb_worker=1,  # parallelization messes up data order. careful!
+        max_q_size=config["batch_size"],
+        pickle_safe=True
+    )
+    print("Prob Shape ", probabilities.shape)
+
+    limit = cli_args.limit
+    tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=cli_args.num_iter)
+    lowD_weights = tsne.fit_transform(probabilities[:limit, :])
+
+    labels = data_generator.get_labels()[:limit]
+    plot_with_labels(lowD_weights, labels, config["label_names"], cli_args.plot_name)
+
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', dest='model_dir', required=True)
+    parser.add_argument('--model', dest='model_file', required=True)
     parser.add_argument('--config', dest='config', required=True)
+    parser.add_argument('--plot', dest='plot_name')
+    parser.add_argument('--limit', dest='limit', default=2000, type=int)
+    parser.add_argument('--iter', dest='num_iter', default=4000, type=int)
     cli_args = parser.parse_args()
+
+    if cli_args.plot_name == None:
+        cli_args.plot_name = os.path.join(os.path.dirname(cli_args.model_file), "tsne.pdf")
 
     visualize_cluster(cli_args)
