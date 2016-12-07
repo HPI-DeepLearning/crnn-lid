@@ -10,7 +10,7 @@ import data_loaders
 from evaluate import evaluate
 
 from keras.callbacks import ModelCheckpoint, TensorBoard, CSVLogger, EarlyStopping
-from keras.optimizers import Adam
+from keras.optimizers import Adam, RMSprop
 
 CONFIG_FILE = "config.yaml"
 config = load(open(CONFIG_FILE, "rb"))
@@ -40,7 +40,8 @@ def train(log_dir):
     model = model_class.create_model(train_data_generator.get_input_shape(), config)
     print(model.summary())
 
-    optimizer = Adam(lr=config["learning_rate"], decay=1e-6)
+    # optimizer = Adam(lr=config["learning_rate"], decay=1e-6)
+    optimizer = RMSprop(lr=config["learning_rate"], rho=0.9, epsilon=1e-08, decay=0.95)
     model.compile(optimizer=optimizer,
                   loss="categorical_crossentropy",
                   metrics=["accuracy", "recall", "precision", "fmeasure"])
