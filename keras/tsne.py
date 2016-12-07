@@ -64,10 +64,19 @@ def visualize_cluster(cli_args):
     print("Prob Shape ", probabilities.shape)
 
     limit = cli_args.limit
+
+
+    # Save probs to file for analysis with external tools
+    directory = os.path.dirname(cli_args.plot_name)
+    np.savetext(os.path.join(directory, "probabilities.tsv"), probabilities, delimiter='\t', newline='\n')
+    file_names, labels = data_generator.images_label_pairs[:limit]
+    df = DataFrame({"label": labels, "filename": file_names})
+    df.to_csv(os.path.join(directory, "metadata.tsv"), "\t", "%.18e", header=True)
+    print(df)
+
     tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=cli_args.num_iter)
     lowD_weights = tsne.fit_transform(probabilities[:limit, :])
 
-    labels = data_generator.get_labels()[:limit]
     plot_with_labels(lowD_weights, labels, config["label_names"], cli_args.plot_name)
 
 
