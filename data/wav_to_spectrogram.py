@@ -36,12 +36,14 @@ def directory_to_spectrograms(args):
     i = 0
     while True:
 
+        target_shape = tuple(args.shape)
+
         try:
             for j, language in enumerate(languages):
 
                 data = generator_queues[j].next()
 
-                assert data.shape == args.shape, "Shape mismatch {} vs {}".format(data.shape, args.shape)
+                assert data.shape == target_shape, "Shape mismatch {} vs {}".format(data.shape, args.shape)
 
                 file_name = os.path.join(args.destination, language, "{}.png".format(i))
                 scipy.misc.imsave(file_name, np.squeeze(data))
