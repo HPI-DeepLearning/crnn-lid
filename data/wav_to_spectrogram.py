@@ -41,6 +41,8 @@ def directory_to_spectrograms(args):
 
                 data = generator_queues[j].next()
 
+                assert data.shape == args.shape, "Shape mismatch {data.shape} vs {args.shape}"
+
                 file_name = os.path.join(args.destination, language, "{}.png".format(i))
                 scipy.misc.imsave(file_name, np.squeeze(data))
 

@@ -78,6 +78,8 @@ class SpectrogramGenerator(object):
 
                 height, width, channels = image.shape
 
+                assert target_height == height, "Heigh mismatch {} vs {}".format(target_height, height)
+
                 num_segments = width // target_width
 
                 for i in range(0, num_segments):
@@ -85,6 +87,11 @@ class SpectrogramGenerator(object):
                     slice_end = slice_start + target_width
 
                     slice = image[:, slice_start:slice_end]
+
+                    # Ignore black images
+                    if slice.max() == 0 and slice.min() == 0:
+                        continue
+
                     yield slice
 
             except Exception as e:
@@ -112,5 +119,9 @@ class SpectrogramGenerator(object):
 
 if __name__ == "__main__":
 
-    a = SpectrogramGenerator("/Users/therold/Downloads/Speech Data/EU Speech/english", {"pixel_per_second": 50, "input_shape": [129, 100, 1], "batch_size": 32, "num_classes": 4}, shuffle=True)
+    a = SpectrogramGenerator("/extra/tom/news2/raw", {"pixel_per_second": 50, "input_shape": [129, 100, 1], "batch_size": 32, "num_classes": 4}, shuffle=True)
     gen = a.get_generator()
+
+
+    for a in gen:
+        pass
