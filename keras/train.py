@@ -63,7 +63,8 @@ def train(cli_args, log_dir):
 
     # Do evaluation on model with best validation accuracy
     best_epoch = np.argmax(history.history["val_acc"])
-    print("Best epoch: ", best_epoch)
+    print("Log files: ", log_dir)
+    print("Best epoch: ", best_epoch + 1)
     model_file_name = checkpoint_filename.replace("{epoch:02d}", "{:02d}".format(best_epoch))
 
     return model_file_name
