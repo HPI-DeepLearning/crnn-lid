@@ -13,7 +13,7 @@ def equal_error_rate(y_true, probabilities):
 
     y_one_hot = to_categorical(y_true)
     fpr, tpr, thresholds = roc_curve(y_one_hot.ravel(), probabilities.ravel())
-    eer = brentq(lambda x : 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
+    eer = brentq(lambda x : 1.0 - x - interp1d(fpr, tpr)(x), 0.0, 1.0)
 
     return eer
 
@@ -33,8 +33,10 @@ def evaluate(cli_args):
     config = load(open(cli_args.config, "rb"))
 
     # Load Data + Labels
+    dataset_dir = config["test_data_dir"] if cli_args.use_test_set else config["validation_data_dir"]
+
     DataLoader = getattr(data_loaders, config["data_loader"])
-    data_generator = DataLoader(config["validation_data_dir"], config)
+    data_generator = DataLoader(dataset_dir, config)
 
     # Model Generation
     model = load_model(cli_args.model_dir)
@@ -57,6 +59,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', dest='model_dir', required=True)
     parser.add_argument('--config', dest='config', required=True)
+    parser.add_argument('--testset', dest='use_test_set', default=False, type=bool)
     cli_args = parser.parse_args()
 
     evaluate(cli_args)
