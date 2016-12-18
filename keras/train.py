@@ -11,7 +11,7 @@ import data_loaders
 from evaluate import evaluate
 
 from keras.callbacks import ModelCheckpoint, TensorBoard, CSVLogger, EarlyStopping
-from keras.optimizers import Adam, RMSprop
+from keras.optimizers import Adam, RMSprop, SGD
 
 def train(cli_args, log_dir):
 
@@ -40,6 +40,7 @@ def train(cli_args, log_dir):
 
     optimizer = Adam(lr=config["learning_rate"], decay=1e-6)
     # optimizer = RMSprop(lr=config["learning_rate"], rho=0.9, epsilon=1e-08, decay=0.95)
+    # optimizer = SGD(lr=config["learning_rate"], decay=1e-6, momentum=0.9, clipnorm=1, clipvalue=10)
     model.compile(optimizer=optimizer,
                   loss="categorical_crossentropy",
                   metrics=["accuracy", "recall", "precision", "fmeasure"])
@@ -70,7 +71,6 @@ def train(cli_args, log_dir):
     return model_file_name
 
 
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -87,6 +87,6 @@ if __name__ == "__main__":
 
     model_file_name = train(cli_args, log_dir)
 
-    DummyCLIArgs = namedtuple("DummyCLIArgs", ["model_dir", "config"])
-    evaluate(DummyCLIArgs(model_file_name, cli_args.config))
+    DummyCLIArgs = namedtuple("DummyCLIArgs", ["model_dir", "config", "use_test_set"])
+    evaluate(DummyCLIArgs(model_file_name, cli_args.config, False))
 

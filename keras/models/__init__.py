@@ -5,3 +5,7 @@ import topcoder_5s_finetune
 import topcoder_crnn_finetune
 import cnn
 import crnn
+import xception
+import resnet
+import inceptionv3
+import music_tagger
