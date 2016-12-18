@@ -68,11 +68,10 @@ def visualize_cluster(cli_args):
 
     # Save probs to file for analysis with external tools
     directory = os.path.dirname(cli_args.plot_name)
-    np.savetext(os.path.join(directory, "probabilities.tsv"), probabilities, delimiter='\t', newline='\n')
-    file_names, labels = data_generator.images_label_pairs[:limit]
+    np.savetxt(os.path.join(directory, "probabilities.tsv"), probabilities[:limit], delimiter='\t', newline='\n')
+    file_names, labels = zip(*data_generator.images_label_pairs[:limit])
     df = DataFrame({"label": labels, "filename": file_names})
-    df.to_csv(os.path.join(directory, "metadata.tsv"), "\t", "%.18e", header=True)
-    print(df)
+    df.to_csv(os.path.join(directory, "metadata.tsv"), "\t", "%.18e", header=True, index=False)
 
     tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=cli_args.num_iter)
     lowD_weights = tsne.fit_transform(probabilities[:limit, :])
