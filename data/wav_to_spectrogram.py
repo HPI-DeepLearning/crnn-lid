@@ -8,6 +8,7 @@ lib_dir = os.path.join(os.getcwd(), "../keras/data_loaders")
 sys.path.append(lib_dir)
 
 from SpectrogramGenerator import SpectrogramGenerator
+from NoisyBackgroundSpectrogramGenerator import NoisyBackgroundSpectrogramGenerator
 from create_csv import create_csv
 
 def directory_to_spectrograms(args):

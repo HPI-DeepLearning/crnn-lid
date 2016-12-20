@@ -14,7 +14,7 @@ def recursive_glob(path, pattern):
                 if os.path.isfile(filename):
                     yield filename
 
-class SpectrogramGenerator(object):
+class NoisyBackgroundSpectrogramGenerator(object):
     def __init__(self, source, config, shuffle=False, max_size=100, run_only_once=False):
 
         self.source = source
