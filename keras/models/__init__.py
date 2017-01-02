@@ -8,4 +8,4 @@ import crnn
 import xception
 import resnet
 import inceptionv3
-import music_tagger
+import inceptionv3_crnn
