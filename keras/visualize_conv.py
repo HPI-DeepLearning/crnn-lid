@@ -5,13 +5,12 @@ from scipy.misc import imsave
 import numpy as np
 import argparse
 import time
+from math import ceil, sqrt
 from keras.models import load_model
 from keras import backend as K
 from keras.backend import set_learning_phase
 
 set_learning_phase(0)
-
-# K._LEARNING_PHASE = tf.constant(0) # test mode
 
 # util function to convert a tensor into a valid image
 def deprocess_image(x):
@@ -36,26 +35,10 @@ def normalize(x):
     # utility function to normalize a tensor by its L2 norm
     return x / (K.sqrt(K.mean(K.square(x))) + 1e-5)
 
-
-def visualize_conv_layer(cli_args):
-
-    # dimensions of the generated pictures for each filter.
-    img_width = cli_args.width
-    img_height = cli_args.height
-
-    model = load_model(cli_args.model_dir)
-    model.summary()
-
-    # this is the placeholder for the input images
-    input_img = model.input
-
-    # get the symbolic outputs of each "key" layer (we gave them unique names).
-    layer_dict = dict([(layer.name, layer) for layer in model.layers])
-
-    assert layer_dict[cli_args.layer_name] != None
+def visualize_conv_filters(layer_name, num_filters, input_img, output, img_width, img_height):
 
     kept_filters = []
-    for filter_index in range(0, cli_args.num_filter):
+    for filter_index in range(0, num_filters):
         # we only scan through the first 200 filters,
         # but there are actually 512 of them
         print("Processing filter %d" % filter_index)
@@ -63,7 +46,7 @@ def visualize_conv_layer(cli_args):
 
         # we build a loss function that maximizes the activation
         # of the nth filter of the layer considered
-        layer_output = layer_dict[cli_args.layer_name].output
+        layer_output = output
         if K.image_dim_ordering() == "th":
             loss = K.mean(layer_output[:, filter_index, :, :])
         else:
@@ -106,12 +89,21 @@ def visualize_conv_layer(cli_args):
         print("Filter %d processed in %ds" % (filter_index, end_time - start_time))
 
     # we will stich the best 64 filters on a 8 x 8 grid.
-    n = 8
+    n = int(ceil(sqrt(num_filters)))
 
     # the filters that have the highest loss are assumed to be better-looking.
     # we will only keep the top 64 filters.
     kept_filters.sort(key=lambda x: x[1], reverse=True)
-    kept_filters = kept_filters[:n * n]
+    #kept_filters = kept_filters[:n * n]
+    n = int(ceil(sqrt(len(kept_filters))))
+    #
+    # import pickle
+    # # pickle.dump(kept_filters, open("filters.pickle", "wb"))
+    # kept_filters = pickle.load(open("filters.pickle", "rb"))
+
+    remaining_filters = n*n - len(kept_filters)
+    for i in range(remaining_filters):
+        kept_filters.append((np.zeros((img_height, img_width, 1)), 0.0))
 
     # build a black picture with enough space for
     # our 8 x 8 filters of size 128 x 128, with a 5px margin in between
@@ -127,14 +119,33 @@ def visualize_conv_layer(cli_args):
 
             # swap X > Y Axis
             img = np.transpose(img, [1, 0, 2])
+            # imsave("{}.png".format(i * n + j), np.squeeze(img))
 
             stitched_filters[(img_width + margin) * i: (img_width + margin) * i + img_width,
             (img_height + margin) * j: (img_height + margin) * j + img_height, :] = img
 
-
-
     # save the result to disk
-    imsave("{0}_{1}x{1}.png".format(cli_args.filename, n), stitched_filters)
+    imsave("{0}_{1}x{1}.png".format(layer_name, n), np.transpose(np.squeeze(stitched_filters)))
+
+
+def visualize_conv_layers(cli_args):
+
+    # dimensions of the generated pictures for each filter.
+    img_width = cli_args.width
+    img_height = cli_args.height
+
+    model = load_model(cli_args.model_dir)
+    model.summary()
+
+    # this is the placeholder for the input images
+    input_img = model.input
+
+    for layer in  model.layers:
+
+        if layer.name.startswith("conv"):
+
+            num_filters = layer.output_shape[3]
+            visualize_conv_filters(layer.name, num_filters, input_img, layer.output, img_width, img_height)
 
 
 if __name__ == "__main__":
@@ -142,10 +153,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", dest="model_dir", required=True)
     parser.add_argument("--layer", dest="layer_name", default="convolution2d_1")
-    parser.add_argument("--out", dest="filename", default="conv_filters.png")
     parser.add_argument('--width', dest='width', default=500, type=int)
     parser.add_argument('--height', dest='height', default=129, type=int)
     parser.add_argument('--filter', dest='num_filter', default=200, type=int)
     cli_args = parser.parse_args()
 
-    visualize_conv_layer(cli_args)
+    visualize_conv_layers(cli_args)
