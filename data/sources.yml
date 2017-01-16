@@ -23,4 +23,14 @@ spanish:
     - rtve
   playlists:
     -
+chinese:
+  users:
+    - VOAchina
+  playlists:
+    -
+russian:
+  users:
+    - Russia24TV
+  playlists:
+    -
 

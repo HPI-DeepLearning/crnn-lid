@@ -10,6 +10,8 @@ LABELS = {
     "german": 1,
     "french": 2,
     "spanish": 3,
+    "chinese": 4,
+    "russian": 5,
 }
 
 
