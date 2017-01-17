@@ -70,3 +70,4 @@ target/
 /datasets/**
 
 *.iml
+**/.texpadtmp/**

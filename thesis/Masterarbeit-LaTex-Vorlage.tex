@@ -12,6 +12,28 @@
 \usepackage{graphicx}             % Graphiken einbinden
 
 \usepackage{acro}                 % List of abbriviations 
+\usepackage[toc,page]{appendix}   % Appendixes
+\usepackage{listings}             % Code Blocks
+\usepackage{color}
+
+\usepackage{microtype} 			  % enable margin kerning
+\usepackage{booktabs}		      % table stuff, like toprule
+
+% Table styles % 
+\setlength{\tabcolsep}{18pt}
+\renewcommand{\arraystretch}{1.5}
+
+% Code Listing Styles
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    captionpos=b,
+    breaklines=true,
+    basicstyle=\footnotesize,
+    numbers=left,                    
+    numbersep=5pt,  
+}
+\lstset{style=mystyle}
 
 % probably a good idea for the nomenclature entries:
 \acsetup{first-style=short}
@@ -27,7 +49,7 @@
 \\ \bigskip 
 \large{<Deutscher Titel bei englischer Arbeit> }}
 \author{Tom Herold\\{\small{\url{tom.herold@student.hpi.uni-potsdam.de}}}}
-\date{XX.12.2015}
+\date{XX.02.2016}
 \publishers{
 Supverisors \\ Prof. Dr. Christoph Meinel \\ Dr. Haojin Yang \\
 \bigskip 
@@ -35,7 +57,6 @@ Internet-Technologies and Systems \\
 Hasso Plattner Institute \\
 University of Potsdam, Germany 
 }
-
 
 
 \pagestyle{headings}    % Seitenstil mit Kapitelüberschriften in der Kopfzeile
@@ -71,6 +92,7 @@ University of Potsdam, Germany
     \include{sections/implementation}
     \include{sections/evaluation}
     \include{sections/conclusion}
+    \include{sections/appendix}
 
     % Inhaltsverzeichnis
     \clearpage % auf neuer Seite
