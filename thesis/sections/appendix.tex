@@ -1,0 +1,30 @@
+\begin{appendices}
+\section{Audio manipulation with SoX}
+
+    \begin{lstlisting}[caption=Generating monochrome spectrograms with SoX]
+    sox -V0 input.wav -n remix 1 rate 10k spectrogram -y 129 -X 50 -m -r -o spectrogram.png
+    
+    
+    
+    V0 - verbosity level 
+    n - apply filter/effect
+    remix - select audio channels
+    rate - limit sampling rate to 10k; caps max frequency at 5kHz according to Nyquist-Shannon sampling theorem
+    y - spectogram height
+    X - pixels per second for width
+    m - monochrome output
+    r - disable legend
+    o - output file
+    \end{lstlisting}
+    
+    \begin{lstlisting}[caption=Adding white noise to an audio file]
+    scale_factor1=0.94; 
+    scale_factor2=0.05;
+     
+    sox -m \
+          -v $(echo "$(sox input.wav -n stat -v 2>&1) * ${scale_factor1}" | bc -l)  input.wav \
+      -v ${scale_factor2} <(sox input.wav -p synth whitenoise) \
+      -b 16 output.wav
+   \end{lstlisting}
+
+\end{appendices}
