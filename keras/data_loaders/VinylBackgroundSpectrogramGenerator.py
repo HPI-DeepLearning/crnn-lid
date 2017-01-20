@@ -3,11 +3,16 @@ import random
 import numpy as np
 from PIL import Image
 import fnmatch
-from Queue import Queue
 from math import ceil
 import sox
 import tempfile
+import shutil
+import sys
 
+if (sys.version_info >= (3,0)):
+    from queue import Queue
+else:
+    from Queue import Queue
 
 NOISE_FILES_LENGTH = [118, 14, 20, 46, 126, 8, 124]
 
@@ -45,7 +50,7 @@ class VinylBackgroundSpectrogramGenerator(object):
         scale_factor2 = 0.5
 
         noise_file_index = random.randint(1, len(NOISE_FILES_LENGTH))
-        noise_file_name = "../../data/vinyl_noise/noise{}.wav".format(noise_file_index)
+        noise_file_name = "vinyl_noise/noise{}.wav".format(noise_file_index)
         noise_length = NOISE_FILES_LENGTH[noise_file_index - 1]
 
         audio_stats = sox.file_info.stat(file)
@@ -67,16 +72,17 @@ class VinylBackgroundSpectrogramGenerator(object):
             with tempfile.NamedTemporaryFile(suffix='.wav') as noisy_speech_file:
 
                 mixer = sox.Combiner()
-                mixer.remix(num_output_channels=1)
-                mixer.rate(10000)
+                # mixer.remix(num_output_channels=1)
+                # mixer.rate(10000)
                 mixer.build([file, noise_file.name], noisy_speech_file.name, "mix", [scale_factor1 * input_volume, scale_factor2])
 
+                #shutil.copyfile(noisy_speech_file.name, os.path.join("/extra/tom/news2/debug", os.path.basename(noisy_speech_file.name)))
+
                 with tempfile.NamedTemporaryFile(suffix='.png') as image_file:
-                    command = "{} -n spectrogram -y {} -X {} -m -r -o {}". format(noisy_speech_file.name, height, pixel_per_sec, image_file.name)
+                    command = "{} -n remix 1 rate 10k spectrogram -y {} -X {} -m -r -o {}". format(noisy_speech_file.name, height, pixel_per_sec, image_file.name)
                     sox.core.sox([command])
 
                     # spectrogram can be inspected at image_file.name
-
                     image = Image.open(image_file.name)
 
                     return np.array(image)

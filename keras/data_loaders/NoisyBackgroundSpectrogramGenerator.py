@@ -3,8 +3,13 @@ import random
 import numpy as np
 from PIL import Image
 import fnmatch
-from Queue import Queue
+import sys
 from subprocess import Popen, PIPE, STDOUT, check_output, call
+
+if (sys.version_info >= (3,0)):
+    from queue import Queue
+else:
+    from Queue import Queue
 
 def recursive_glob(path, pattern):
     for root, dirs, files in os.walk(path):
@@ -64,7 +69,7 @@ class NoisyBackgroundSpectrogramGenerator(object):
 
         output, errors = p.communicate()
         if errors:
-            print errors
+            print(errors)
 
         # image = Image.open(StringIO(output))
         image = Image.open(file_name)

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import argparse
 import scipy.misc
@@ -45,7 +47,7 @@ def directory_to_spectrograms(args):
         try:
             for j, language in enumerate(languages):
 
-                data = generator_queues[j].next()
+                data = next(generator_queues[j])
 
                 assert data.shape == target_shape, "Shape mismatch {} vs {}".format(data.shape, args.shape)
 
