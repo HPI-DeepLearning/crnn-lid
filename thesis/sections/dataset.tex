@@ -17,11 +17,11 @@
 
 	Following the example of Montavon \cite{montavon2009deep} we looked for large, public sources of speech audio. We first experimented with podcasts and radio stations, both of which are unsuited for the job. Podcasts usually feature only one speaker and radio contains a lot of noise in the form of music. From these initial insights we noticed that news broadcasts provided high quality speech audio data. To source a large variety of languages and gather enough hours of speech audio we sourced the majority of our data from YouTube. 
 	
-	For each target language we manually select one or more YouTube channels of respected news outlets. E.g. for English we used the BBC and CNN to gather a variety of different accents. For a full list of channels refer to table \ref{tab:channels}. All channels were chosen regardless of their content, their political views or journalistic agenda.
+	For each target language we manually selected one or more YouTube channels of respected news outlets. E.g. for English we used the BBC and CNN to gather a variety of different accents. For a full list of channels refer to table \ref{tab:channels}. All channels were chosen regardless of their content, their political views or journalistic agenda.
 	
 	\begin{table}[]
 	\centering
-	\begin{tabular}{@{}ll@{}}
+	\begin{tabularx}{\textwidth}{ll}
 	\toprule
 	YouTube Channel Name  & Language \\ \midrule
 	CNN                   & English \\
@@ -36,39 +36,33 @@
 	VOAChina              & Mandarin Chinese  \\
 	Russia24TV            & Russian \\
 	RTrussian             & Russian \\ \bottomrule
-	\end{tabular}
-	\label{tab:channels}
+	\end{tabularx}
 	\caption{YouTube Channel names and their corresponding language}
+	\label{tab:channels}
 	\end{table}
 
   	
-  	Audio obtained from news coverage has many desired properties. The data is of high recording quality and hundreds of hours recording is available online. News anchors are trained to speak loud and clear, while still talking at a normal speed. News shows often feature guests or correspondents so we get a variety of speakers, which converse in a ordinary fashion with each other unlike speech audio obtained from reading texts aloud. Lastly, news shows feature all the noise one would expect from a real world situation: music jingles, non-speech audio from video clips and transitions between reports. In essence we believe that speech data source from news broadcast represent an accurate, real-world sample for speech audio.
+  	Audio obtained from news coverage has many desired properties. The data is of high recording quality and hundreds of hours recording is available online. News anchors are trained to speak loud and clear, while still talking at a normal speed. News shows often feature guests or correspondents so we get a variety of speakers, which converse in a ordinary fashion with each other unlike speech audio obtained from reading texts aloud. Lastly, news shows feature all the noise one would expect from a real world situation: music jingles, non-speech audio from video clips and transitions between reports. The difficulty is also increased by mixed language reports. Many city, company, and personal names, e.g. New York City or Google for English, are pronounced in their native language and are embedded within the broadcast's host language. In essence we believe that speech data source from news broadcast represent an accurate, real-world sample for speech audio.
   	
   	In contrast to the EU Speech Repository this dataset consists 1024 hours of audio data for the same four languages: English, German, French and Spanish. We also gathered an extended language set adding Mandarin Chinese and Russian to the dataset. The extended set is only used for the evaluation of the model extensibility as outlined in section \ref{sec:extensibility}. Table \ref{tab:dataset_comparison} provides a complete comparison between the datasets.
   	
-
-	\begin{table}[]
-	\centering
-	\begin{tabular}{@{}llll@{}}
-	\toprule
-	Feature               & EU Speech Repository & YouTube News & YouTube News Extended \\ 
-	\midrule
-	\# Languages   		  & 4                    & 4            & 6                     \\
-	Total audio duration  & 4                    & 4            & 6                     \\
-	Average clip duration & 4                    & 4            & 6                     \\
-	Sample Rate           & 4                    & 4            & 6                     \\ 
-	\# Training Samples   & 4                    & 4            & 6                     \\ 
-	\bottomrule
-	\end{tabular}
-	\label{tab:dataset_comparison}
-	\caption{Comparison of the EU Speech and YouTube News dataset}
-	\end{table}
+  	
+\begin{table}[]
+\centering
+\begin{tabularx}{\textwidth}{lXXX}
+\toprule
+Feature               & EU Speech Repository & YouTube News & YouTube News \mbox{Extended} \\ 
+\midrule
+Languages             & English, German, French, Spanish & English, German, French, Spanish & English, German, French, Spanish, Russian, Chinese \\
+Total audio duration  & 4                    & 4            & 6                     \\
+Average clip duration & 4                    & 4            & 6                     \\
+Audio Sampling Rate   & 4                    & 4            & 6                     \\ 
+Training Samples      & 4                    & 4            & 6                     \\ 
+\bottomrule
+\end{tabularx}
+\caption{Comparison of the EU Speech and YouTube News dataset}
+\label{tab:dataset_comparison}
+\end{table}
 	
-	
-\subsection{Preprocessing}
-
-- train / test split
-- number of training samples
-- sample creation / preprocessing
 
 
