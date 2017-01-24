@@ -1,7 +1,9 @@
 \begin{appendices}
 \section{Audio manipulation with SoX}
+\label{sec:appendix_a}
 
-    \begin{lstlisting}[caption=Generating monochrome spectrograms with SoX]
+    \begin{lstlisting}[caption={Generating monochrome spectrograms with SoX}, label={lst:spectrograms}]
+    
     sox -V0 input.wav -n remix 1 rate 10k spectrogram -y 129 -X 50 -m -r -o spectrogram.png
     
     

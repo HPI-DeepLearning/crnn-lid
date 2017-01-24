@@ -14,7 +14,7 @@ This section will outline the employed software and hardware resources of the sy
 	OS  	& Ubuntu Linux 14.04 		& Ubuntu Linux 16.04 \\
 	CPU  	& Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} i7-4790K @4GHz 	& AMD FX\textsuperscript{\texttrademark}-8370  @ 4GHz \\
 	RAM  	& 16GB 						& 32GB \\
-	GPU  	& Nvidia GeForc\textsuperscript{\textregistered}e GTX 980 	& Nvidia Titan X \\
+	GPU  	& Nvidia GeForce\textsuperscript{\textregistered} GTX 980 	& Nvidia Titan X \\
 	VRM  	& 4GB 						& 12GB \\
 	\bottomrule
 	\end{tabularx}
@@ -31,9 +31,20 @@ This section will outline the employed software and hardware resources of the sy
 
 \subsection{Data Preprocessing}
 \label{sec:data_processing}
+All audio files have to be preprocessed before feeding them to the neural network. As a first step all files are encoded as uncompressed, lossless Waveform Audio File Format\footnote{\url{http://www.microsoft.com/whdc/device/audio/multichaud.mspx}, accessed 23.02.2017}, WAVE, commonly know by its file extension *.wav. This conversion has two advantages: A lossless data codec allows for future audio manipulations with any quality loss and makes the data easily readable by third party programs and library such as SciPy\footnote{\url{https://www.scipy.org/}, accessed 23.02.2017}. 
+
+	Since our CNN does not operate on raw waveform audio signals we transfer it into the image domain. As introduced in section \ref{sec:audio_representations} we used a spectrogram representation of the audio file for model training. The spectrograms were generated using the open source command line tool SoX\footnote{\url{http://sox.sourceforge.net/}, accessed 23.02.2017}. Spectrograms are generated using a Hann window and 129 frequency bins along the frequency-axis (y-axis). The time-axis (x-axis) is rendered at 25 pixel per second. Each audio sequence is clipped into non-overlapping ten second segments. The  final segment is discarded to avoid segments shorter than the required ten seconds. We decided against filtering silent section within the audio segment to keep the natural pauses between words and not disturb the regular speech rhythm. Frequency intensities are mapped to a gray scale. The resulting greyscale images are saved as lossless PNG files and are 500 pixel in width and 129 pixel in height. Appendix \ref{sec:appendix_a} includes the complete listing \ref{lst:spectrograms} for generating spectrogram images with SoX.
+	
+	As can be seen in figure \ref{fig:spectrogram} the spectrograms feature very apparent bright ripple-like pattern. Each of these represents a strong activation of a certain frequency over time. Several frequency activations can be active at once constituting a particular phoneme or sound. A sequence of these phonemes forms words and is only interrupted by short speech pauses. It is our aim to learn the characteristic and unique composition of these frequency activation for every language in our classifier. 
 
 	
-
+	\begin{figure}[h]
+  		\centering
+    	\includegraphics[width=\textwidth,keepaspectratio]{img/spectrogram.png}
+    	\caption{A spectrogram generated from a ten second German audio clip  using SoX. Notice the bright ripple-like patterns. These frequency activations serve as the main feature for the classifier.}
+    	\label{fig:spectrogram}
+	\end{figure}
+	
     \begin{itemize}
         \item Spectrogram Generation
         \item Data Segmentation
@@ -44,11 +55,38 @@ This section will outline the employed software and hardware resources of the sy
 
 \subsection{CNN Architecture}
 
+
     \begin{itemize}
         \item Layer Table
         \item Transfer Learning / Fine-tuning
         \item Variations
     \end{itemize}
+    
+    \begin{table}[h]
+  \centering
+  \begin{tabularx}{\textwidth}{Xllll}
+  \toprule
+  Layer Type                       & input maps  & output maps & kernel & stride  \\ \midrule
+  \mbox{Convolution with} \mbox{Batch Normalization}  & 1           & 16     & 7x7    & 1       \\ 
+  Max Pooling                           & 16          & 16     & 2x2    & 2       \\ 
+  Convolution with Batch Normalization  & 16          & 32     & 5x5    & 1       \\ 
+  Max Pooling                           & 32          & 32     & 2x2    & 2       \\ 
+  Convolution with Batch Normalization  & 32          & 64     & 3x3    & 1       \\ 
+  Max Pooling                           & 64          & 64     & 2x2    & 2       \\ 
+  Convolution with Batch Normalization  & 64          & 128    & 3x3    & 1       \\ 
+  Max Pooling                           & 128         & 128    & 2x2    & 2       \\ 
+  Convolution with Batch Normalization  & 128         & 256    & 3x3    & 1       \\ 
+  Max Pooling                           & 256         & 256    & 2x2    & 2       \\ 
+  Dropout                               &             &        &        &         \\ 
+  Fully Connected                       & ???         & 1024   &        &         \\ 
+  Fully Connected                       & 1024        & 4      &        &        \\ 
+  \bottomrule
+  \end{tabularx}
+  \caption{The layer architecture for the convolutional neural network CNN\_A.}
+  \label{tab:layers_CNN_A}
+  \end{table}
+    
+    
 
 \subsection{CRNN Architecture}
 
