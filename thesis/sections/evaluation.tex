@@ -6,6 +6,25 @@ Further, we experiment with modified model architectures to optimize our model f
 \subsection{Setup} 
 \label{sec:setup}
 
+\subsubsection{Hardware Resources}
+\label{sec:hardware}
+	In order to facilitate Keras' and TensorFlow's hardware-accelerated computation we ran of training on CUDA\footnote{\url{https://developer.nvidia.com/cuda-zone}, accessed 30.01.2017} compatible GPU machines. All trainings and experiments were executed on two CUDA enabled machines belonging to the Internet Technologies and Systems chair. Details can be found in table \ref{tab:hardware}.
+		
+	\begin{table}[h]
+	\centering
+	\begin{tabularx}{\textwidth}{lll}
+	\toprule
+	  		& Machine A 					& Machine B \\ \midrule
+	OS  	& Ubuntu Linux 14.04 		& Ubuntu Linux 16.04 \\
+	CPU  	& Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} i7-4790K @4GHz 	& AMD FX\textsuperscript{\texttrademark}-8370  @ 4GHz \\
+	RAM  	& 16GB 						& 32GB \\
+	GPU  	& Nvidia GeForce\textsuperscript{\textregistered} GTX 980 	& Nvidia Titan X \\
+	VRAM  	& 4GB 						& 12GB \\
+	\bottomrule
+	\end{tabularx}
+	\caption{Hardware resources used in training the neural network.}
+	\label{tab:hardware}
+	\end{table}
 
 \subsubsection{Data} 
 \label{sec:data}
@@ -38,30 +57,54 @@ Neural networks have a multitude of hyperparameters that influence the training 
 	\begin{description}
 	\item[Optimizer] We employed an Adam\cite{kingma2014adam} optimizer to quickly and efficiently convergence our model. The Adam solver utilizes momentum during gradient updates and to support a quicker convergence. We set the optimizer's parameters $\beta_1$ to 0.9, $\beta_2$ to 0.999, and $\epsilon$ to 1e-08. Overall we found it to be an order of magnitude quicker than using standard stochastic gradient descent (\ac{sgd}). We resorted to SGD finetuning when needed more control over the learning rate schedule and wanted smaller weight updates.
 	\item[Weights Initializer] All layer weights are initialized within the range is [0, 1) using Keras' default random Glorot uniform initializer\cite{glorot2010understanding}.
-	\item[Data Normalization]
-	\item[Learning Rate]
-	\item[Batch Size]
-	\item[Weight Regularization] Weight Decay
-	\item[Early Stopping] Hier folgt die weitere Beschreibung
+	\item[Data Normalization] The greyscale images are loaded using SciPy and normalized to the [0, 1] range. The shape for all inputs needs to be uniform across all samples and is set to [500, 129, 1], unless otherwise noted. The data loader uses Python generators\footnote{\url{https://docs.python.org/3/glossary.html#term-generator}, accessed 30.01.2017} to keep the system's memory requirements low.
+	\item[Learning Rate] We set the initial learning rate to 0.001. Given the Adam optimizer's dynamic learning rate adaption we expect the learning rate to be increase or decreased after every epoch. 
+	\item[Batch Size] We specified the batch size depending on the available VRAM of the training machine. We used a value of 64 for Machine A and 128 for Machine B. See section \ref{sec:hardware} for the hardware specifications. 
+	\item[Weight Regularization] We employed the L2 norm as a weight regularizer for all convolutional and fully connected layers to improve the models generality. We penalize our loss with a weight decay value of 0.001. 
+	\item[Epochs] We limited the model training to a maximum of 50 epochs when using the Adam solver. We usually reach convergence well below this threshold. For training sessions with SGD we increased this considerably. To speed up our workflow we employed an early stopping policy and stopped a training if the validation accuracy and loss did not increase within a ten window.
+	\item[Metrics] We observed the loss, accuracy, recall, precession, f1 measure, and equal error rate for both the training and validation set during model training. All values were saved to log files and visualized as graphs in Tensorboard\footnote{\url{https://www.tensorflow.org/how_tos/summaries_and_tensorboard/}, accessed 30.01.2017}.   
 	\end{description}
 
-Initial Weights Data Loading All training data is loaded using scipy [30]. All data is resized to the input dimensions as needed by the network speci cation. Resizing is done using the imresize function of scipy. The pixel values of each image are normalized to have a mean of 0. This is achieved by subtracting the mean of the image from each of the pixels in the image. This is done to improve the numerical stability of the network as proposed in [37].Optimizer We used ADADELTA [64] as solver/optimizer for the training of each model. We chose ADADELTA as this solver is more robust to gradient spikes during training and also because it is not necessary to manually adapt the learning rate, making it easier to train the network.Metrics During training we collected the following metrics:• Loss The loss as a measure of how well the network is able to perform its task. See section 2.4.3 for more information on the role of loss during the training of a network.• Accuracy The accuracy gives the percentage of how many words have been correctly recognized from each training or test mini batch.• Edit Distance The edit distance represents the number of changes (insertions, deletions and substitutions) required to transform the recognized string into the ground-truth string. We utilize the Levenshtein distance [38] to determine this number of changes.1HeNormal initializer in Chainer Docs: http://docs.chainer.org/en/v1.9.1/reference/ initializers.html - last accessed 27/06/201646 
-End of Training We trained each network until we reached convergence. This means that we stopped the training if we were not able to see much improvement in accuracy and edit distance over the course of at least 10 000 iterations.
-
-
-\subsubsection{Validation of the Training Process} 
-\label{sec:validation}
 
 \subsection{Evaluation} 
 
-\subsection{Evaluation Metric} 
+\subsection{Evaluation Metrics} 
 \label{sec:metrics}
-\begin{itemize}
-    \item F1
-    \item Accuracy, error rate
-    \item Precision, Recall
-    \item Equal Error Rate
-\end{itemize}
+In this section we discuss the evaluation metrics used throughout our experiments. 
+
+- Multiclass classifier
+- scikit learn metric package
+
+\begin{description}
+    \item[Accuracy] is a common measure in machine learning and is defined as the ration of correctly classified samples to all samples in the dataset. In the context of language identification this translates as:
+     
+    	\begin{equation}
+		Accuracy = \frac{\abs{\{\text{correctly identified language samples}\}}}{\abs{\{\text{all language samples}\}}}
+		\end{equation}
+     
+    
+    \item[Precision and Recall] Precision defines the ratio of retrieved language samples that are correctly identified as belonging to said language. Recall is the fraction of correctly identified language samples to all samples belonging to this language.
+    
+    
+    how many were correctly predicted
+    if all samples belonging to a language were assigned
+     
+ 		\begin{equation}
+		Precision = \frac
+		{\abs{\{\text{samples belonging to a language which were correctly identified as belonging to said language}\}}}
+		{\abs{\{\text{samples belonging to a language which were correctly identified as belonging to said language}\} \cup \{\text{samples belonging to a language which were identified as belonging to another language}\}}}
+		\end{equation}  
+		
+		\begin{equation}
+		Recall = \frac
+		{\abs{\{\text{samples belonging to a language which were correctly identified as belonging to said language}\}}}
+		{\abs{\{\text{samples belonging to a language which were correctly identified as belonging to said language}\} \cup \{\text{samples belonging to a language which were incorrectly identified as not belonging to said language}\}}}
+		\end{equation}      
+
+
+    \item[F1]
+    \item[Equal Error Rate]
+\end{description}
 
 \subsubsection{Inter Language Discrimination} 
 \label{sec:lang_discrimination}
@@ -78,3 +121,6 @@ End of Training We trained each network until we reached convergence. This means
 
 \subsubsection{Discussion and Comparison} 
 \label{sec:comparison}
+
+- evaluierung nur auf 10s snippets nd nicht auf ganzen audio files
+- noch bessere perf mit majority voting über mehrere segmente

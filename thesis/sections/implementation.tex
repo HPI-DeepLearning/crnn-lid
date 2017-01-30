@@ -1,26 +1,12 @@
 \section{Implementation}
 This section will outline the employed software and hardware resources of the system, explain the data preprocessing, and describe the model architecture of our neural networks in detail.
 
-\subsection{Software and Hardware Resources}
+\subsection{Software}
+\label{sec:software}
+
 
 	The language identification system is implemented in Python. We used the open source deep learning framework Keras\cite{chollet2015keras} with the TensorFlow\cite{abadi2016tensorflow} backend for training our neural networks. Keras provides us with a set of higher level machine learning primitives such as convolutional layers and optimizing algorithms without abstracting too much away. Internally it builds on Google's open source numerical operation library TensorFlow which is optimized to quickly compute large multidimensional data on GPUs.
-		All trainings and experiments were executed on two cuda-enabled GPU machines belonging to the Internet Technologies and Systems chair. Details can be found in table \ref{tab:hardware}.
 		
-	\begin{table}[h]
-	\centering
-	\begin{tabularx}{\textwidth}{lll}
-	\toprule
-	  		& Machine A 					& Machine B \\ \midrule
-	OS  	& Ubuntu Linux 14.04 		& Ubuntu Linux 16.04 \\
-	CPU  	& Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} i7-4790K @4GHz 	& AMD FX\textsuperscript{\texttrademark}-8370  @ 4GHz \\
-	RAM  	& 16GB 						& 32GB \\
-	GPU  	& Nvidia GeForce\textsuperscript{\textregistered} GTX 980 	& Nvidia Titan X \\
-	VRAM  	& 4GB 						& 12GB \\
-	\bottomrule
-	\end{tabularx}
-	\caption{Hardware ressources used in training the neural network.}
-	\label{tab:hardware}
-	\end{table}
 	 
 	From a high level perspective, our system was designed in three parts. 
 	
