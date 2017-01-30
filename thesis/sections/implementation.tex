@@ -15,19 +15,21 @@ This section will outline the employed software and hardware resources of the sy
 	CPU  	& Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} i7-4790K @4GHz 	& AMD FX\textsuperscript{\texttrademark}-8370  @ 4GHz \\
 	RAM  	& 16GB 						& 32GB \\
 	GPU  	& Nvidia GeForce\textsuperscript{\textregistered} GTX 980 	& Nvidia Titan X \\
-	VRM  	& 4GB 						& 12GB \\
+	VRAM  	& 4GB 						& 12GB \\
 	\bottomrule
 	\end{tabularx}
 	\caption{Hardware ressources used in training the neural network.}
 	\label{tab:hardware}
 	\end{table}
 	 
-	We designed the system in three parts. 
-	\begin{enumerate}
-		\item The preprocessor. Its job is to download, extract, and convert the data. The preprocessor clips the audio tracks for raw video footage and converts them into WAV files before ultimately converting the data into PNG images for the training. Details can be found in section \ref{sec:data_processing}.
-		\item The trainer. 
-		\item The evaluator.
-	\end{enumerate}
+	From a high level perspective, our system was designed in three parts. 
+	
+	\begin{description}
+		\item[The preprocessor] Its job is to download, extract, and convert the data. The preprocessor clips the audio tracks for raw video footage and converts them into WAV files before ultimately converting the data into PNG images for the training. Details can be found in section \ref{sec:data_processing}.
+		\item[The trainer]
+		\item[The evaluator] 
+	\end{description}
+	
 
 \subsection{Data Preprocessing}
 \label{sec:data_processing}
@@ -41,7 +43,7 @@ All audio files have to be preprocessed before feeding them to the neural networ
 	\begin{figure}[h]
   		\centering
     	\includegraphics[width=\textwidth,keepaspectratio]{img/spectrogram.png}
-    	\caption{A spectrogram generated from a ten second German audio clip  using SoX. Notice the bright ripple-like patterns. These frequency activations serve as the main feature for the classifier.}
+    	\caption{A spectrogram generated from a ten second German audio clip  using SoX. Notice the bright ripple-like patterns. These frequency activations serve as the main features for the classifier.}
     	\label{fig:spectrogram}
 	\end{figure}
 	

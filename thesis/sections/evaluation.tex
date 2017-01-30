@@ -1,19 +1,60 @@
 \section{Experiments and Evaluation} 
 \label{sec:evaluation}
+In this chapter we show and discuss the results of training the outlined neural network architecture for spoken language identification. We introduce several performance metrics and present the results evaluated on our system.
+Further, we experiment with modified model architectures to optimize our model for noise robustness. To assess the real world performance of the neural network we augment our data to simulated various noisy environments. We show the classification performance of our approach by discussing the inter language discrimination and extensibility to other languages.     
 
 \subsection{Setup} 
 \label{sec:setup}
+
+
 \subsubsection{Data} 
 \label{sec:data}
-train / test split
-number of training samples
+For our performance evaluation we used the European Speech Repository and YouTube News dataset as describe in section \ref{sec:datasets}. Both datasets were preprocessed and converted spectrogram images as described in section \ref{sec:data_processing}. Each spectrogram image represents a non-overlapping ten second duration of source audio file. 
+We split both dataset into a training (70\%), validation (20\%) and testing set (10\%) and all files were distributed equally between all four language classes. The amount of samples per language is limited by language with least files to ensure an equal class distribution. The yield of the datasets could be increased by increasing the number of Spanish files. Nonetheless, the European Speech repository yields a total of 19.000 training images files which adds to roughly 53 hours of speech audio. The YouTube News dataset is considerable larger and yields a total of 194.000 training files, or 540 hours. Table \ref{tab:data_splits} contains the detailed dataset splits.
+
+	\begin{table}[]
+	\centering
+	\begin{tabularx}{\textwidth}{lrr}
+	\toprule
+	  				& European Speech Repository & YouTube News\\ \midrule
+	Training Set    & 18.788						 & 193.432 \\
+	Validation Set  & 5.372						 & 55.272 \\
+	Test Set        & 2.684						 & 27.632 \\
+	\midrule
+	Total           & 26.844						 & 276.336 \\
+	\bottomrule
+	\end{tabularx}
+	\caption{As is common in data science we split our dataset into a training, validation and testing set.}
+	\label{tab:data_splits}
+	\end{table}
+
+Given the European Speech Repository's smaller size we only used it initially confirm the validity of our approach. Since we were satisfied with the results we did not do include it in the extensive robustness tests that we used for the evaluation on the YouTube News dataset. In addition to the original audio we augmented the news dataset with three different background noises to evaluate how well our model would hold out in non ideal, real world situations outside of a new broadcasting studio. For the first experiment we added generic white noise to data. For the second experiment we added noise to simulate an old phone line or bad internet connection during voice chat. Lastly, we added background music to the data. All experiments are described in detail below.
+
 
 \subsubsection{Training of the Neural Network Model} 
 \label{sec:training}
+Neural networks have a multitude of hyperparameters that influence the training results drastically. In the following we will briefly explain our choice of hyperparameters and other important training settings.
+
+	\begin{description}
+	\item[Optimizer] We employed an Adam\cite{kingma2014adam} optimizer to quickly and efficiently convergence our model. The Adam solver utilizes momentum during gradient updates and to support a quicker convergence. We set the optimizer's parameters $\beta_1$ to 0.9, $\beta_2$ to 0.999, and $\epsilon$ to 1e-08. Overall we found it to be an order of magnitude quicker than using standard stochastic gradient descent (\ac{sgd}). We resorted to SGD finetuning when needed more control over the learning rate schedule and wanted smaller weight updates.
+	\item[Weights Initializer] All layer weights are initialized within the range is [0, 1) using Keras' default random Glorot uniform initializer\cite{glorot2010understanding}.
+	\item[Data Normalization]
+	\item[Learning Rate]
+	\item[Batch Size]
+	\item[Weight Regularization] Weight Decay
+	\item[Early Stopping] Hier folgt die weitere Beschreibung
+	\end{description}
+
+Initial Weights Data Loading All training data is loaded using scipy [30]. All data is resized to the input dimensions as needed by the network speci cation. Resizing is done using the imresize function of scipy. The pixel values of each image are normalized to have a mean of 0. This is achieved by subtracting the mean of the image from each of the pixels in the image. This is done to improve the numerical stability of the network as proposed in [37].Optimizer We used ADADELTA [64] as solver/optimizer for the training of each model. We chose ADADELTA as this solver is more robust to gradient spikes during training and also because it is not necessary to manually adapt the learning rate, making it easier to train the network.Metrics During training we collected the following metrics:• Loss The loss as a measure of how well the network is able to perform its task. See section 2.4.3 for more information on the role of loss during the training of a network.• Accuracy The accuracy gives the percentage of how many words have been correctly recognized from each training or test mini batch.• Edit Distance The edit distance represents the number of changes (insertions, deletions and substitutions) required to transform the recognized string into the ground-truth string. We utilize the Levenshtein distance [38] to determine this number of changes.1HeNormal initializer in Chainer Docs: http://docs.chainer.org/en/v1.9.1/reference/ initializers.html - last accessed 27/06/201646 
+End of Training We trained each network until we reached convergence. This means that we stopped the training if we were not able to see much improvement in accuracy and edit distance over the course of at least 10 000 iterations.
+
+
 \subsubsection{Validation of the Training Process} 
 \label{sec:validation}
 
-\subsection{Evaluation Metrics} 
+\subsection{Evaluation} 
+
+\subsection{Evaluation Metric} 
 \label{sec:metrics}
 \begin{itemize}
     \item F1
