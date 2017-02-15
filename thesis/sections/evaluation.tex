@@ -16,7 +16,7 @@ Further, we experiment with modified model architectures to optimize our model f
 	\toprule
 	  		& Machine A 					& Machine B \\ \midrule
 	OS  	& Ubuntu Linux 14.04 		& Ubuntu Linux 16.04 \\
-	CPU  	& Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} i7-4790K @4GHz 	& AMD FX\textsuperscript{\texttrademark}-8370  @ 4GHz \\
+	CPU  	& Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} i7-4790K @ 4GHz 	& AMD FX\textsuperscript{\texttrademark}-8370  @ 4GHz \\
 	RAM  	& 16GB 						& 32GB \\
 	GPU  	& Nvidia GeForce\textsuperscript{\textregistered} GTX 980 	& Nvidia Titan X \\
 	VRAM  	& 4GB 						& 12GB \\
@@ -62,7 +62,8 @@ Neural networks have a multitude of hyperparameters that influence the training 
 	\item[Batch Size] We specified the batch size depending on the available VRAM of the training machine. We used a value of 64 for Machine A and 128 for Machine B. See section \ref{sec:hardware} for the hardware specifications. 
 	\item[Weight Regularization] We employed the L2 norm as a weight regularizer for all convolutional and fully connected layers to improve the models generality. We penalize our loss with a weight decay value of 0.001. 
 	\item[Epochs] We limited the model training to a maximum of 50 epochs when using the Adam solver. We usually reach convergence well below this threshold. For training sessions with SGD we increased this considerably. To speed up our workflow we employed an early stopping policy and stopped a training if the validation accuracy and loss did not increase within a ten window.
-	\item[Metrics] We observed the loss, accuracy, recall, precession, f1 measure, and equal error rate for both the training and validation set during model training. All values were saved to log files and visualized as graphs in Tensorboard\footnote{\url{https://www.tensorflow.org/how_tos/summaries_and_tensorboard/}, accessed 30.01.2017}.   
+	\item[Metrics] We observed the loss, accuracy, recall, precession, f1 measure, and equal error rate for both the training and validation set during model training. All values were saved to log files and visualized as graphs in Tensorboard\footnote{\url{https://www.tensorflow.org/how_tos/summaries_and_tensorboard/}, accessed 30.01.2017}.  
+	\item[Loss] As is common for multivariate classification all models were trained with a softmax cross-entropy loss function.
 	\end{description}
 
 
@@ -126,6 +127,24 @@ In this section we discuss the evaluation metrics used throughout our experiment
 
 \subsubsection{Results for EU Speech Repository Dataset}
 \label{sec:results_eu}
+In order to verify our theoretic model of using convolutional neural networks for classifying audio data in the image domain we established a baseline with the smaller EU Speech Repository dataset. Previous work with CNNs showed that the layer wise architecture has a great effect on the final classification performance. If one does not use enough or sufficiently large layers the model is not able to properly distinguish between classes. Going to deep or using too large layer outputs increases the overall number of model parameters to a degree where both training time and classification performance suffers again. The goal of this experiment is find favorable settings for the number of convolutional layers needed, the kernel size of the convolutions, the number of output maps of the convolutional layer and finally the number of features of the fully connected layer.
+
+For this particular dataset we tested three slightly different model architectures. Following the VGG-style model architecture of Simonyan et al. \cite{Chatfield14}, we setup a first CNN with five convolutional layers as outlined in section \ref{sec:cnn_architecture}. The first two convolutional layer use larger kernel sizes of 7x7 and 5x5 respectively. All the following kernels were set at 3x3. Each convolutional layer is followed by batch normalization and a 2x2 pooling with a stride of two. After the five convolutional blocks we add regularization through a fifty percent dropout layer before flattening all parameters to a fully connected layer with 1024 outputs. The final fully connected layer serves as a classifier outputting the prediction for our language identification. Henceforth, we will refer to this model as CNN\_A.
+
+A slightly adapted version called CNN\_B has the same amount of convolutional layers but with a reduced number of feature maps. Instead of doubling the initial value of sixteen feature map for every convolutional layer we stick to 16 - 32 - 32 - 64 - 64 feature maps respectively. The fully connected layer has been reduce to only 256 output. Overall this model has significantly less parameters than the CNN\_A. The purpose of this variation is to ensure that the proposed architecture for CNN\_A is not unnecessarily complex.
+	
+Lastly we evaluated architecture CNN\_C which uses constant kernel size of 3x3 for all convolutional layers. At the same time we increased the number of convolutional layers to seven and extended feature maps for each layer: 64 - 128 - 256 -256 - 512 - 512 - 515. The remaining fully connected layers are identical to the CNN\_A. The main difference here is the smaller receptive field of the convolutional layer which could negatively effect the model performance but should speed up the model training time overall. 
+
+	\begin{figure}[h]
+  		\centering
+    	\includegraphics[width=\textwidth, keepaspectratio]{plots/results_eu_plot.pdf}
+    	\caption{Performance comparison of three different CNN architecture using the EU Speech Repository dataset. CNN\_A outperforms all other approaches with a top accuracy of 0.904.}
+    	\label{fig:eu_results}
+	\end{figure}
+
+
+
+\todo{tabelle mit architec CNN_C???}
 
 \subsubsection{Results for YouTube News Dataset}
 \label{sec:results_news}
