@@ -68,43 +68,67 @@ Neural networks have a multitude of hyperparameters that influence the training 
 
 \subsection{Evaluation} 
 
-\subsection{Evaluation Metrics} 
+\subsubsection{Evaluation Metrics} 
 \label{sec:metrics}
 In this section we discuss the evaluation metrics used throughout our experiments. 
 
-- Multiclass classifier
-- scikit learn metric package
+\todo{Multiclass classifier, scikit learn metric package}
 
 \begin{description}
     \item[Accuracy] is a common measure in machine learning and is defined as the ration of correctly classified samples to all samples in the dataset. In the context of language identification this translates as:
      
-    	\begin{equation}
+    	$$
 		Accuracy = \frac{\abs{\{\text{correctly identified language samples}\}}}{\abs{\{\text{all language samples}\}}}
-		\end{equation}
+		$$
      
     
     \item[Precision and Recall] Precision defines the ratio of retrieved language samples that are correctly identified as belonging to said language. Recall is the fraction of correctly identified language samples to all samples belonging to this language.
     
+    	\todo{fix this}
     
-    how many were correctly predicted
-    if all samples belonging to a language were assigned
+    	how many were correctly predicted
+    	if all samples belonging to a language were assigned
      
- 		\begin{equation}
-		Precision = \frac
-		{\abs{\{\text{samples belonging to a language which were correctly identified as belonging to said language}\}}}
-		{\abs{\{\text{samples belonging to a language which were correctly identified as belonging to said language}\} \cup \{\text{samples belonging to a language which were identified as belonging to another language}\}}}
-		\end{equation}  
+		$$
+ 		truePositives = \abs{\set{\parbox{0.7\textwidth}{samples belonging to a language which were correctly identified as belonging to said language}}} 
+		$$
+		\todo{fix set's curly braces}
+
+		$$
+ 		falsePositives = \abs{\set{\parbox{0.7\textwidth}{samples belonging to a language which were identified as belonging to another language}}} 
+		$$
 		
-		\begin{equation}
-		Recall = \frac
-		{\abs{\{\text{samples belonging to a language which were correctly identified as belonging to said language}\}}}
-		{\abs{\{\text{samples belonging to a language which were correctly identified as belonging to said language}\} \cup \{\text{samples belonging to a language which were incorrectly identified as not belonging to said language}\}}}
-		\end{equation}      
+		$$
+ 		falseNegatives = \abs{\set{\parbox{0.7\textwidth}{samples belonging to a language which were incorrectly identified as not belonging to said language}}} 
+		$$
+
+	    $$
+	    precision = \frac
+	      {truePositives}
+	      {truePositives + falsePositives}
+	    $$
+		
+		$$
+		recall = \frac
+			{truePositives}
+			{truePositives + falseNegatives}
+		$$    
 
 
-    \item[F1]
+    \item[The F1 Score] is the scaled harmonic mean of precision and recall. It is used to a have combined judgement of recall and precision, since one is generally not interested in assessing one without the other.
+    
+    	$$
+    	F1 = 2 * \frac{precision * recall}{precision + recall}
+    	$$
     \item[Equal Error Rate]
+    \todo{add or remove}
 \end{description}
+
+\subsubsection{Results for EU Speech Repository Dataset}
+\label{sec:results_eu}
+
+\subsubsection{Results for YouTube News Dataset}
+\label{sec:results_news}
 
 \subsubsection{Inter Language Discrimination} 
 \label{sec:lang_discrimination}
