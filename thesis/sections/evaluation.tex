@@ -43,7 +43,7 @@ We split both dataset into a training (70\%), validation (20\%) and testing set 
 	Total           & 26.844						 & 276.336 \\
 	\bottomrule
 	\end{tabularx}
-	\caption{As is common in data science we split our dataset into a training, validation and testing set.}
+	\caption{The amount of samples for our training (70\%), validation (20\%) and testing (10\%) set for the respective datasets.}
 	\label{tab:data_splits}
 	\end{table}
 
@@ -55,7 +55,7 @@ Given the European Speech Repository's smaller size we only used it initially co
 Neural networks have a multitude of hyperparameters that influence the training results drastically. In the following we will briefly explain our choice of hyperparameters and other important training settings.
 
 	\begin{description}
-	\item[Optimizer] We employed an Adam\cite{kingma2014adam} optimizer to quickly and efficiently convergence our model. The Adam solver utilizes momentum during gradient updates and to support a quicker convergence. We set the optimizer's parameters $\beta_1$ to 0.9, $\beta_2$ to 0.999, and $\epsilon$ to 1e-08. Overall we found it to be an order of magnitude quicker than using standard stochastic gradient descent (\ac{sgd}). We resorted to SGD finetuning when needed more control over the learning rate schedule and wanted smaller weight updates.
+	\item[Optimizer] We employed an Adam\cite{kingma2014adam} optimizer to quickly and efficiently convergence our model. The Adam solver utilizes momentum during gradient updates and to support a quicker convergence. We set the optimizer's parameters $\beta_1$ to 0.9, $\beta_2$ to 0.999, and $\epsilon$ to 1e-08. Overall we found it to be an order of magnitude quicker than using standard stochastic gradient descent (\ac{sgd}). We resorted to SGD finetuning when we needed more control over the learning rate schedule and wanted smaller weight updates.
 	\item[Weights Initializer] All layer weights are initialized within the range is [0, 1) using Keras' default random Glorot uniform initializer\cite{glorot2010understanding}.
 	\item[Data Normalization] The greyscale images are loaded using SciPy and normalized to the [0, 1] range. The shape for all inputs needs to be uniform across all samples and is set to [500, 129, 1], unless otherwise noted. The data loader uses Python generators\footnote{\url{https://docs.python.org/3/glossary.html#term-generator}, accessed 30.01.2017} to keep the system's memory requirements low.
 	\item[Learning Rate] We set the initial learning rate to 0.001. Given the Adam optimizer's dynamic learning rate adaption we expect the learning rate to be increase or decreased after every epoch. 
@@ -127,7 +127,7 @@ In this section we discuss the evaluation metrics used throughout our experiment
 
 \subsubsection{Results for EU Speech Repository Dataset}
 \label{sec:results_eu}
-In order to verify our theoretic model of using convolutional neural networks for classifying audio data in the image domain we established a baseline with the smaller EU Speech Repository dataset. Previous work with CNNs showed that the layer wise architecture has a great effect on the final classification performance. If one does not use enough or sufficiently large layers the model is not able to properly distinguish between classes. Going to deep or using too large layer outputs increases the overall number of model parameters to a degree where both training time and classification performance suffers again. The goal of this experiment is find favorable settings for the number of convolutional layers needed, the kernel size of the convolutions, the number of output maps of the convolutional layer and finally the number of features of the fully connected layer.
+In order to verify our theoretic model of using convolutional neural networks for classifying audio data in the image domain we established a baseline with the smaller EU Speech Repository dataset. Previous work with CNNs showed that the careful arrangement of the neural network layers has a great effect on the final classification performance. If one does not use enough or sufficiently large layers the model is not able to properly distinguish between classes. Going to deep or using too large layer outputs increases the overall number of model parameters to a degree where both training time and classification performance suffers again. The goal of this experiment is find favorable settings for the number of convolutional layers needed, the kernel size of the convolutions, the number of output maps of the convolutional layer and finally the number of features of the fully connected layer.
 
 For this particular dataset we tested three slightly different model architectures. Following the VGG-style model architecture of Simonyan et al. \cite{Chatfield14}, we setup a first CNN with five convolutional layers as outlined in section \ref{sec:cnn_architecture}. The first two convolutional layer use larger kernel sizes of 7x7 and 5x5 respectively. All the following kernels were set at 3x3. Each convolutional layer is followed by batch normalization and a 2x2 pooling with a stride of two. After the five convolutional blocks we add regularization through a fifty percent dropout layer before flattening all parameters to a fully connected layer with 1024 outputs. The final fully connected layer serves as a classifier outputting the prediction for our language identification. Henceforth, we will refer to this model as CNN\_A.
 
@@ -135,16 +135,21 @@ A slightly adapted version called CNN\_B has the same amount of convolutional la
 	
 Lastly we evaluated architecture CNN\_C which uses constant kernel size of 3x3 for all convolutional layers. At the same time we increased the number of convolutional layers to seven and extended feature maps for each layer: 64 - 128 - 256 -256 - 512 - 512 - 515. The remaining fully connected layers are identical to the CNN\_A. The main difference here is the smaller receptive field of the convolutional layer which could negatively effect the model performance but should speed up the model training time overall. 
 
-	\begin{figure}[h]
+	\begin{figure}[]
   		\centering
     	\includegraphics[width=\textwidth, keepaspectratio]{plots/results_eu_plot.pdf}
-    	\caption{Performance comparison of three different CNN architecture using the EU Speech Repository dataset. CNN\_A outperforms all other approaches with a top accuracy of 0.904.}
+    	\caption{Performance measure comparison of three different CNN architecture evaluated on the EU Speech Repository dataset. CNN\_A outperforms all other approaches with a top accuracy of 0.904 and a F1 score of 0.90.}
     	\label{fig:eu_results}
 	\end{figure}
 
+CNN\_A outperforms both of the other two network architectures with respect to all the evaluated performance measures, which can be seen in figure \ref{fig:eu_results}. With a top-1 accuracy of 0.904 it trumps CNN\_B and CNN\_C with 0.743 and ??? respectively. Comparing the F1 score we get a similar result: 0.90 versus 0.74 and ???. This experiment confirmed a few assumptions. Firstly, it proves that convolutional neural networks can be successfully used to classify audio data. Secondly, demonstrates that spectrogram images are meaningful representation for audio that retains enough information for language identification. Thirdly, it shows that large kernels for the initial convolutional layers are indeed favorable. The increased receptive field captures both the time domain and frequencies better. 
+Based on these findings did some further testing with CNN\_A. Based on Mishkin et al.\cite{mishkin2016systematic} we switched the convolutional layers' ReLU activations to Exponential Linear Units\cite{clevert2015fast} (ELU) but without any improvement. Baoguan et al. \cite{shi2016end} propse to use 1x2 rectangular pooling windows instead of the conventional square ones. This tweak yields feature maps with larger width, hence longer features along the time domain. In theory this should increase the CNN's sensitivity at judging the occurrence of frequencies at certain time intervals. For this experiment we were unable to gain any improvement, but we will discuss this approach some more for our CRNN approach later.
+
+The goal of this thesis is to evaluate the use of Deep Convolutional Recurrent Networks. Therefore we extended our previously best performing CNN\_A with a bidirectional LSTM layer. We interpret the CNN output as intermediate representation of the audio frequencies and used every vector entry along the x axis as a single step / input for the LSTMs. During training we froze the convolutional layer to only learn the frequency sequence of the audio sample. Our bidirectional LSTM layer trained two individual LSTMs with 512 outputs each, one training the input sequence from the start and one from the end. Both ouputs were concatenated to form a single output vector of 1024 which is followed by single fully connected layer for classification.
+Our CRNN architecture outperformed all CNN approaches significantly. With a top-1 accuracy of 0.98 and a F1 score of 0.98 it proves the viability of the CRNN approach and reaffirms the central hypothesis of this thesis.
 
 
-\todo{tabelle mit architec CNN_C???}
+\todo{tabelle mit architecture CNN\_C???}
 
 \subsubsection{Results for YouTube News Dataset}
 \label{sec:results_news}
