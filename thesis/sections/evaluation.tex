@@ -71,9 +71,7 @@ Neural networks have a multitude of hyperparameters that influence the training 
 
 \subsubsection{Evaluation Metrics} 
 \label{sec:metrics}
-In this section we discuss the evaluation metrics used throughout our experiments. 
-
-\todo{Multiclass classifier, scikit learn metric package}
+In this section we discuss the evaluation metrics used throughout our experiments. All metrics are generally only defined for binary classification results. Given our multi-class prediction problem we will report the average of the individual class performance measure in the following sections. 
 
 \begin{description}
     \item[Accuracy] is a common measure in machine learning and is defined as the ration of correctly classified samples to all samples in the dataset. In the context of language identification this translates as:
@@ -84,11 +82,6 @@ In this section we discuss the evaluation metrics used throughout our experiment
      
     
     \item[Precision and Recall] Precision defines the ratio of retrieved language samples that are correctly identified as belonging to said language. Recall is the fraction of correctly identified language samples to all samples belonging to this language.
-    
-    	\todo{fix this}
-    
-    	how many were correctly predicted
-    	if all samples belonging to a language were assigned
      
 		$$
  		truePositives = \abs{\set{\parbox{0.7\textwidth}{samples belonging to a language which were correctly identified as belonging to said language}}} 
@@ -121,8 +114,7 @@ In this section we discuss the evaluation metrics used throughout our experiment
     	$$
     	F1 = 2 * \frac{precision * recall}{precision + recall}
     	$$
-    \item[Equal Error Rate]
-    \todo{add or remove}
+
 \end{description}
 
 \subsubsection{Results for EU Speech Repository Dataset}
@@ -138,14 +130,14 @@ Lastly we evaluated architecture CNN\_C which uses constant kernel size of 3x3 f
 	\begin{figure}[]
   		\centering
     	\includegraphics[width=\textwidth, keepaspectratio]{plots/results_eu_plot.pdf}
-    	\caption{Performance measure comparison of three different CNN architecture evaluated on the EU Speech Repository dataset. CNN\_A outperforms all other approaches with a top accuracy of 0.904 and a F1 score of 0.90.}
+    	\caption{Performance measure comparison of three different CNN architectures evaluated on the EU Speech Repository dataset and our proposal of a CRNN model. CNN\_A outperforms all other CNN approaches with a top accuracy of 0.90, but is bested by the CRNN's 0.98 accuracy, proving the potential of this thesis' approach.}
     	\label{fig:eu_results}
 	\end{figure}
 
 CNN\_A outperforms both of the other two network architectures with respect to all the evaluated performance measures, which can be seen in figure \ref{fig:eu_results}. With a top-1 accuracy of 0.904 it trumps CNN\_B and CNN\_C with 0.743 and ??? respectively. Comparing the F1 score we get a similar result: 0.90 versus 0.74 and ???. This experiment confirmed a few assumptions. Firstly, it proves that convolutional neural networks can be successfully used to classify audio data. Secondly, demonstrates that spectrogram images are meaningful representation for audio that retains enough information for language identification. Thirdly, it shows that large kernels for the initial convolutional layers are indeed favorable. The increased receptive field captures both the time domain and frequencies better. 
 Based on these findings did some further testing with CNN\_A. Based on Mishkin et al.\cite{mishkin2016systematic} we switched the convolutional layers' ReLU activations to Exponential Linear Units\cite{clevert2015fast} (ELU) but without any improvement. Baoguan et al. \cite{shi2016end} propse to use 1x2 rectangular pooling windows instead of the conventional square ones. This tweak yields feature maps with larger width, hence longer features along the time domain. In theory this should increase the CNN's sensitivity at judging the occurrence of frequencies at certain time intervals. For this experiment we were unable to gain any improvement, but we will discuss this approach some more for our CRNN approach later.
 
-The goal of this thesis is to evaluate the use of Deep Convolutional Recurrent Networks. Therefore we extended our previously best performing CNN\_A with a bidirectional LSTM layer. We interpret the CNN output as intermediate representation of the audio frequencies and used every vector entry along the x axis as a single step / input for the LSTMs. During training we froze the convolutional layer to only learn the frequency sequence of the audio sample. Our bidirectional LSTM layer trained two individual LSTMs with 512 outputs each, one training the input sequence from the start and one from the end. Both ouputs were concatenated to form a single output vector of 1024 which is followed by single fully connected layer for classification.
+The goal of this thesis is to evaluate the use of Deep Convolutional Recurrent Networks. Therefore we extended our previously best performing CNN\_A with a bidirectional LSTM layer. We interpreted the CNN output as intermediate representation of the audio frequencies and used every vector entry along the x axis as a single step / input for the LSTMs. During training we froze the convolutional layer to only learn the frequency sequence of the audio sample. Our bidirectional LSTM layer trained two individual LSTMs with 512 outputs each, one training the input sequence from the start and one from the end. Both outputs were concatenated to form a single output vector with  1024 dimensions which is followed by single fully connected layer for classification.
 Our CRNN architecture outperformed all CNN approaches significantly. With a top-1 accuracy of 0.98 and a F1 score of 0.98 it proves the viability of the CRNN approach and reaffirms the central hypothesis of this thesis.
 
 
