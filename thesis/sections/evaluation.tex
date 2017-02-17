@@ -56,7 +56,7 @@ Neural networks have a multitude of hyperparameters that influence the training 
 
 	\begin{description}
 	\item[Optimizer] We employed an Adam\cite{kingma2014adam} optimizer to quickly and efficiently convergence our model. The Adam solver utilizes momentum during gradient updates and to support a quicker convergence. We set the optimizer's parameters $\beta_1$ to 0.9, $\beta_2$ to 0.999, and $\epsilon$ to 1e-08. Overall we found it to be an order of magnitude quicker than using standard stochastic gradient descent (\ac{sgd}). We resorted to SGD finetuning when we needed more control over the learning rate schedule and wanted smaller weight updates.
-	\item[Weights Initializer] All layer weights are initialized within the range is [0, 1) using Keras' default random Glorot uniform initializer\cite{glorot2010understanding}.
+	\item[Weights Initializer] All layer weights are initialized within the range [0, 1) using Keras' default random Glorot uniform initializer\cite{glorot2010understanding}.
 	\item[Data Normalization] The greyscale images are loaded using SciPy and normalized to the [0, 1] range. The shape for all inputs needs to be uniform across all samples and is set to [500, 129, 1], unless otherwise noted. The data loader uses Python generators\footnote{\url{https://docs.python.org/3/glossary.html#term-generator}, accessed 30.01.2017} to keep the system's memory requirements low.
 	\item[Learning Rate] We set the initial learning rate to 0.001. Given the Adam optimizer's dynamic learning rate adaption we expect the learning rate to be increase or decreased after every epoch. 
 	\item[Batch Size] We specified the batch size depending on the available VRAM of the training machine. We used a value of 64 for Machine A and 128 for Machine B. See section \ref{sec:hardware} for the hardware specifications. 
@@ -121,9 +121,9 @@ In this section we discuss the evaluation metrics used throughout our experiment
 \label{sec:results_eu}
 In order to verify our theoretic model of using convolutional neural networks for classifying audio data in the image domain we established a baseline with the smaller EU Speech Repository dataset. Previous work with CNNs showed that the careful arrangement of the neural network layers has a great effect on the final classification performance. If one does not use enough or sufficiently large layers the model is not able to properly distinguish between classes. Going to deep or using too large layer outputs increases the overall number of model parameters to a degree where both training time and classification performance suffers again. The goal of this experiment is find favorable settings for the number of convolutional layers needed, the kernel size of the convolutions, the number of output maps of the convolutional layer and finally the number of features of the fully connected layer.
 
-For this particular dataset we tested three slightly different model architectures. Following the VGG-style model architecture of Simonyan et al. \cite{Chatfield14}, we setup a first CNN with five convolutional layers as outlined in section \ref{sec:cnn_architecture}. The first two convolutional layer use larger kernel sizes of 7x7 and 5x5 respectively. All the following kernels were set at 3x3. Each convolutional layer is followed by batch normalization and a 2x2 pooling with a stride of two. After the five convolutional blocks we add regularization through a fifty percent dropout layer before flattening all parameters to a fully connected layer with 1024 outputs. The final fully connected layer serves as a classifier outputting the prediction for our language identification. Henceforth, we will refer to this model as CNN\_A.
+For this particular dataset we tested three slightly different model architectures. Following the VGG-style model architecture of Simonyan et al. \cite{Chatfield14}, we setup a first CNN with five convolutional layers as outlined in section \ref{sec:cnn_architecture}. The first two convolutional layer use larger kernel sizes of 7x7 and 5x5, respectively. All the following kernels were set at 3x3. Each convolutional layer is followed by batch normalization and a 2x2 pooling with a stride of two. After the five convolutional blocks we add regularization through a fifty percent dropout layer before flattening all parameters to a fully connected layer with 1024 outputs. The final fully connected layer serves as a classifier outputting the prediction for our language identification. Henceforth, we will refer to this model as CNN\_A.
 
-A slightly adapted version called CNN\_B has the same amount of convolutional layers but with a reduced number of feature maps. Instead of doubling the initial value of sixteen feature map for every convolutional layer we stick to 16 - 32 - 32 - 64 - 64 feature maps respectively. The fully connected layer has been reduce to only 256 output. Overall this model has significantly less parameters than the CNN\_A. The purpose of this variation is to ensure that the proposed architecture for CNN\_A is not unnecessarily complex.
+A slightly adapted version called CNN\_B has the same amount of convolutional layers but with a reduced number of feature maps. Instead of doubling the initial value of sixteen feature map for every convolutional layer we stick to 16 - 32 - 32 - 64 - 64 feature maps, respectively. The fully connected layer has been reduce to only 256 output. Overall this model has significantly less parameters than the CNN\_A. The purpose of this variation is to ensure that the proposed architecture for CNN\_A is not unnecessarily complex.
 	
 Lastly we evaluated architecture CNN\_C which uses constant kernel size of 3x3 for all convolutional layers. At the same time we increased the number of convolutional layers to seven and extended feature maps for each layer: 64 - 128 - 256 -256 - 512 - 512 - 515. The remaining fully connected layers are identical to the CNN\_A. The main difference here is the smaller receptive field of the convolutional layer which could negatively effect the model performance but should speed up the model training time overall. 
 
@@ -134,22 +134,62 @@ Lastly we evaluated architecture CNN\_C which uses constant kernel size of 3x3 f
     	\label{fig:eu_results}
 	\end{figure}
 
-CNN\_A outperforms both of the other two network architectures with respect to all the evaluated performance measures, which can be seen in figure \ref{fig:eu_results}. With a top-1 accuracy of 0.904 it trumps CNN\_B and CNN\_C with 0.743 and ??? respectively. Comparing the F1 score we get a similar result: 0.90 versus 0.74 and ???. This experiment confirmed a few assumptions. Firstly, it proves that convolutional neural networks can be successfully used to classify audio data. Secondly, demonstrates that spectrogram images are meaningful representation for audio that retains enough information for language identification. Thirdly, it shows that large kernels for the initial convolutional layers are indeed favorable. The increased receptive field captures both the time domain and frequencies better. 
+CNN\_A outperforms both of the other two network architectures with respect to all the evaluated performance measures, which can be seen in figure \ref{fig:eu_results}. With a top-1 accuracy of 0.904 it trumps CNN\_B and CNN\_C with 0.743 and 0.68, respectively. Comparing the F1 score we get a similar result: 0.90 versus 0.74 and 0.68. This experiment confirmed a few assumptions. Firstly, it proves that convolutional neural networks can be successfully used to classify audio data. Secondly, demonstrates that spectrogram images are meaningful representation for audio that retains enough information for language identification. Thirdly, it shows that large kernels for the initial convolutional layers are indeed favorable. The increased receptive field captures both the time domain and frequencies better. 
 Based on these findings did some further testing with CNN\_A. Based on Mishkin et al.\cite{mishkin2016systematic} we switched the convolutional layers' ReLU activations to Exponential Linear Units\cite{clevert2015fast} (ELU) but without any improvement. Baoguan et al. \cite{shi2016end} propse to use 1x2 rectangular pooling windows instead of the conventional square ones. This tweak yields feature maps with larger width, hence longer features along the time domain. In theory this should increase the CNN's sensitivity at judging the occurrence of frequencies at certain time intervals. For this experiment we were unable to gain any improvement, but we will discuss this approach some more for our CRNN approach later.
 
-The goal of this thesis is to evaluate the use of Deep Convolutional Recurrent Networks. Therefore we extended our previously best performing CNN\_A with a bidirectional LSTM layer. We interpreted the CNN output as intermediate representation of the audio frequencies and used every vector entry along the x axis as a single step / input for the LSTMs. During training we froze the convolutional layer to only learn the frequency sequence of the audio sample. Our bidirectional LSTM layer trained two individual LSTMs with 512 outputs each, one training the input sequence from the start and one from the end. Both outputs were concatenated to form a single output vector with  1024 dimensions which is followed by single fully connected layer for classification.
+The goal of this thesis is to evaluate the use of Deep Convolutional Recurrent Networks. Therefore we extended our previously best performing CNN\_A with a bidirectional LSTM layer. We interpreted the CNN output as intermediate representation of the audio frequencies and used every vector entry along the x-axis as a single step / input for the LSTMs. During training we froze the convolutional layer to only learn the frequency sequence of the audio sample. Our bidirectional LSTM layer trained two individual LSTMs with 512 outputs each, one training the input sequence from the start and one from the end. Both outputs were concatenated to form a single output vector with  1024 dimensions which is followed by single fully connected layer for classification.
 Our CRNN architecture outperformed all CNN approaches significantly. With a top-1 accuracy of 0.98 and a F1 score of 0.98 it proves the viability of the CRNN approach and reaffirms the central hypothesis of this thesis.
 
 
 \todo{tabelle mit architecture CNN\_C???}
 
+\subsubsection{Effect of Audio Duration} 
+\label{sec:duration}
+For all previous experiments we split all audio recording into ten second segments, which translated into an image dimension of 500x129 pixels for the spectrogram. We decided on 10 second audio snippets based on the setup of the NIST LRE 2015 \footnote{\url{https://www.nist.gov/itl/iad/mig/2015-language-recognition-evaluation}, accessed 15.02.2017} challenge. To study the effect of the audio duration on classification performance we set up a version of the EU Speech Repository dataset with non-overlapping five seconds snippets and same number of frequency bins. Due to the reduced input dimensions of 250x129 pixels we could not just use our previously trained models but had to retrain new models.
+
+To set a baseline we used the same CNN\_A architecture as explained in the previous section. When training it completely from scratch we achieved an accuracy of 0.81 falling short of the results achieved with ten second snippets. Next, we applied some transfer learning and finetuned CNN\_A on the new five second dataset. Since the convolutional layers are not bound to a specific input size and given that the frequency features did not change in dimension we were able to reuse the complete  convolutional weights. For the finetuning we froze the convolutional layers, confident in their ability to detect frequencies, and only retrained the final two fully connected layers. With the bisection of the input data the model amount of model parameters were greatly reduced, especially the fully connected layer weights. To account for this we finetuned on model with a fully connected layer of 512 outputs and a second one with the default 1024 outputs. Overall this yielded an accuracy of 0.88 and 0.89, respectively. The effect of the smaller fully connected layer is only marginal. 
+
+After establishing a solid CNN foundation we applied the same CRNN approach again as previously highlighted. Due to the shorter audio duration the final pooling layer only features 5 output units along the x-axis compared to the 13 output units of the ten second CRNN. When interpreted as a sequence of time steps and fed into the bidirectional LSTM the accuracy improved only marginally to 0.90. We suspect that the number of time steps was too little to take full advantage of the recurrent network layer.
+In an effort to increase the number of output units of the final pooling layer and hence increase the sequence length we applied 1x2 rectangular pooling again. We changed the final two pooling layers and bumped up the number of output units along the x-axis to 22. The y-axis remained unaffected. The resulting accuracy of 0.90 and the F1 score of 0.91 remained comparable to the previous model and did not bring the desired effect. 
+
+In summary we believe that decreasing the duration of the audio snippets used for training has a negative effect on the classification performance. While it is possible to train and finetune CNNs that match their ten second counterparts we found that the CRNN approach does not boost the model effectiveness in a similar manner.
+	
+	\begin{table}[]
+	\centering
+	\begin{tabularx}{\textwidth}{lrr}
+	\toprule
+	Model Architecture		& Accuracy 		& F1 	\\ \midrule
+	CNN from scratch    		& 0.81			& 0.81 	\\
+	CNN finetuned (FC 1024)	& 0.88			& 0.89 	\\
+	CNN finetuned (FC 512)	& 0.89			& 0.89 	\\
+	CRNN with 5 time steps	& 0.90			& 0.91 	\\
+	CRNN with 22 time steps & 0.90			& 0.91 	\\ \midrule
+	CRNN (10s) for reference& 0.98			& 0.98 	\\ 
+ 	\bottomrule
+	\end{tabularx}
+	\caption{Various CNN and CRNN model configurations trained on five second audio samples. The best performing five second CRNN still falls short of its ten second counterpart with an accuracy of 0.90 and 0.98, respectively.}
+	\label{tab:audio_duration}
+	\end{table}
+
+
 \subsubsection{Results for YouTube News Dataset}
 \label{sec:results_news}
+Following the promising results from the experiments with the EU Speech Repository we switched to the ten time larger YouTube News dataset for further training and evaluation.
+
+	\begin{figure}[]
+  		\centering
+    	\includegraphics[width=\textwidth, keepaspectratio]{plots/results_news_plot.pdf}
+    	\caption{Performance measurement comparison between our CNN and CRNN architecture and In}
+    	\label{fig:news_results}
+	\end{figure}
+	
+	
+	total params cnn 3.815.140
+	total params inception 21.585.348
 
 \subsubsection{Inter Language Discrimination} 
 \label{sec:lang_discrimination}
-\subsubsection{Effect of Audio Duration} 
-\label{sec:duration}
+
 \subsubsection{Noise Robustness} 
 \label{sec:noise_robustness}
 \subsubsection{Background Music Robustness} 
