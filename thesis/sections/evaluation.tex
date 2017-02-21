@@ -62,7 +62,7 @@ Neural networks have a multitude of hyperparameters that influence the training 
 	\item[Batch Size] We specified the batch size depending on the available VRAM of the training machine. We used a value of 64 for Machine A and 128 for Machine B. See section \ref{sec:hardware} for the hardware specifications. 
 	\item[Weight Regularization] We employed the L2 norm as a weight regularizer for all convolutional and fully connected layers to improve the models generality. We penalize our loss with a weight decay value of 0.001. 
 	\item[Epochs] We limited the model training to a maximum of 50 epochs when using the Adam solver. We usually reach convergence well below this threshold. For training sessions with SGD we increased this considerably. To speed up our workflow we employed an early stopping policy and stopped a training if the validation accuracy and loss did not increase within a ten window.
-	\item[Metrics] We observed the loss, accuracy, recall, precession, f1 measure, and equal error rate for both the training and validation set during model training. All values were saved to log files and visualized as graphs in Tensorboard\footnote{\url{https://www.tensorflow.org/how_tos/summaries_and_tensorboard/}, accessed 30.01.2017}.  
+	\item[Metrics] We observed the loss, accuracy, recall, precession, f1 measure, and equal error rate for both the training and validation set during model training. All values were saved to log files and visualized as graphs in TensorBoard.  
 	\item[Loss] As is common for multivariate classification all models were trained with a softmax cross-entropy loss function.
 	\end{description}
 
@@ -175,20 +175,61 @@ In summary we believe that decreasing the duration of the audio snippets used fo
 \subsubsection{Results for YouTube News Dataset}
 \label{sec:results_news}
 Following the promising results from the experiments with the EU Speech Repository we switched to the ten time larger YouTube News dataset for further training and evaluation.
+For our first experiment we used the same CNN\_A architecture as before but initialized the model weights with the weights of best performing model of the EU Speech Repository evaluation. Our reasoning here was to reuse the convolutional layers that were already trained to identify frequency ranges. However, with an accuracy of only 0.79 I did not perform as strongly as anticipated. One reason for this could be that the EU dataset is a lot smaller and does not feature as many diverse situation as news broadcasts. All audio is recorded in a similar environment without much background noise and exhibits high signal quality.
+
+Next, we trained the same CNN completely from scratch with randomly initialized weights. We had several setbacks when using an Adam optimizer and reverted to using standard SGD to keep our loss in check. Additionally we employed gradient clipping to avoid the exploding gradient problem. With these measure we were able to get the model to converge and gained an accuracy of 0.9090 besting our previous attempt. 
+Given the new dataset we also tried to increase the number of feature maps of the model's convolutional layers by doubling them. This, however, did not help.
+Based on this CNN we added the our bidirectional LSTM layers again, just like we did with the previous CRNNs. We were able slightly improve our accuracy and F1 score to 0.9124, respectively. 
+
+To see how our model architecture fares against established deep learning model we trained a model using Google's Inception-v3\cite{szegedy2016rethinking} layout. This resulted in a top accuracy of 0.9488 improving our results significantly. Applying the CRNN treatment to this model increased the performance by roughly 1\% to an accuracy of 0.9579. The trained the CRNN with both the convolutional layers frozen and trainable and found the frozen variant to do better. Figure \ref{fig:news_results} shows an overview of the performance metrics of the mentioned experiements.
+The increase performance, however, does not come without a cost. With a total of 3.153.924 parameters our CRNN uses roughly six times less parameters then the Inception-v3 CRNN with its 19 million. This increases training time, requires a large enough dataset and consumes more GPU memory. On disk the serialized model weights come in at 30MB versus 260MB, which could be a potential disadvantage for deployment on mobile phones.
 
 	\begin{figure}[]
   		\centering
     	\includegraphics[width=\textwidth, keepaspectratio]{plots/results_news_plot.pdf}
-    	\caption{Performance measurement comparison between our CNN and CRNN architecture and In}
+    	\caption{Performance measurement comparison between our CNN and CRNN models and Inception-v3 based models. With a top accuracy of 0.96 the Inception style CRNN performs best but needs more than five times the amount of parameters compared to our proposed model architecture.}
     	\label{fig:news_results}
 	\end{figure}
 	
-	
-	total params cnn 3.815.140
-	total params inception 21.585.348
+
 
 \subsubsection{Inter Language Discrimination} 
 \label{sec:lang_discrimination}
+
+Previous work\cite{montavon2009deep} raised concerns about the similarity of our four feature languages \textendash{} English, German, French and Spanish \textendash{} and the model's inability to discriminate between them properly. Both English and German belong to the West Germanic language family, while French and Spanish are part of the Romance languages. We hypothesized that our deep learning approach to language identification is able to differentiate between them reliably. 
+Table \ref{tab:language_family_crnn} shows the confusion matrix when evaluating language family pairs on the best performing CRNN. Spanish and French audio files separate very well with hardly any wrong classifications. Both languages are more likely to be classified as German and English rather then as the respective other, demonstrating that they are quite distinctive within their language family. 
+German and English language samples have a tendency to be misclassified as the respective other language. Furthermore English also has a slight bias towards French, an observation in line with related work\cite{werkmeister2016practical}. German, however, distributes its classification error fairly between French and Spanish. Overall, German samples are misclassified the most across all languages.
+ 	
+	\todo{Consider showing error rates instead of absolute numbers}
+	
+	\begin{table}[h]
+	\centering
+	\begin{tabularx}{\textwidth}{l|rrrr}
+	      & EN     & DE     & FR     & ES \\ \midrule
+	  EN  & 6153   & 339    & 181    & 225 \\
+	  DE  & 426    & 6128   & 173    & 162 \\
+	  FR  & 200    & 145    & 6447   & 107 \\
+	  ES  & 214    & 170    & 115    & 6399 \\
+	\end{tabularx}
+	\caption{Confusion matrix of the best performing CRNN. English audio files are likely to be misclassified as German and vice versa. Both languages belong the family of Germanic languages. }
+	\label{tab:language_family_crnn}
+	\end{table}
+	
+	Table \ref{tab:language_family_inception} shows the confusion matrix for the Inception-v3 CRNN. The observations here match those for other model. German has the most classification errors again. 
+	
+	\begin{table}[h]
+	\centering
+	\begin{tabularx}{\textwidth}{l|rrrr}
+	      & EN     & DE     & FR     & ES \\ \midrule
+	  EN  & 6648   & 140    & 45     & 61 \\
+	  DE  & 152    & 6639   & 62     & 44 \\
+	  FR  & 68     & 59     & 6742   & 27 \\
+	  ES  & 75     & 83     & 42     & 6697 \\
+	\end{tabularx}
+	\caption{Confusion matrix of the Inception-v3 CRNN. Despite its deeper architecture it makes the same mistakes as our proposed CRNN. }
+	\label{tab:language_family_inception}
+	\end{table}
+ 
 
 \subsubsection{Noise Robustness} 
 \label{sec:noise_robustness}

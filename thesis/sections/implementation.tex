@@ -4,24 +4,22 @@ This section will outline the employed software and hardware resources of the sy
 \subsection{Software}
 \label{sec:software}
 
-
-	The language identification system is implemented in Python. We used the open source deep learning framework Keras\cite{chollet2015keras} with the TensorFlow\cite{abadi2016tensorflow} backend for training our neural networks. Keras provides us with a set of higher level machine learning primitives such as convolutional layers and optimizing algorithms without abstracting too much away. Internally it builds on Google's open source numerical operation library TensorFlow which is optimized to quickly compute large multidimensional data on GPUs.
-		
-	 
-	From a high level perspective, our system was designed in three parts. 
+	The language identification system is implemented in Python. We used the open source deep learning framework Keras\cite{chollet2015keras} with the TensorFlow\cite{abadi2016tensorflow} backend for training our neural networks. Keras provides us with a set of higher level machine learning primitives such as convolutional layers and optimizing algorithms without abstracting too much away. Internally it builds on Google's open source numerical operation library TensorFlow which is optimized to quickly compute large multidimensional data on GPUs. We make heavy use Keras' neural network building blocks, e.g. convolutional layers and the efficient LSTM implementation. With the recent announcement of Tensorflow version 1.0\footnote{\url{https://research.googleblog.com/2017/02/announcing-tensorflow-10.html?m=1}, accessed} it should be possible to generate a small and efficient binary version of our models ready to be used on mobile phones.
 	
-	\begin{description}
-		\item[The preprocessor] Its job is to download, extract, and convert the data. The preprocessor clips the audio tracks for raw video footage and converts them into WAV files before ultimately converting the data into PNG images for the training. Details can be found in section \ref{sec:data_processing}.
-		\item[The trainer]
-		\item[The evaluator] 
-	\end{description}
-	
+	All models are persisted to disk during training, including a summary of the layer architecture as well as the model weights. This makes it easy to load and evaluate model later. During evaluation, the performance metrics are calculated using the Scikit Learn\cite{scikit-learn} framework. All measurement are logged and visualized using TensorBoard\footnote{\url{https://www.tensorflow.org/how_tos/summaries_and_tensorboard/}, accessed 30.01.2017}, both for the training and validation set. Having the ability to easily study and compare different metrics like accuracy and loss  across several training runs made it very comfortable to judge the progress of our research. Figure \ref{fig:tensorboard} shows a TensorBoard instance with several models open for discussion. 
 
+	\begin{figure}[]
+  		\centering
+    	\includegraphics[width=\textwidth,keepaspectratio]{img/tensorboard.png}
+    	\caption{Training accuracy and loss of different models  visualized in TensorBoard.}
+    	\label{fig:tensorboard}
+	\end{figure}		
+	
 \subsection{Data Preprocessing}
 \label{sec:data_processing}
 All audio files have to be preprocessed before feeding them to the neural network. As a first step all files are encoded as uncompressed, lossless Waveform Audio File Format\footnote{\url{http://www.microsoft.com/whdc/device/audio/multichaud.mspx}, accessed 23.02.2017}, WAVE, commonly know by its file extension *.wav. This conversion has two advantages: A lossless data codec allows for future audio manipulations with any quality loss and makes the data easily readable by third party programs and library such as SciPy\footnote{\url{https://www.scipy.org/}, accessed 23.02.2017}. 
 
-	Since our CNN does not operate on raw waveform audio signals we transfer it into the image domain. As introduced in section \ref{sec:audio_representations} we used a spectrogram representation of the audio file for model training. The spectrograms were generated using the open source command line tool SoX\footnote{\url{http://sox.sourceforge.net/}, accessed 23.02.2017}. Spectrograms are generated using a Hann window and 129 frequency bins along the frequency-axis (y-axis). The time-axis (x-axis) is rendered at 25 pixel per second. Each audio sequence is clipped into non-overlapping ten second segments. The  final segment is discarded to avoid segments shorter than the required ten seconds. We decided against filtering silent section within the audio segment to keep the natural pauses between words and not disturb the regular speech rhythm. Frequency intensities are mapped to a gray scale. The resulting greyscale images are saved as lossless PNG files and are 500 pixel in width and 129 pixel in height. Appendix \ref{sec:appendix_a} includes the complete listing \ref{lst:spectrograms} for generating spectrogram images with SoX.
+	Since our CNN does not operate on raw waveform audio signals we transfer our features into the image domain. As introduced in section \ref{sec:audio_representations} we used a spectrogram representation of the audio file for training our models. The spectrograms were generated using the open source command line tool SoX\footnote{\url{http://sox.sourceforge.net/}, accessed 23.02.2017}. Spectrograms are calculated using a Hann window and 129 frequency bins along the frequency axis (y-axis). The time axis (x-axis) is rendered at 25 pixel per second. Each audio sequence is clipped into non-overlapping ten second segments. The  final segment is discarded to avoid segments shorter than the required ten seconds. We decided against filtering silent section within the audio segment to keep the natural pauses between words and not disturb the regular speech rhythm. Frequency intensities are mapped to a gray scale. The resulting greyscale images are saved as lossless PNG files and are 500 pixel in width and 129 pixel in height. Appendix \ref{sec:appendix_a} includes the complete listing \ref{lst:spectrograms} for generating spectrogram images with SoX.
 	
 	As can be seen in figure \ref{fig:spectrogram} the spectrograms feature very apparent bright ripple-like pattern. Each of these represents a strong activation of a certain frequency over time. Several frequency activations can be active at once constituting a particular phoneme or sound. A sequence of these phonemes forms words and is only interrupted by short speech pauses. It is our aim to learn the characteristic and unique composition of these frequency activation for every language in our classifier. 
 
@@ -33,13 +31,6 @@ All audio files have to be preprocessed before feeding them to the neural networ
     	\label{fig:spectrogram}
 	\end{figure}
 	
-    \begin{itemize}
-        \item Spectrogram Generation
-        \item Data Segmentation
-        \item (Augmentation)
-        \item train / test split
-		\item number of training samples
-    \end{itemize}
 
 \subsection{CNN Architecture}
 \label{sec:cnn_architecture}
