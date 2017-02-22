@@ -9,6 +9,8 @@ import tempfile
 import shutil
 import sys
 
+from pydub import AudioSegment
+
 if (sys.version_info >= (3,0)):
     from queue import Queue
 else:
@@ -46,46 +48,34 @@ class VinylBackgroundSpectrogramGenerator(object):
 
     def audioToSpectrogram(self, file, pixel_per_sec, height):
 
-        scale_factor1 = 0.95
-        scale_factor2 = 0.5
-
         noise_file_index = random.randint(1, len(NOISE_FILES_LENGTH))
-        noise_file_name = "vinyl_noise/noise{}.wav".format(noise_file_index)
-        noise_length = NOISE_FILES_LENGTH[noise_file_index - 1]
+        noise_file_name = "vinyl_noise/normalized-noise{}.wav".format(noise_file_index)
 
-        audio_stats = sox.file_info.stat(file)
-        input_length = audio_stats["Length (seconds)"]
-        input_volume = audio_stats["Volume adjustment"]
+        with tempfile.NamedTemporaryFile(suffix='.wav') as noisy_speech_file:
 
-        repeats_needed = int(ceil(input_length / noise_length))
+            noise = AudioSegment.from_file(noise_file_name)
+            speech = AudioSegment.from_file(file)
 
-        with tempfile.NamedTemporaryFile(suffix='.wav') as noise_file:
+            speech.apply_gain(noise.dBFS - speech.dBFS)
 
-            noise_creator = sox.Transformer()
-            noise_creator.repeat(repeats_needed)
-            noise_creator.trim(0, input_length)
-            noise_creator.remix(num_output_channels=1)
-            noise_creator.convert(samplerate=sox.file_info.sample_rate(file))
-            noise_creator.gain(10, normalize=False)
-            noise_creator.build(noise_file_name, noise_file.name)
+            noisy_speech = speech.overlay(noise - 10, loop=True)
+            noisy_speech.export(noisy_speech_file.name, format="wav")
 
-            with tempfile.NamedTemporaryFile(suffix='.wav') as noisy_speech_file:
+            print(noisy_speech_file.name)
+            print("speech", speech.dBFS)
+            print("noise", noise.dBFS)
+            print("mix", noisy_speech.dBFS)
 
-                mixer = sox.Combiner()
-                # mixer.remix(num_output_channels=1)
-                # mixer.rate(10000)
-                mixer.build([file, noise_file.name], noisy_speech_file.name, "mix", [scale_factor1 * input_volume, scale_factor2])
+            # shutil.copyfile(noisy_speech_file.name, os.path.join("/extra/tom/news2/debug", "mixed_" + os.path.basename(noisy_speech_file.name)))
 
-                # shutil.copyfile(noisy_speech_file.name, os.path.join("/extra/tom/news2/debug", os.path.basename(noisy_speech_file.name)))
+            with tempfile.NamedTemporaryFile(suffix='.png') as image_file:
+                command = "{} -n remix 1 rate 10k spectrogram -y {} -X {} -m -r -o {}". format(noisy_speech_file.name, height, pixel_per_sec, image_file.name)
+                sox.core.sox([command])
 
-                with tempfile.NamedTemporaryFile(suffix='.png') as image_file:
-                    command = "{} -n remix 1 rate 10k spectrogram -y {} -X {} -m -r -o {}". format(noisy_speech_file.name, height, pixel_per_sec, image_file.name)
-                    sox.core.sox([command])
+                # spectrogram can be inspected at image_file.name
+                image = Image.open(image_file.name)
 
-                    # spectrogram can be inspected at image_file.name
-                    image = Image.open(image_file.name)
-
-                    return np.array(image)
+                return np.array(image)
 
     def get_generator(self):
 
@@ -121,7 +111,7 @@ class VinylBackgroundSpectrogramGenerator(object):
                     yield slice
 
             except Exception as e:
-                print("SpectrogramGenerator Exception: ", e, file)
+                print("VinylBackgroundSpectrogramGenerator Exception: ", e, file)
                 pass
 
             finally:
