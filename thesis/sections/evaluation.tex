@@ -235,32 +235,59 @@ German and English language samples have a tendency to be misclassified as the r
 \label{sec:noise_robustness}
 Given that we left our data unadulterated we expect a certain degree of noise within the dataset. Therefore we hypothesize that the neural network develops some noise robustness by itself. For instance, the convolution operations of the earlier layers summarize pixel values over an image patch and help with masking noise. To prove our theory we generated two augmented datasets with the YouTube news dataset. 
 For the first one we mixed the audio signal with some randomly generated white noise. The resulting audio samples are still easily identifiable for human listeners. The noise has a strong audible presence, so much so that a human tester will easily be annoyed after a few seconds of listening to it.
-For the second augmentation we added a more periodic cracking noise emulating analog telephony or a bad voice chat connection. We sampled a selection of fitting sound effects and randomly applied these to the source signal. The resulting noise is not as present and annoying as the white noise, but gives the augmented audio file a subdued vintage quality.
+For the second augmentation we added a more periodic cracking noise emulating analog telephony or a bad voice chat connection. We sampled a selection of fitting sound effects and randomly applied these to the source signal using the PyDub\footnote{\url{https://github.com/jiaaro/pydub}, accessed 01.03.2017} library. The resulting noise is not as noticeable and intrusive as the white noise, but gives the augmented audio file a subdued vintage quality.
 
 As expected the white noise did not deteriorate the language identification performance. If anything it seems to muffle audio segments 
  
 	\begin{table}[]
 	\centering
-	\begin{tabularx}{\textwidth}{lrr}
+	\begin{tabularx}{\textwidth}{lrrrrr}
 	\toprule
-	Metrics					& CRNN 		& Inception-v3 CRNN 	\\ \midrule
-	white noise accuracy    	& 0.631177325581			& 0.913771802326 	\\
-	white noise F1			& 0.61			& 0.91 	\\
-	cracking noise accuracy	& 0.91092662413			&  	\\
-	cracking noise F1 		& 0.91				&  	\\
+	Dataset & \multicolumn{2}{c}{CRNN} & \multicolumn{2}{c}{Inception-v3 CRNN} \\  
+                & Accuracy  & F1    & Accuracy  & F1   \\ \midrule
+white noise     & 0.63      & 0.63  & 0.91      & 0.91 \\
+cracking noise  & 0.XX      & 0.XX  & 0.XX      & 0.XX \\
  	\bottomrule
 	\end{tabularx}
-	\caption{}
+	\caption{Accuracy and F1 score for our models evaluated on the speech data augmented with two different types of noise.}
 	\label{tab:audio_duration}
 	\end{table}
 
+- corrupted files (noise louder than speech)
 
 \subsubsection{Background Music Robustness} 
 \label{sec:music_robustness}
+Many real world audio applications involve a some form of music. Therefore we evaluated our model to see if language identification was still possible when mixing speech with music. For this experiment we used two different test sets. For the first series we augmented our existing YouTube news dataset with randomly sampled background music in a similar fashion to the background noise augmentation. The background audio was obtained fron Soundcloud\footnote{\url{https://soundcloud.com/royalty-free-audio-loops}, accessed 01.03.2017} and features royalty free, instrument-only music from various genres, including Pop, Dubstep, Rock and Electro amongst others. 
+We volume normalized these sounds and overlaid them onto our speech data while trying to stay below the speech audio volume. In the best cases the two audio streams blend nicely with the background music producing a soft but noticeable ambient effect, while retaining the clarity of the speech. In other cases the audio levels and volume are over-accentuate for one or the other. The final result, however, does not resemble a complete song. We changed neither the tempo nor the pitch of our speaker and the rhythm of the vocals does not match the rhythm of the background audio. Therefore we gathered a small second test set of XXX \todo{insert number of songs} songs for each of the following genres: Pop, Rock, Hiphop, and Folk. 
+Given that our training set does not intentionally include samples with music or songs we expected the performance do be drastically lower then for pure speech samples.
 
+	\begin{table}[]
+	\centering
+	\begin{tabularx}{\textwidth}{lrrrr}
+	\toprule
+Dataset & \multicolumn{2}{c}{CRNN} & \multicolumn{2}{c}{Inception-v3 CRNN} \\   
+                  & Accuracy  & F1    & Accuracy   & F1   \\ \midrule
+Background Music  & 0.63      & 0.90  & 0.63  & 0.90 \\
+Pop Songs         & 0.63      & 0.90  & 0.63  & 0.90 \\
+Rock Songs        & 0.63      & 0.90  & 0.63  & 0.90 \\
+HipHop Songs      & 0.63      & 0.90  & 0.63  & 0.90 \\
+Folk Songs        & 0.63      & 0.90  & 0.63  & 0.90 \\
+
+ 	\bottomrule
+	\end{tabularx}
+	\caption{Accuracy and F1 score for our models evaluated on the speech data augmented background noise and songs sampled from four different genres.}
+	\label{tab:audio_duration}
+	\end{table}
 
 \subsubsection{Model Extensibility} 
 \label{sec:extensibility}
+So far all our experiments were conducted on datasets consisting of only four languages: English, German, French and Spanish. We complemented these with two new languages spoken by millions around the globe: Mandarin Chinese and Russian. The goal of this experiment was to learn whether we could easily expand our model to other languages. 
+We increased our existing YouTube news dataset with samples taken from Chinese and Russian new channels yielding the extended YouTube news dataset described in section \ref{sec:youtube_news}. In order to maintain the class distribution for six languages we had to decrease the number of training samples of the existing samples slightly. Table \ref{tab:dataset_comparison} contains the detailed difference for the extended YouTube news dataset.
+
+For this approach we first finetuned our previous best CNN by replacing the final fully connected layers and adjusting the number of output nodes. This model served as the basis for training the CRNN in a similar manner as in earlier experiements.
+
+Given that both new languages are rooted within their own language family and feature considerable different intonations we were content to find that the features learned by our model are indeed universal in nature. 
+
 \subsubsection{Visualization} 
 \label{sec:visualization}
 
