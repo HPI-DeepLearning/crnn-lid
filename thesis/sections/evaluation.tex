@@ -191,6 +191,7 @@ The increase performance, however, does not come without a cost. With a total of
     	\label{fig:news_results}
 	\end{figure}
 	
+	\todo{Plot loss decrease?}
 
 
 \subsubsection{Inter Language Discrimination} 
@@ -246,14 +247,17 @@ As expected the white noise did not deteriorate the language identification perf
 	Dataset & \multicolumn{2}{c}{CRNN} & \multicolumn{2}{c}{Inception-v3 CRNN} \\  
                 & Accuracy  & F1    & Accuracy  & F1   \\ \midrule
 white noise     & 0.63      & 0.63  & 0.91      & 0.91 \\
-cracking noise  & 0.XX      & 0.XX  & 0.XX      & 0.XX \\
+cracking noise  & 0.82      & 0.83  & 0.93      & 0.93 \\
  	\bottomrule
 	\end{tabularx}
 	\caption{Accuracy and F1 score for our models evaluated on the speech data augmented with two different types of noise.}
 	\label{tab:audio_duration}
 	\end{table}
 
+\todo{spectrogram comparision images}
+
 - corrupted files (noise louder than speech)
+- explain finetuneing / other trainings
 
 \subsubsection{Background Music Robustness} 
 \label{sec:music_robustness}
@@ -267,7 +271,7 @@ Given that our training set does not intentionally include samples with music or
 	\toprule
 Dataset & \multicolumn{2}{c}{CRNN} & \multicolumn{2}{c}{Inception-v3 CRNN} \\   
                   & Accuracy  & F1    & Accuracy   & F1   \\ \midrule
-Background Music  & 0.63      & 0.90  & 0.63  & 0.90 \\
+Background Music  & 0.      & 0.  & 0.89  & 0.89 \\
 Pop Songs         & 0.63      & 0.90  & 0.63  & 0.90 \\
 Rock Songs        & 0.63      & 0.90  & 0.63  & 0.90 \\
 HipHop Songs      & 0.63      & 0.90  & 0.63  & 0.90 \\
@@ -282,11 +286,36 @@ Folk Songs        & 0.63      & 0.90  & 0.63  & 0.90 \\
 \subsubsection{Model Extensibility} 
 \label{sec:extensibility}
 So far all our experiments were conducted on datasets consisting of only four languages: English, German, French and Spanish. We complemented these with two new languages spoken by millions around the globe: Mandarin Chinese and Russian. The goal of this experiment was to learn whether we could easily expand our model to other languages. 
-We increased our existing YouTube news dataset with samples taken from Chinese and Russian new channels yielding the extended YouTube news dataset described in section \ref{sec:youtube_news}. In order to maintain the class distribution for six languages we had to decrease the number of training samples of the existing samples slightly. Table \ref{tab:dataset_comparison} contains the detailed difference for the extended YouTube news dataset.
+We increased our existing YouTube news dataset with samples taken from Chinese and Russian news channels yielding the extended YouTube news dataset described in section \ref{sec:youtube_news}. In order to maintain the class distribution for six languages we had to decrease the number of training samples of the existing samples slightly. Table \ref{tab:dataset_comparison} contains the details for the extended YouTube news dataset.
 
-For this approach we first finetuned our previous best CNN by replacing the final fully connected layers and adjusting the number of output nodes. This model served as the basis for training the CRNN in a similar manner as in earlier experiements.
+For this approach we first finetuned our previous best CNN by replacing the final fully connected layers and adjusting the number of output nodes to accommodate for six classes. The resulting model served as the basis for training the CRNN in a similar manner as in earlier experiments. Applied on the test set we measured an accuracy of 0.92 and F1-score of 0.92. Both measurements match our previous evaluation with four languages on the YouTube news dataset as laid out in section \ref{sec:results_news} proving that the proposed CRNN architecture can easily be extended to cover more languages. Figure \ref{fig:6lang} shows individual performance measure of each language. Mandarin Chinese outperforms all other languages with a top accuracy of 0.96, which could be interpreted as it sounding the most contrasting to western languages and featuring its own unique intonation. We also noted that Russian was most frequently misclassified as Spanish and vice-versa. In contrast to our previous observation German is no longer the worst performing class, but English takes that role now. This is in part due to a significant number of misclassifcation as Russian samples.
 
-Given that both new languages are rooted within their own language family and feature considerable different intonations we were content to find that the features learned by our model are indeed universal in nature. 
+	\begin{table}[]
+	\centering
+	\begin{tabularx}{\textwidth}{lrrrr}
+	\toprule
+     & accuracy & precision & recall  & F1 \\ \midrule
+EN   & 0.86     & 0.89      & 0.88    & 0.88 \\
+DE   & 0.89     & 0.91      & 0.90    & 0.90 \\
+FR   & 0.93     & 0.94      & 0.93    & 0.94 \\
+ES   & 0.92     & 0.91      & 0.93    & 0.92 \\
+CN   & 0.96     & 0.97      & 0.96    & 0.96 \\
+RUS  & 0.92     & 0.90      & 0.92    & 0.91 \\
+
+ 	\bottomrule
+	\end{tabularx}
+	\caption{}
+	\label{tab:6lang}
+	\end{table}
+
+	\begin{figure}[]
+  		\centering
+    	\includegraphics[width=\textwidth, keepaspectratio]{plots/results_6lang_plot.pdf}
+    	\caption{Individual performance measurements for each of our six target languages: English, German, French, Spanish, Mandarin Chinese, and Russian. Chinese exhibits the lowest misclassification rate while English performs the worst. Overall the model performance is consistent with previous evaluations on four languages as highlighted in section \ref{sec:results_news}.}
+    	\label{fig:6lang}
+	\end{figure}
+
+Given that both new languages are rooted within their own respective language families and feature considerable different intonations we were content to find that the features learned by our model are indeed universal in nature. We are confident in the believe that the approach to language identification proposed in this these can be successfully applied to a wide variety of languages.
 
 \subsubsection{Visualization} 
 \label{sec:visualization}
