@@ -8,7 +8,7 @@ Further, we experiment with modified model architectures to optimize our model f
 
 \subsubsection{Hardware Resources}
 \label{sec:hardware}
-	In order to facilitate Keras' and TensorFlow's hardware-accelerated computation we ran of training on CUDA\footnote{\url{https://developer.nvidia.com/cuda-zone}, accessed 30.01.2017} compatible GPU machines. All trainings and experiments were executed on two CUDA enabled machines belonging to the Internet Technologies and Systems chair. Details can be found in table \ref{tab:hardware}.
+	In order to facilitate Keras' and TensorFlow's hardware-accelerated computation we ran of training on CUDA\footnote{\url{https://developer.nvidia.com/cuda-zone}, accessed 30.01.2017} compatible \ac{gpu} machines. All trainings and experiments were executed on two CUDA enabled machines belonging to the Internet Technologies and Systems chair. Details can be found in table \ref{tab:hardware}.
 		
 	\begin{table}[h]
 	\centering
@@ -137,7 +137,7 @@ Lastly we evaluated architecture CNN\_C which uses constant kernel size of 3x3 f
 CNN\_A outperforms both of the other two network architectures with respect to all the evaluated performance measures, which can be seen in figure \ref{fig:eu_results}. With a top-1 accuracy of 0.904 it trumps CNN\_B and CNN\_C with 0.743 and 0.68, respectively. Comparing the F1 score we get a similar result: 0.90 versus 0.74 and 0.68. This experiment confirmed a few assumptions. Firstly, it proves that convolutional neural networks can be successfully used to classify audio data. Secondly, demonstrates that spectrogram images are meaningful representation for audio that retains enough information for language identification. Thirdly, it shows that large kernels for the initial convolutional layers are indeed favorable. The increased receptive field captures both the time domain and frequencies better. 
 Based on these findings did some further testing with CNN\_A. Based on Mishkin et al.\cite{mishkin2016systematic} we switched the convolutional layers' ReLU activations to Exponential Linear Units\cite{clevert2015fast} (ELU) but without any improvement. Baoguan et al. \cite{shi2016end} propse to use 1x2 rectangular pooling windows instead of the conventional square ones. This tweak yields feature maps with larger width, hence longer features along the time domain. In theory this should increase the CNN's sensitivity at judging the occurrence of frequencies at certain time intervals. For this experiment we were unable to gain any improvement, but we will discuss this approach some more for our CRNN approach later.
 
-The goal of this thesis is to evaluate the use of Deep Convolutional Recurrent Networks. Therefore we extended our previously best performing CNN\_A with a bidirectional LSTM layer. We interpreted the CNN output as intermediate representation of the audio frequencies and used every vector entry along the x-axis as a single step / input for the LSTMs. During training we froze the convolutional layer to only learn the frequency sequence of the audio sample. Our bidirectional LSTM layer trained two individual LSTMs with 512 outputs each, one training the input sequence from the start and one from the end. Both outputs were concatenated to form a single output vector with  1024 dimensions which is followed by single fully connected layer for classification.
+The goal of this thesis is to evaluate the use of Deep Convolutional Recurrent Networks. Therefore we extended our previously best performing CNN\_A with a bidirectional \ac{lstm} layer. We interpreted the \ac{cnn} output as intermediate representation of the audio frequencies and used every vector entry along the x-axis as a single step / input for the LSTMs. During training we froze the convolutional layer to only learn the frequency sequence of the audio sample. Our bidirectional LSTM layer trained two individual LSTMs with 512 outputs each, one training the input sequence from the start and one from the end. Both outputs were concatenated to form a single output vector with  1024 dimensions which is followed by single fully connected layer for classification.
 Our CRNN architecture outperformed all CNN approaches significantly. With a top-1 accuracy of 0.98 and a F1 score of 0.98 it proves the viability of the CRNN approach and reaffirms the central hypothesis of this thesis.
 
 
@@ -145,7 +145,7 @@ Our CRNN architecture outperformed all CNN approaches significantly. With a top-
 
 \subsubsection{Effect of Audio Duration} 
 \label{sec:duration}
-For all previous experiments we split all audio recording into ten second segments, which translated into an image dimension of 500x129 pixels for the spectrogram. We decided on 10 second audio snippets based on the setup of the NIST LRE 2015 \footnote{\url{https://www.nist.gov/itl/iad/mig/2015-language-recognition-evaluation}, accessed 15.02.2017} challenge. To study the effect of the audio duration on classification performance we set up a version of the EU Speech Repository dataset with non-overlapping five seconds snippets and same number of frequency bins. Due to the reduced input dimensions of 250x129 pixels we could not just use our previously trained models but had to retrain new models.
+For all previous experiments we split all audio recording into ten second segments, which translated into an image dimension of 500x129 pixels for the spectrogram. We decided on 10 second audio snippets based on the setup of the \ac{nist} LRE 2015 \footnote{\url{https://www.nist.gov/itl/iad/mig/2015-language-recognition-evaluation}, accessed 15.02.2017} challenge. To study the effect of the audio duration on classification performance we set up a version of the EU Speech Repository dataset with non-overlapping five seconds snippets and same number of frequency bins. Due to the reduced input dimensions of 250x129 pixels we could not just use our previously trained models but had to retrain new models.
 
 To set a baseline we used the same CNN\_A architecture as explained in the previous section. When training it completely from scratch we achieved an accuracy of 0.81 falling short of the results achieved with ten second snippets. Next, we applied some transfer learning and finetuned CNN\_A on the new five second dataset. Since the convolutional layers are not bound to a specific input size and given that the frequency features did not change in dimension we were able to reuse the complete  convolutional weights. For the finetuning we froze the convolutional layers, confident in their ability to detect frequencies, and only retrained the final two fully connected layers. With the bisection of the input data the model amount of model parameters were greatly reduced, especially the fully connected layer weights. To account for this we finetuned on model with a fully connected layer of 512 outputs and a second one with the default 1024 outputs. Overall this yielded an accuracy of 0.88 and 0.89, respectively. The effect of the smaller fully connected layer is only marginal. 
 
@@ -235,10 +235,24 @@ German and English language samples have a tendency to be misclassified as the r
 \subsubsection{Noise Robustness} 
 \label{sec:noise_robustness}
 Given that we left our data unadulterated we expect a certain degree of noise within the dataset. Therefore we hypothesize that the neural network develops some noise robustness by itself. For instance, the convolution operations of the earlier layers summarize pixel values over an image patch and help with masking noise. To prove our theory we generated two augmented datasets with the YouTube news dataset. 
-For the first one we mixed the audio signal with some randomly generated white noise. The resulting audio samples are still easily identifiable for human listeners. The noise has a strong audible presence, so much so that a human tester will easily be annoyed after a few seconds of listening to it.
-For the second augmentation we added a more periodic cracking noise emulating analog telephony or a bad voice chat connection. We sampled a selection of fitting sound effects and randomly applied these to the source signal using the PyDub\footnote{\url{https://github.com/jiaaro/pydub}, accessed 01.03.2017} library. The resulting noise is not as noticeable and intrusive as the white noise, but gives the augmented audio file a subdued vintage quality.
+For the first one we mixed the audio signal with randomly generated white noise sound. The resulting audio samples are still easily identifiable for human listeners. The noise has a very strong audible presence, so much so that a human tester will easily be annoyed after a few seconds of listening to it.
+For the second augmentation we added a more periodic cracking noise emulating analog telephony or a bad voice chat connection. We sampled a selection of fitting sound effects and randomly applied these to the source signal using the PyDub\footnote{\url{https://github.com/jiaaro/pydub}, accessed 01.03.2017} library. The resulting noise is not as noticeable and less intrusive as the white noise, but gives the augmented audio file a subdued vintage quality.
 
-As expected the white noise did not deteriorate the language identification performance. If anything it seems to muffle audio segments 
+The white noise did deteriorate the language identification performance significantly both for our CRNN proposal and the Inception-v3 CRNN as can be seen in table \ref{tab:noise}. The noise spectrogram in figure \ref{} show that the white noise effect has a very strong influence on the resulting image. Most parts of the image end up being covered by the distinct noise texture and only the lower frequency features remain intact. All pauses and fine grained details are lost to the noise sound. 
+The cracking experiment fared better did not incur such a dramatic drop in performance. That might be in part due to the consistent recurring sound of the noise in contrast to the randomly generated white noise sound. Perhaps a second factor was the lower, less intrusive volume used for augmenting this dataset.
+
+The deeper, more complex structure of the Inception-v3 CRNN did suffer a significantly smaller performance deterioration than our proposed model architecture. The more than five times as many parameters seem to capture the frequency features in a more robust manner.  In an attempt  to remedy the performance loss for our model we trained and finetuned models containing whitenoise data. We experimented with a 100\% noise dataset and the original news dataset extend with 10\% whitenoise for augmentation purposes. While these approaches did recovered some whitenoise performance they reduced the general language identification and cracking noise statistics as a trade off.
+Let it be noted that our audio mixing was fully automated and that the resulting samples varied in   speech and noise volume. We tried to match volume levels of speech and noise to maintain as much clarity of speech as possible, yet some samples will have an artificial quality to them.
+
+	\begin{figure}[]
+  		\centering
+    	\includegraphics[width=\textwidth, keepaspectratio]{img/noise_spectrograms.png}
+    	\caption{Spectrograms generated from the raw data, augmented with white noise and mixed with a cracking noise emulating analog telephony or a bad voice chat connection. The white noise aggressively subdues most higher frequencies and pauses causing a loss of classification performance. The cracking noise is less intrusive and therefore does not affect accuracy as much.}
+    	\label{fig:noise}
+	\end{figure}
+
+
+Overall we note that even deep convolutional recurrent network are still subject to the influence of noise on audio. We learned that our spectrogram preprocessing does not help in these situations and that different network architectures play an instrumental role in dealing with these situations.
  
 	\begin{table}[]
 	\centering
@@ -251,13 +265,10 @@ cracking noise  & 0.82      & 0.83  & 0.93      & 0.93 \\
  	\bottomrule
 	\end{tabularx}
 	\caption{Accuracy and F1 score for our models evaluated on the speech data augmented with two different types of noise.}
-	\label{tab:audio_duration}
+	\label{tab:noise}
 	\end{table}
 
-\todo{spectrogram comparision images}
 
-- corrupted files (noise louder than speech)
-- explain finetuneing / other trainings
 
 \subsubsection{Background Music Robustness} 
 \label{sec:music_robustness}
@@ -271,11 +282,11 @@ Given that our training set does not intentionally include samples with music or
 	\toprule
 Dataset & \multicolumn{2}{c}{CRNN} & \multicolumn{2}{c}{Inception-v3 CRNN} \\   
                   & Accuracy  & F1    & Accuracy   & F1   \\ \midrule
-Background Music  & 0.      & 0.  & 0.89  & 0.89 \\
-Pop Songs         & 0.63      & 0.90  & 0.63  & 0.90 \\
-Rock Songs        & 0.63      & 0.90  & 0.63  & 0.90 \\
-HipHop Songs      & 0.63      & 0.90  & 0.63  & 0.90 \\
-Folk Songs        & 0.63      & 0.90  & 0.63  & 0.90 \\
+Background Music  & 0.70      & 0.70  & 0.89  & 0.89 \\
+Pop Songs         & 0.XX      & 0.XX  & 0.XX  & 0.XX \\
+Rock Songs        & 0.XX      & 0.XX  & 0.XX  & 0.XX \\
+HipHop Songs      & 0.XX      & 0.XX  & 0.XX  & 0.XX \\
+Folk Songs        & 0.XX      & 0.XX  & 0.XX  & 0.XX \\
 
  	\bottomrule
 	\end{tabularx}
@@ -288,7 +299,7 @@ Folk Songs        & 0.63      & 0.90  & 0.63  & 0.90 \\
 So far all our experiments were conducted on datasets consisting of only four languages: English, German, French and Spanish. We complemented these with two new languages spoken by millions around the globe: Mandarin Chinese and Russian. The goal of this experiment was to learn whether we could easily expand our model to other languages. 
 We increased our existing YouTube news dataset with samples taken from Chinese and Russian news channels yielding the extended YouTube news dataset described in section \ref{sec:youtube_news}. In order to maintain the class distribution for six languages we had to decrease the number of training samples of the existing samples slightly. Table \ref{tab:dataset_comparison} contains the details for the extended YouTube news dataset.
 
-For this approach we first finetuned our previous best CNN by replacing the final fully connected layers and adjusting the number of output nodes to accommodate for six classes. The resulting model served as the basis for training the CRNN in a similar manner as in earlier experiments. Applied on the test set we measured an accuracy of 0.92 and F1-score of 0.92. Both measurements match our previous evaluation with four languages on the YouTube news dataset as laid out in section \ref{sec:results_news} proving that the proposed CRNN architecture can easily be extended to cover more languages. Figure \ref{fig:6lang} shows individual performance measure of each language. Mandarin Chinese outperforms all other languages with a top accuracy of 0.96, which could be interpreted as it sounding the most contrasting to western languages and featuring its own unique intonation. We also noted that Russian was most frequently misclassified as Spanish and vice-versa. In contrast to our previous observation German is no longer the worst performing class, but English takes that role now. This is in part due to a significant number of misclassifcation as Russian samples.
+For this approach we first finetuned our previous best CNN by replacing the final fully connected layers and adjusting the number of output nodes to accommodate for six classes. The resulting model served as the basis for training the CRNN in a similar manner as in earlier experiments. Applied on the test set we measured an accuracy of 0.92 and F1-score of 0.92. Both measurements match our previous evaluation with four languages on the YouTube news dataset as laid out in section \ref{sec:results_news} proving that the proposed CRNN architecture can easily be extended to cover more languages. Figure \ref{fig:6lang} shows individual performance measure of each language. Mandarin Chinese outperforms all other languages with a top accuracy of 0.96, which could be interpreted as it sounding the most contrasting to western languages and featuring its own unique intonation. We also noted that Russian was most frequently misclassified as Spanish and vice-versa. In contrast to our previous observation German is no longer the worst performing class, but English takes that role now. This is in part due to a significant number of misclassification as Russian samples.
 
 	\begin{table}[]
 	\centering
@@ -317,8 +328,18 @@ RUS  & 0.92     & 0.90      & 0.92    & 0.91 \\
 
 Given that both new languages are rooted within their own respective language families and feature considerable different intonations we were content to find that the features learned by our model are indeed universal in nature. We are confident in the believe that the approach to language identification proposed in this these can be successfully applied to a wide variety of languages.
 
-\subsubsection{Visualization} 
+\subsubsection{Visualizations} 
 \label{sec:visualization}
+All previous sections described and evaluated our model by measuring various performance indicators and applying them to different datasets. In this section we will present plots underlining earlier observations from a different perspective.
+
+First we visualized the high dimensional spectrogram embedding space using t-distributed stochastic neighbor embedding (\ac{tsne}) algorithm\cite{maaten2008visualizing}. t-SNE is nonlinear dimensionality reduction technique employed to map high dimensional data into 2D or 3D space for plotting. We applied this machine learning algorithm to the first 2000 predicitions of our second to last fully connected layer right before the classifier and managed to project our 1024 dimensional YouTube news data into a 2D space. Figure \ref{fig:tsne} shows the resulting plot, highlighting a good separation of our four language classes as independent clusters. Note that French and Spanish split very nicely while German and English have a degree of overlap. This is in line with our previous observations of classification errors as described in section \ref{sec:youtube_news}.
+
+	\begin{figure}[]
+  		\centering
+    	\includegraphics[width=\textwidth, keepaspectratio]{plots/tsne.pdf}
+    	\caption{A t-SNE plot of }
+    	\label{fig:tsne}
+	\end{figure}
 
 \subsubsection{Discussion and Comparison} 
 \label{sec:comparison}
