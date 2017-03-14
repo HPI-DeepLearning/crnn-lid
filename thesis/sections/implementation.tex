@@ -42,31 +42,59 @@ All audio files have to be preprocessed before feeding them to the neural networ
         \item Variations
     \end{itemize}
     
-    \begin{table}[h]
+  \begin{table}[h]
   \centering
-  \begin{tabularx}{\textwidth}{Xllll}
+  \begin{tabularx}{\textwidth}{Xccc}
   \toprule
-  Layer Type                       & input maps  & output maps & kernel & stride  \\ \midrule
-  \mbox{Convolution with} \mbox{Batch Normalization}  & 1           & 16     & 7x7    & 1       \\ 
-  Max Pooling                           & 16          & 16     & 2x2    & 2       \\ 
-  Convolution with Batch Normalization  & 16          & 32     & 5x5    & 1       \\ 
-  Max Pooling                           & 32          & 32     & 2x2    & 2       \\ 
-  Convolution with Batch Normalization  & 32          & 64     & 3x3    & 1       \\ 
-  Max Pooling                           & 64          & 64     & 2x2    & 2       \\ 
-  Convolution with Batch Normalization  & 64          & 128    & 3x3    & 1       \\ 
-  Max Pooling                           & 128         & 128    & 2x2    & 2       \\ 
-  Convolution with Batch Normalization  & 128         & 256    & 3x3    & 1       \\ 
-  Max Pooling                           & 256         & 256    & 2x2    & 2       \\ 
-  Dropout                               &             &        &        &         \\ 
-  Fully Connected                       & ???         & 1024   &        &         \\ 
-  Fully Connected                       & 1024        & 4      &        &        \\ 
+Layer Type                                          & output size    & kernel & stride  \\ \midrule
+\mbox{Convolution with} \mbox{Batch Normalization}  & 123 x 494 x 16 & 7x7    & 1       \\ 
+Max Pooling                                         & 61 x 247 x 16  & 2x2    & 2       \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 57 x 243 x 32  & 5x5    & 1       \\ 
+Max Pooling                                         & 28 x 121 x 32  & 2x2    & 2       \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 26 x 119 x 64  & 3x3    & 1       \\ 
+Max Pooling                                         & 13 x 59 x 64   & 2x2    & 2       \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 11 x 57 x 128  & 3x3    & 1       \\ 
+Max Pooling                                         & 5 x 28 x 128   & 2x2    & 2       \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 3 x 26 x 256   & 3x3    & 1       \\ 
+Max Pooling                                         & 1 x 13 x 256   & 2x2    & 2       \\ 
+Dropout \& Flatten                                  & 3328           &        &         \\ 
+\mbox{Fully Connected}                              & 1024           &        &         \\ 
+\mbox{Fully Connected}                              & 4              &        &         \\ 
   \bottomrule
   \end{tabularx}
-  \caption{The layer architecture for the convolutional neural network CNN\_A.}
+  \caption{The layerwise architecture for the convolutional neural network CNN\_A.}
   \label{tab:layers_CNN_A}
   \end{table}
     
+    ---------------
     
+  \begin{table}[h]
+  \centering
+  \begin{tabularx}{\textwidth}{Xccc}
+  \toprule
+Layer Type                                          & output size    & kernel & stride  \\ \midrule
+\mbox{Convolution with} \mbox{Batch Normalization}  & 127 x 498 x 64  & 3x3    & 1x1     \\ 
+Max Pooling                                         & 63 x 249 x 64   & 2x2    & 2x2     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 61 x 247 x 128  & 3x3    & 1x1     \\ 
+Max Pooling                                         & 30 x 123 x 128  & 2x2    & 2x2     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 28 x 121 x 256  & 3x3    & 1x1     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 26 x 119 x 256  & 3x3    & 1x1     \\ 
+Max Pooling                                         & 13 x 59 x 256   & 2x2    & 2x2     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 11 x 57 x 512   & 3x3    & 1x1     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 9 x 55 x 512    & 3x3    & 1x1     \\ 
+Max Pooling                                         & 4 x 27 x 512    & 2x2    & 2x2     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 2 x 25 x 512    & 3x3    & 1x1     \\ 
+Max Pooling                                         & 1 x 12 x 512    & 2x2    & 2x2     \\ 
+Flatten                                             & 6144            &        &         \\                        
+\mbox{Fully Connected}                              & 1024            &        &         \\
+\mbox{Fully Connected}                              & 4               &        &         \\
+  \bottomrule
+  \end{tabularx}
+  \caption{The layerwise architecture for the convolutional neural network CNN\_C.}
+  \label{tab:layers_CNN_C}
+  \end{table} 
+    
+    --------------------
 
 \subsection{CRNN Architecture}
 
@@ -77,3 +105,30 @@ All audio files have to be preprocessed before feeding them to the neural networ
         \item Transfer Learning / Fine-tuning
         \item 
     \end{itemize}
+    
+  \begin{table}[h]
+  \centering
+  \begin{tabularx}{\textwidth}{Xccc}
+  \toprule
+Layer Type                                          & output size    & kernel & stride  \\ \midrule
+\mbox{Convolution with} \mbox{Batch Normalization}  & 123 x 494 x 16  & 7x7    & 1x1     \\ 
+Max Pooling                                         & 61 x 247 x 16   & 2x2    & 2x2     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 57 x 243 x 32   & 5x5    & 1x1     \\ 
+Max Pooling                                         & 28 x 121 x 32   & 2x2    & 2x2     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 26 x 119 x 64   & 3x3    & 1x1     \\ 
+Max Pooling                                         & 13 x 59 x 64    & 2x2    & 2x2     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 11 x 57 x 128   & 3x3    & 1x1     \\ 
+Max Pooling                                         & 5 x 56 x 128    & 2x2    & 2x1     \\ 
+\mbox{Convolution with} \mbox{Batch Normalization}  & 3 x 54 x 256    & 3x3    & 1x1     \\ 
+Max Pooling                                         & 1 x 53 x 256    & 2x2    & 2x1     \\ 
+Permute                                             & 53 x 1 x 256    &        &         \\
+Reshape                                             & 53 x 256        &        &         \\
+\mbox{Bidirectional LSTM}                           & 1024            &        &         \\
+\mbox{Fully Connected}                              & 4               &        &         \\
+  \bottomrule
+  \end{tabularx}
+  \caption{The layerwise architecture for the convolutional recurrent neural network.}
+  \label{tab:layers_CRNN}
+  \end{table}
+  
+  

@@ -84,16 +84,15 @@ In this section we discuss the evaluation metrics used throughout our experiment
     \item[Precision and Recall] Precision defines the ratio of retrieved language samples that are correctly identified as belonging to said language. Recall is the fraction of correctly identified language samples to all samples belonging to this language.
      
 		$$
- 		truePositives = \abs{\set{\parbox{0.7\textwidth}{samples belonging to a language which were correctly identified as belonging to said language}}} 
-		$$
-		\todo{fix set's curly braces}
-
-		$$
- 		falsePositives = \abs{\set{\parbox{0.7\textwidth}{samples belonging to a language which were identified as belonging to another language}}} 
+ 		truePositives = \abs{\left\{\parbox{0.7\textwidth}{samples belonging to a language which were correctly identified as belonging to said language}\right\}} 
 		$$
 		
 		$$
- 		falseNegatives = \abs{\set{\parbox{0.7\textwidth}{samples belonging to a language which were incorrectly identified as not belonging to said language}}} 
+ 		falsePositives = \abs{\left\{\parbox{0.7\textwidth}{samples belonging to a language which were identified as belonging to another language}\right\}}  
+		$$
+		
+		$$
+ 		falseNegatives = \abs{\left\{\parbox{0.7\textwidth}{samples belonging to a language which were incorrectly identified as not belonging to said language}\right\}}  
 		$$
 
 	    $$
@@ -130,7 +129,7 @@ Lastly we evaluated architecture CNN\_C which uses constant kernel size of 3x3 f
 	\begin{figure}[]
   		\centering
     	\includegraphics[width=\textwidth, keepaspectratio]{plots/results_eu_plot.pdf}
-    	\caption{Performance measure comparison of three different CNN architectures evaluated on the EU Speech Repository dataset and our proposal of a CRNN model. CNN\_A outperforms all other CNN approaches with a top accuracy of 0.90, but is bested by the CRNN's 0.98 accuracy, proving the potential of this thesis' approach.}
+    	\caption{Performance measure comparison of three different CNN architectures evaluated on the EU Speech Repository dataset and our proposal of a \ac{crnn} model. CNN\_A outperforms all other CNN approaches with a top accuracy of 0.90, but is bested by the CRNN's 0.98 accuracy, proving the potential of this thesis' approach.}
     	\label{fig:eu_results}
 	\end{figure}
 
@@ -160,7 +159,7 @@ In summary we believe that decreasing the duration of the audio snippets used fo
 	\toprule
 	Model Architecture		& Accuracy 		& F1 	\\ \midrule
 	CNN from scratch    		& 0.81			& 0.81 	\\
-	CNN finetuned (FC 1024)	& 0.88			& 0.89 	\\
+	CNN finetuned (\ac{fc} 1024)	& 0.88			& 0.89 	\\
 	CNN finetuned (FC 512)	& 0.89			& 0.89 	\\
 	CRNN with 5 time steps	& 0.90			& 0.91 	\\
 	CRNN with 22 time steps & 0.90			& 0.91 	\\ \midrule
@@ -200,8 +199,7 @@ The increase performance, however, does not come without a cost. With a total of
 Previous work\cite{montavon2009deep} raised concerns about the similarity of our four feature languages \textendash{} English, German, French and Spanish \textendash{} and the model's inability to discriminate between them properly. Both English and German belong to the West Germanic language family, while French and Spanish are part of the Romance languages. We hypothesized that our deep learning approach to language identification is able to differentiate between them reliably. 
 Table \ref{tab:language_family_crnn} shows the confusion matrix when evaluating language family pairs on the best performing CRNN. Spanish and French audio files separate very well with hardly any wrong classifications. Both languages are more likely to be classified as German and English rather then as the respective other, demonstrating that they are quite distinctive within their language family. 
 German and English language samples have a tendency to be misclassified as the respective other language. Furthermore English also has a slight bias towards French, an observation in line with related work\cite{werkmeister2016practical}. German, however, distributes its classification error fairly between French and Spanish. Overall, German samples are misclassified the most across all languages.
- 	
-	\todo{Consider showing error rates instead of absolute numbers}
+
 	
 	\begin{table}[h]
 	\centering
