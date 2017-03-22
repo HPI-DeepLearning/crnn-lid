@@ -201,7 +201,7 @@ Table \ref{tab:language_family_crnn} shows the confusion matrix when evaluating 
 German and English language samples have a tendency to be misclassified as the respective other language. Furthermore English also has a slight bias towards French, an observation in line with related work\cite{werkmeister2016practical}. German, however, distributes its classification error fairly between French and Spanish. Overall, German samples are misclassified the most across all languages.
 
 	
-	\begin{table}[h]
+	\begin{table}[]
 	\centering
 	\begin{tabularx}{\textwidth}{l|rrrr}
 	      & EN     & DE     & FR     & ES \\ \midrule
@@ -213,10 +213,10 @@ German and English language samples have a tendency to be misclassified as the r
 	\caption{Confusion matrix of the best performing CRNN. English audio files are likely to be misclassified as German and vice versa. Both languages belong the family of Germanic languages. }
 	\label{tab:language_family_crnn}
 	\end{table}
+
+	The confusion matrix for the Inception-v3 CRNN, table \ref{tab:language_family_inception}, match our observations for the other model.Again, German exhibits the most classification errors. 
 	
-	Table \ref{tab:language_family_inception} shows the confusion matrix for the Inception-v3 CRNN. The observations here match those for other model. Again, German has the most classification errors. 
-	
-	\begin{table}[h]
+	\begin{table}[]
 	\centering
 	\begin{tabularx}{\textwidth}{l|rrrr}
 	      & EN     & DE     & FR     & ES \\ \midrule
