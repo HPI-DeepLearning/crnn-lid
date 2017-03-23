@@ -1,48 +1,46 @@
 \section{Implementation}
-This section will outline the employed software and hardware resources of the system, explain the data preprocessing, and describe the model architecture of our neural networks in detail.
+This section will outline the software resources of the system, explain the data preprocessing, and describe the model architecture of our neural networks in detail.
 
 \subsection{Software}
 \label{sec:software}
 
-	The language identification system is implemented in Python. We used the open source deep learning framework Keras\cite{chollet2015keras} with the TensorFlow\cite{abadi2016tensorflow} backend for training our neural networks. Keras provides us with a set of higher level machine learning primitives such as convolutional layers and optimizing algorithms without abstracting too much away. Internally it builds on Google's open source numerical operation library TensorFlow which is optimized to quickly compute large multidimensional data on GPUs. We make heavy use Keras' neural network building blocks, e.g. convolutional layers and the efficient LSTM implementation. With the recent announcement of Tensorflow version 1.0\footnote{\url{https://research.googleblog.com/2017/02/announcing-tensorflow-10.html?m=1}, accessed} it should be possible to generate a small and efficient binary version of our models ready to be used on mobile phones.
+	Our language identification system is implemented in Python and uses the open source deep learning framework Keras\cite{chollet2015keras} with the TensorFlow\cite{abadi2016tensorflow} backend for training our neural networks. Keras provides us with a set of higher level machine learning primitives such as convolutional layers and optimizing algorithms without sacrificing any fine grained control over the training parameters. Internally it builds on Google's open source numerical operation library TensorFlow which is optimized to quickly compute multidimensional data on GPUs. We make heavy use Keras' neural network building blocks, e.g. convolutional layers and the efficient LSTM implementation. With the recent announcement of Tensorflow version 1.0\footnote{\url{https://research.googleblog.com/2017/02/announcing-tensorflow-10.html?m=1}, accessed 03.03.2017} it should even be possible to generate a small and efficient binary version of our models ready to be used on mobile phones.
 	
-	All models are persisted to disk during training, including a summary of the layer architecture as well as the model weights. This makes it easy to load and evaluate model later. During evaluation, the performance metrics are calculated using the Scikit Learn\cite{scikit-learn} framework. All measurement are logged and visualized using TensorBoard\footnote{\url{https://www.tensorflow.org/how_tos/summaries_and_tensorboard/}, accessed 30.01.2017}, both for the training and validation set. Having the ability to easily study and compare different metrics like accuracy and loss  across several training runs made it very comfortable to judge the progress of our research. Figure \ref{fig:tensorboard} shows a TensorBoard instance with several models open for discussion. 
+	All models are persisted to disk during training, including a summary of the layer architecture as well as the model weights. This makes it easy to load and evaluate model later. During evaluation, the performance metrics are calculated using the Scikit Learn\cite{scikit-learn} framework. All measurement are logged and visualized using TensorBoard\footnote{\url{https://www.tensorflow.org/how_tos/summaries_and_tensorboard/}, accessed 30.01.2017}, both for the training and validation set. Having the ability to easily study and compare different metrics like accuracy and loss across several training runs made it very comfortable to judge the progress of our research. Figure \ref{fig:tensorboard} shows a TensorBoard instance with several models open for discussion. 
 
 	\begin{figure}[]
   		\centering
     	\includegraphics[width=\textwidth,keepaspectratio]{img/tensorboard.png}
-    	\caption{Training accuracy and loss of different models  visualized in TensorBoard.}
+    	\caption{Training accuracy and loss of different models visualized in TensorBoard. Plotting multiple evaluation measures over many training runs helped judge the overall performance progress of the system.}
     	\label{fig:tensorboard}
 	\end{figure}		
 	
 \subsection{Data Preprocessing}
 \label{sec:data_processing}
-All audio files have to be preprocessed before feeding them to the neural network. As a first step all files are encoded as uncompressed, lossless Waveform Audio File Format\footnote{\url{http://www.microsoft.com/whdc/device/audio/multichaud.mspx}, accessed 23.02.2017}, WAVE, commonly know by its file extension *.wav. This conversion has two advantages: A lossless data codec allows for future audio manipulations with any quality loss and makes the data easily readable by third party programs and library such as SciPy\footnote{\url{https://www.scipy.org/}, accessed 23.02.2017}. 
+All audio files undergo preprocessing before being feed to the neural network. As a first step all files are encoded as uncompressed, lossless Waveform Audio File Format\footnote{\url{http://www.microsoft.com/whdc/device/audio/multichaud.mspx}, accessed 23.02.2017}, WAVE, commonly know by its file extension *.wav. This conversion has two advantages: A lossless data codec allows for future audio manipulations without any quality loss and makes the data easily readable by third party programs and library such as SciPy\footnote{\url{https://www.scipy.org/}, accessed 23.02.2017}. 
 
-	Since our CNN does not operate on raw waveform audio signals we transfer our features into the image domain. As introduced in section \ref{sec:audio_representations} we used a spectrogram representation of the audio file for training our models. The spectrograms were generated using the open source command line tool SoX\footnote{\url{http://sox.sourceforge.net/}, accessed 23.02.2017}. Spectrograms are calculated using a Hann window and 129 frequency bins along the frequency axis (y-axis). The time axis (x-axis) is rendered at 25 pixel per second. Each audio sequence is clipped into non-overlapping ten second segments. The  final segment is discarded to avoid segments shorter than the required ten seconds. We decided against filtering silent section within the audio segment to keep the natural pauses between words and not disturb the regular speech rhythm. Frequency intensities are mapped to a gray scale. The resulting greyscale images are saved as lossless PNG files and are 500 pixel in width and 129 pixel in height. Appendix \ref{sec:appendix_a} includes the complete listing \ref{lst:spectrograms} for generating spectrogram images with SoX.
+	Since our CNN does not operate on raw waveform audio signals directly we transfer our features into the image domain. As introduced in section \ref{sec:audio_representations} we used a spectrogram representation of the audio file for training our models. The spectrograms were generated using the open source command line tool SoX\footnote{\url{http://sox.sourceforge.net/}, accessed 23.02.2017}. Spectrograms are calculated using a Hann window and 129 frequency bins along the frequency axis (y-axis). The time axis (x-axis) is rendered at 25 pixel per second. Each audio sequence is clipped into non-overlapping ten second segments. The  final segment is discarded to avoid segments shorter than the required ten seconds. We decided against filtering silent sections within the audio segment to keep the natural pauses between words and not disturb the regular speech rhythm. Frequency intensities are mapped to a gray scale. The resulting greyscale images are saved as lossless PNG files with 500 pixel in width and 129 pixel in height. Appendix \ref{sec:appendix_a} includes the complete listing \ref{lst:spectrograms} for generating a spectrogram image with SoX.
 	
-	As can be seen in figure \ref{fig:spectrogram} the spectrograms feature very apparent bright ripple-like pattern. Each of these represents a strong activation of a certain frequency over time. Several frequency activations can be active at once constituting a particular phoneme or sound. A sequence of these phonemes forms words and is only interrupted by short speech pauses. It is our aim to learn the characteristic and unique composition of these frequency activation for every language in our classifier. 
+	As can be seen in figure \ref{fig:spectrogram} the spectrograms feature very apparent bright ripple-like pattern. Each of these represents a strong activation of a certain frequency over time. Several frequency activations can be active simultaneously constituting a particular phoneme or sound. A sequence of these phonemes forms words and is only interrupted by short speech pauses. We hypothesize that our \ac{lid} system will learn the characteristic and unique composition of these frequency activation for every language in our classifier. 
 
 	
-	\begin{figure}[h]
+	\begin{figure}[]
   		\centering
     	\includegraphics[width=\textwidth,keepaspectratio]{img/spectrogram.png}
-    	\caption{A spectrogram generated from a ten second German audio clip  using SoX. Notice the bright ripple-like patterns. We expect these frequency activations to serve as the main features for the classifier.}
+    	\caption{A spectrogram generated from a ten second German audio clip  using SoX. Notice the bright ripple-like patterns representing intensive frequency activations. We hypothesize that these frequency activations will serve as the main features for the classifier.}
     	\label{fig:spectrogram}
 	\end{figure}
 	
 
 \subsection{CNN Architecture}
 \label{sec:cnn_architecture}
+To successfully solve our research task with deep neural networks we had to design a fitting model architecture. Combing the right layers and adjusting the correct parameters is not an easy task. Critics argue that deep learning systems are a black box and that the impact of individual settings is hard to judge. Therefore, we based our model architectures on proven existing designs from related work and adapted them to our needs, while heeding as best practices\cite{szegedy2016rethinking}\cite{mishkin2016systematic}. 
+The size of the deep neural network is determined by the bias-variance tradeoff\cite{geman1992neural}, imposing underfitting or overfitting on the resulting model. The bias characterizes the prediction error that results from the model's limited ability to learn relevant relations of features in the training data. Underfitting can be caused by designing a too small network layer causing a high bias. Variance in contrast refers to the error that results from the model responding overly sensitive to variation in the training data. By designing a too large network and introducing too many parameters the model results in low variance. Hence, it learns an exact representation of the training data without abstracting for more general applications. This is known as overfitting.
+Designing and adjusting the network layout is an empirical process. We tried many variations and parameters of our proposed model layouts to find the most suitable design for our LID system. The layout of the network interdepends and interacts with other design decisions of the system, especially the loss calculation. It hence needs to be tested in a complete process setup. 
 
+For this thesis we tried two different convolutional neural networks. The first one is based on the early VGG-style model architectures of Simonyan et al. \cite{Chatfield14}. With only five convolutional layers and modest feature map output sizes this is the smaller of two designs. Note the large kernel size of 7x7 pixels and 5x5 pixels for the first two layers yielding a large receptive field. We complemented each convolutional layer with batch normalization\cite{ioffe2015batch}, a technique that both helps with training speed and model regularization. The full network layout is available in table \ref{tab:layers_CNN_A}.
 
-    \begin{itemize}
-        \item Layer Table
-        \item Transfer Learning / Fine-tuning
-        \item Variations
-    \end{itemize}
-    
-  \begin{table}[h]
+ \begin{table}[]
   \centering
   \begin{tabularx}{\textwidth}{Xccc}
   \toprule
@@ -65,10 +63,11 @@ Dropout \& Flatten                                  & 3328           &        & 
   \caption{The layerwise architecture for the convolutional neural network CNN\_A.}
   \label{tab:layers_CNN_A}
   \end{table}
+
+The second CNN architecture is based on the VGG-16 network\cite{simonyan2014very} and has considerably more parameters. The CNN is deeper with seven convolutional layers and has increased feature map outputs in an effort to capture more information. In contrast to the first design, all convolutional layers feature equally sized kernels of 3x3 pixels. The complete model architecture can be found in table \ref{tab:layers_CNN_C}.
+
     
-    ---------------
-    
-  \begin{table}[h]
+  \begin{table}[]
   \centering
   \begin{tabularx}{\textwidth}{Xccc}
   \toprule
@@ -94,17 +93,10 @@ Flatten                                             & 6144            &        &
   \label{tab:layers_CNN_C}
   \end{table} 
     
-    --------------------
 
 \subsection{CRNN Architecture}
 
-    \begin{itemize}
-        \item Layer Table
-        \item Architecture Image
-        \item Conv Features to time steps
-        \item Transfer Learning / Fine-tuning
-        \item 
-    \end{itemize}
+	\todo{Write something here.}
     
   \begin{table}[h]
   \centering
