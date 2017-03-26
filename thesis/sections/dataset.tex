@@ -1,26 +1,26 @@
-\section{Datasets}
+\section{Dataset Compilation}
 \label{sec:datasets}
 	In this section we will explain the structure of our datasets and how we obtained them.
 
-	Recent breakthroughs in deep learning were fueled by the availability of large-scale, well-annotated, public datasets, for example ImageNet \cite{ILSVRC15} for the computer vision domain. Within the language identification community the TIMIT corpus of read speech \cite{garofolo1993darpa} has long been the default test set. TIMIT contains a total of 5.4 hours, consisting of 10 sentences spoken by each of 630 speakers from 8 major dialect regions of the United States recorded at 16kHz. Given the short span of each individual sound clip, the overall corpus duration and restriction of only one language it was necessary to obtain our data elsewhere. 
+	Recent advances in deep learning were fueled by the availability of high performance hardware, especially massively parallel computing graphic processors units (\ac{gpu}), and of large-scale, well-annotated, public datasets, for example ImageNet \cite{ILSVRC15} for the computer vision domain. Historically, within the language identification community the TIMIT corpus of read speech \cite{garofolo1993darpa} has long been the default test set. TIMIT contains a total of 5.4 hours, consisting of 10 sentences spoken by each of 630 speakers from 8 major dialect regions of the United States. All samples are recorded at 16kHz, which is a significantly lower quality than the 48kHz that are standard today . Given the short span of each individual sound clip, the overall corpus duration and restriction to only one language TIMIT was unsuited for this thesis. Therefore, it was necessary to obtain our data elsewhere. 
   
-  	This thesis uses two primary datasets collected and processed by us. On the one hand we used speeches, press conferences, and statements from the European Parliament and on the other hand we relied on news broadcasts sourced from YouTube.
+  	This thesis uses two primary datasets collected and processed by us. We processed speeches, press conferences, and statements from the European Parliament and collected news broadcasts sourced from YouTube.
 
 \subsection{Language Selection}  
-For the scope of this thesis we decide to limit ourselves to a number of high profile languages spoken by many millions around the world. We focused our efforts on languages with a high availability of public speech content present in the various data sources explained below. From a linguistic standpoint we also made sure to include language from within the same language family with  similar phonetics for comparison reason. More on that in section \ref{sec:lang_discrimination}. Following these guidelines we decided on two Germanic languages, English and German, and two Romance languages, French and Spanish. We later extended our selection with Russian and Mandarin Chinese.
+For the scope of this thesis we decide to limit ourselves to a number of  languages spoken by many millions around the world. We focused our efforts on languages with a high availability of public speech content present in the various data sources explained below, namely the EU Speech Repository and YoutTube. From a linguistic standpoint we also made sure to include language from within the same language family with  similar phonetics for comparison reason. More on the similarities of related languages in section \ref{sec:lang_discrimination}. Following these guidelines we decided on two Germanic languages, English and German, and two Romance languages, French and Spanish. We later extended our selection to Russian and Mandarin Chinese.
 
 \subsection{EU Speech Repository}
 
-	The EU Speech Repository\footnote{\url{https://webgate.ec.europa.eu/sr/}, accessed 10.03.2017} is a collection of video resources for interpretation students provided for free by the European Commission. The dataset consists of debates of the the European Parliament, committee press conferences, interviews and tailor-made training material from EU interpreters. All audio clips are recorded in the speaker's native language and feature only one speaker.
+	The EU Speech Repository\footnote{\url{https://webgate.ec.europa.eu/sr/}, accessed 10.03.2017} is a collection of video resources for interpretation students provided for free by the European Commission. The dataset consists of debates of the the European Parliament as well as committee press conferences, interviews and tailor-made training material from EU interpreters. All audio clips are recorded in the speaker's native language and feature exactly one speaker.
 	
-		With 131 hours of speech data it is the smaller of the two datasets. We obtained material in four languages: English, German, French, and Spanish
+		With 131 hours of speech data it is significantly smaller then the YouTube dataset . We obtained material in four languages: English, German, French, and Spanish
 
 \subsection{YouTube News Collection}
 \label{sec:youtube_news}
 
-	Following the approach of Montavon \cite{montavon2009deep} we looked for large, public sources of speech audio. We first experimented with podcasts and radio stations both of which are unsuited for the job. Podcasts usually feature only one speaker and radio contains a lot of noise in the form of music. From these initial insights we noticed that news broadcasts provided high quality speech audio data fitting our needs perfectly. To source a large variety of languages and gather enough hours of speech audio we sourced the majority of our data from YouTube. 
+	Following the approach of Montavon \cite{montavon2009deep} who used podcasts and radio broadcasts as input data we looked for large, public sources of speech audio. Both podcasts and radio stations are unsuited for this thesis' language identification task for several reasons: Podcasts are usually restricted to a single speaker and lack variety. Radio, on the other hand, contains a lot less speech content and consists mainly of music and songs. Consequently we decided on using news broadcasts which provide high quality speech audio data suitable to our needs. To obtain a large variety of languages and gather enough hours of speech audio we sourced the majority of our data from YouTube. 
 	
-	For each target language we manually selected one or more YouTube channels of respected news outlets. For example for English we used the BBC and CNN to gather a variety of different accents. For a full list of channels refer to table \ref{tab:channels}. All channels were chosen regardless of their content, their political views or journalistic agenda.
+	For each target language we manually selected one or more YouTube channels of respected news outlets, e.g. BBC and CNN for English. Using more than one channel for each language has the benefit of collection a wide variety of accents, speech patterns and intonations. For a full list of channels refer to table \ref{tab:channels}. All channels were chosen regardless of their content, their political views or journalistic agenda.
 	
 	\begin{table}[]
 	\centering
@@ -45,9 +45,9 @@ For the scope of this thesis we decide to limit ourselves to a number of high pr
 	\end{table}
 
   	
-  	Audio obtained from news coverage has many desired properties. The data is of high recording quality and hundreds of hours recording is available online. News anchors are trained to speak loud and clear, while still talking at a normal conversational speed. News programs often feature guests or remote correspondents resulting in a good mix of different speakers. Unlike speech audio obtained from reading texts aloud, news anchors converse in regular, human, conversational tone with each other. Lastly, news programs feature all the noise one would expect from a real world situation: music jingles, non-speech audio from video clips and transitions between reports. Additionally, the difficulty of our language identification task is increased by mixed language reports. Many city, company, and personal names (e.g., New York City or Google for English) are pronounced in their native language and are embedded within the broadcast's host language. In essence we believe that speech data sourced from news broadcast represent an accurate, real-world sample for speech audio.
+  	Audio obtained from news coverage has many desired properties. The data is of high recording quality and hundreds of hours recording is available online. News anchors are trained to speak natural and conversational, while maintaining at steady speed of ca. 150 words per minute\todo{source}. News programs often feature guests or remote correspondents resulting in a good mix of different speakers. Unlike audio book recordings with texts being read aloud, news anchors converse in regular, human, conversational tone with each other. Lastly, news programs feature all the noise one would expect from a real world situation: music jingles, non-speech audio from video clips and transitions between reports. On the one hand this might improve  the models's noise robustness. On the other hand this may interfere with the training, e.g. by having audio segments containing less than average length speech fractions. Although some broadcasts feature mixed language parts, e.g. foreign city, company, and personal names, we believe this is not a big problem. The pronunciation  and intonation of these words and phrases still follow the host's native language.\footnote{E.g. According to the international phonetic alphabet (IPA) the city of Berlin has many different pronunciations in different languages: [bɛʁˈliːn](German), /bə.ˈlɪn/ (British English), and [bɚ.ˈlɪn] (American English).} \todo{FIX IPA symbols} In essence we believe that speech data sourced from news broadcast represent an accurate, real-world sample for speech audio.
   	
-  	In contrast to the EU Speech Repository this dataset consists of ca. 1000 hours of audio data for the same four languages: English, German, French and Spanish. We also gathered an extended language set adding Mandarin Chinese and Russian to the dataset. The extended set is only used for the evaluation of the model extensibility as outlined in section \ref{sec:extensibility}. Table \ref{tab:dataset_comparison} provides a complete comparison between the two datasets.
+  	In contrast to our EU Speech Repository this dataset consists of ca. 1000 hours of audio  for the same four languages: English, German, French and Spanish. Additionally, we also gathered an extended language set adding Mandarin Chinese and Russian. The extended set is only used for the evaluation of the model extensibility as outlined later. Table \ref{tab:dataset_comparison} provides a comparison between the two datasets.
   	
   	
 \begin{table}[]
@@ -62,10 +62,11 @@ Average clip duration & 7m 54s & 3m 18s & 4m 22s  \\
 Audio Sampling Rate   & 48kHz  & 48kHz  & 48kHz   \\ 
 \bottomrule
 \end{tabularx}
-\caption{Comparison of the EU Speech Repository and YouTube News dataset. With ca. 1000 hours of audio recordings the YouTube dataset is ten times large than the EU Speech Repository.}
+\caption{Comparison of our collected EU Speech Repository and YouTube News dataset. With about 1000 hours of audio recordings the acquired YouTube dataset is ten times larger than the EU Speech Repository.}
 \label{tab:dataset_comparison}
 \end{table}
 
-	
+\todo{Compare to related work dataset}
+\todo{how did i obtain the data / youtube-dl}	
 
 
