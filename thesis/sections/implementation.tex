@@ -18,9 +18,25 @@ This section outlines the software resources of our language identification syst
 \label{sec:data_processing}
 All audio files undergo preprocessing before being fed to the neural network. As a first step all files are encoded as uncompressed, lossless Waveform Audio File Format\footnote{\url{http://www.microsoft.com/whdc/device/audio/multichaud.mspx}, accessed 23.02.2017}, WAVE, commonly know by its file extension *.wav. This conversion has two advantages: A lossless data codec allows for future audio manipulations without any deterioration in signal quality and makes the data easily interchangeable for third party programs and library such as SciPy\footnote{\url{https://www.scipy.org/}, accessed 23.02.2017}. 
 
-	Since all our neural networks do not operate on raw waveform audio signals directly we transfer our features into the image domain. As introduced in section \ref{sec:audio_representations} we used a spectrogram representation of the audio file for training our models. The spectrograms were generated using the open source command line tool SoX\footnote{\url{http://sox.sourceforge.net/}, accessed 23.02.2017}. The spectrograms are discretized using a Hann window \todo{source} and 129 frequency bins along the frequency axis (y-axis) as instructed by SoX manual\footnote{\url{http://sox.sourceforge.net/sox.pdf}, page 32, accessed 26.03.2017}. The time axis (x-axis) is rendered at 25 pixel per second. Each audio sequence is clipped into non-overlapping ten second segments. The  final segment is discarded to avoid segments shorter than the required ten seconds. We decided against filtering silent sections within the audio segment to keep the natural pauses between words and not disturb the regular speech rhythm. Frequency intensities are mapped to a gray scale. The resulting greyscale images are saved as lossless PNG files with 500 pixel in width and 129 pixel in height. Appendix \ref{sec:appendix_a} includes the complete listing \ref{lst:spectrograms} for generating a spectrogram image with SoX.
+	Since all our neural networks do not operate on raw waveform audio signals directly we transfer our features into the image domain. As introduced in section \ref{sec:audio_representations} we used a spectrogram representation of the audio file for training our models. The spectrograms were generated using the open source command line tool SoX\footnote{\url{http://sox.sourceforge.net/}, accessed 23.02.2017}. The spectrograms are discretized using a Hann window \todo{source} and 129 frequency bins along the frequency axis (y-axis) as instructed by SoX manual\footnote{\url{http://sox.sourceforge.net/sox.pdf}, page 32, accessed 26.03.2017}. Regular speech manifests itself in frequencies between XXHz \todo{find value} and 5000Hz\todo{source}. Therefore, we instructed SoX to only include those frequencies into the spectrograms. The time axis (x-axis) is rendered at 25 pixel per second. Each audio sequence is clipped into non-overlapping ten second segments. The final segment is discarded to avoid segments shorter than the required ten seconds to avoid padding. Since we gathered enough training data we decided against padding with black pixels, which could be interpreted as silence and add unnaturally long speech pauses. We also decided against filtering silent sections within the 10 second audio segments to keep the natural pauses between words and not disturb the regular speech rhythm. Frequency intensities are mapped to an eight bit grayscale range. The resulting grayscale images are saved as lossless PNG files with 500 pixel in width and 129 pixel in height. Listing \ref{lst:spectrograms} shows the SoX command for generating a spectrogram image from an input audio file.
 	
-	As can be seen in figure \ref{fig:spectrogram} the spectrograms feature very apparent bright ripple-like pattern. Each of these represents a strong activation of a certain frequency over time. Several frequency activations can be active simultaneously constituting a particular phoneme or sound. A sequence of these phonemes forms words and is only interrupted by short speech pauses. We hypothesize that our \ac{lid} system will learn the characteristic and unique composition of these frequency activation for every language in our classifier. 
+	\begin{lstlisting}[caption={Generating monochrome spectrograms with SoX}, label={lst:spectrograms}]
+    
+    sox -V0 input.wav -n remix 1 rate 10k spectrogram -y 129 -X 50 -m -r -o spectrogram.png
+    
+    
+    V0 - verbosity level 
+    n - apply filter/effect
+    remix - select audio channels
+    rate - limit sampling rate to 10k; caps max frequency at 5kHz according to Nyquist-Shannon sampling theorem
+    y - spectogram height
+    X - pixels per second for width
+    m - monochrome output
+    r - disable legend
+    o - output file
+    \end{lstlisting}
+	
+	As seen in figure \ref{fig:spectrogram} the spectrograms feature very apparent bright ripple-like pattern. Each of these represents a strong activation of a certain frequency at a point in time. Several frequency activations can be active simultaneously constituting a particular phoneme or sound. A sequence of these phonemes forms words and is only interrupted by short speech pauses. We hypothesize that our \ac{lid} system will learn the characteristical and unique composition of these frequency activation for every language in our classifier. 
 
 	
 	\begin{figure}[]
@@ -31,13 +47,15 @@ All audio files undergo preprocessing before being fed to the neural network. As
 	\end{figure}
 	
 
-\subsection{CNN Architecture}
+\subsection{Neural Network Architectures}
 \label{sec:cnn_architecture}
-To successfully solve our research task with deep neural networks we had to design a fitting model architecture. Combing the right layers and adjusting the correct parameters is not an easy task. Critics argue that deep learning systems are a black box and that the impact of individual settings is hard to judge. Therefore, we based our model architectures on proven existing designs from related work and adapted them to our needs, while heeding as best practices\cite{szegedy2016rethinking}\cite{mishkin2016systematic}. 
-The size of the deep neural network is determined by the bias-variance tradeoff\cite{geman1992neural}, imposing underfitting or overfitting on the resulting model. The bias characterizes the prediction error that results from the model's limited ability to learn relevant relations of features in the training data. Underfitting can be caused by designing a too small network layer causing a high bias. Variance in contrast refers to the error that results from the model responding overly sensitive to variation in the training data. By designing a too large network and introducing too many parameters the model results in low variance. Hence, it learns an exact representation of the training data without abstracting for more general applications. This is known as overfitting.
-Designing and adjusting the network layout is an empirical process. We tried many variations and parameters of our proposed model layouts to find the most suitable design for our LID system. The layout of the network interdepends and interacts with other design decisions of the system, especially the loss calculation. It hence needs to be tested in a complete process setup. 
+To successfully solve our research task with deep neural networks we had to design a fitting model architecture. Combing the right layers and adjusting the correct parameters is not a trivial task. Critics argue that deep learning systems are a black box and that the impact of the individual layout of the network layers is hard to understand. Therefore, we based our model architectures on proven existing designs from related work and adapted them to our needs, while heeding as best practices\cite{szegedy2016rethinking}\cite{mishkin2016systematic}.
+The architecture and the number of parameters of a deep neural network suited for a given task is determined by the bias-variance tradeoff.\cite{geman1992neural} It is the goal of a network's author to avoid underfitting or overfitting on the resulting model. The bias characterizes the prediction error that results from the model's limited ability to learn relevant relations of features in the training data. Underfitting can be caused by designing too small or too few network layers causing a high bias. Variance in contrast refers to the error that results from the model responding overly sensitive to variation in the training data. By designing a too large network and Introducing too many parameters or adding too many layers results in a model with low variance. Hence, it learns an exact representation of the training data without abstracting for more general applications. This is known as overfitting.
+Designing and adjusting the network layout is an iterative process. We tried many variations and parameters of our proposed model layouts to find the most suitable design for our LID system. The layout of the network interdepends and interacts with other design decisions of the system, especially the loss calculation. Each change in parameters involves a complete new training run to judge the effect of the change. Hence, the architecture always needs to be tested in its entirety. 
 
-For this thesis we tried two different convolutional neural networks. The first one is based on the early VGG-style model architectures of Simonyan et al. \cite{Chatfield14}. With only five convolutional layers and modest feature map output sizes this is the smaller of two designs. Note the large kernel size of 7x7 pixels and 5x5 pixels for the first two layers yielding a large receptive field. We complemented each convolutional layer with batch normalization\cite{ioffe2015batch}, a technique that both helps with training speed and model regularization. The full network layout is available in table \ref{tab:layers_CNN_A}.
+For this thesis we tried three different design of convolutional neural networks. The first one and second one are based on the early VGG-style CNN-M model architectures of Simonyan et al. \cite{Chatfield14}. With only five convolutional layers and modest feature map output sizes this is the smaller of two designs. Note that in this version of the NN the comparatively large kernel size of 7x7 pixels and 5x5 pixels for the first two layers yield a large receptive field. We complemented each convolutional layer with batch normalization\cite{ioffe2015batch}, a technique that helps in increasing training speed and achieving more model regularization. The full network layout can be seen in table \ref{tab:layers_CNN_A}.
+
+\todo{move CNN descriptions here}
 
  \begin{table}[]
   \centering
@@ -63,7 +81,7 @@ Dropout \& Flatten                                  & 3328           &        & 
   \label{tab:layers_CNN_A}
   \end{table}
 
-The second CNN architecture is based on the VGG-16 network\cite{simonyan2014very} and has considerably more parameters. The CNN is deeper with seven convolutional layers and has increased feature map outputs in an effort to capture more information. In contrast to the first design, all convolutional layers feature equally sized kernels of 3x3 pixels. The complete model architecture can be found in table \ref{tab:layers_CNN_C}.
+The third CNN architecture is based on the VGG-16 network\cite{simonyan2014very} and has considerably more parameters than our two designs. The CNN is deeper with its seven convolutional layers and offers an increased number of feature map outputs in an effort to capture more features. In contrast to the first design, all convolutional layers feature equally sized kernels of 3x3 pixels. The complete model architecture can be found in table \ref{tab:layers_CNN_C}.
 
     
   \begin{table}[]
@@ -123,3 +141,5 @@ Reshape                                             & 53 x 256        &        &
   \end{table}
   
   
+  \todo{why not automatic design?}
+  \todo{why not rectengular kernels?}
