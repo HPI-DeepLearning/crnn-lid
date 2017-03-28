@@ -1,4 +1,16 @@
 \section{The Language Identification Problem}
+\label{sec:lid}
 
 \subsection{Language Identification}
+
+
 \subsection{Task Specification in This Thesis}
+The system proposed in the thesis is language identification (\ac{lid}) system for classifying the languages of a given audio recording. We make use of human voices recordings to train the  system. We evaluate the suitability of convolutional neural networks for a LID system. We extend this approach with a recurrent neural network to form a hybrid network known as convolutional recurrent neural networks (\ac{crnn}). The system 's performance is evaluated on a set of news broadcasts and speeches made by members of the European Parliament. We further assess the system's robustness to noisy environments and background music. We state the following hypotheses:
+
+\begin{enumerate}
+	\item Convolutional neural networks can be successfully used for language identification tasks with high accuracy.
+	\item Spectrogram images are a suitable input representation for learning audio features.
+	\item Convolutional recurrent neural networks improve the classification accuracy for our LID task compared to a CNN based approach.
+\end{enumerate}
+
+
