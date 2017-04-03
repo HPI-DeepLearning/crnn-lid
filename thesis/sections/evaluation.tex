@@ -200,15 +200,16 @@ Previous work\cite{montavon2009deep} raised concerns about the similarity of our
 Table \ref{tab:language_family_crnn} shows the confusion matrix when evaluating language family pairs on the best performing CRNN. Spanish and French audio files separate very well with hardly any wrong classifications. Both languages are more likely to be classified as German and English rather then as the respective other, demonstrating that their learned representations are quite distinctive within their language family. 
 German and English language samples have a tendency to be misclassified as the respective other. Furthermore English also has a slight bias towards French, an observation in line with related work\cite{werkmeister2016practical}. German, however, distributes its classification error evenly between French and Spanish. Overall, German samples are misclassified the most across all languages.
 
+
 	
 	\begin{table}[]
 	\centering
 	\begin{tabularx}{\textwidth}{l|rrrr}
 	      & EN     & DE     & FR     & ES \\ \midrule
-	  EN  & 6153   & 339    & 181    & 225 \\
-	  DE  & 426    & 6128   & 173    & 162 \\
-	  FR  & 200    & 145    & 6447   & 107 \\
-	  ES  & 214    & 170    & 115    & 6399 \\
+    EN  & \cellcolor{lightgray} 6153   & 339    & 181    & 225 \\
+    DE  & 426    & \cellcolor{lightgray} 6128   & 173    & 162 \\
+    FR  & 200    & 145    &  \cellcolor{lightgray} 6447   & 107 \\
+    ES  & 214    & 170    & 115    & \cellcolor{lightgray} 6399 \\
 	\end{tabularx}
 	\caption{Confusion matrix of our best performing CRNN. English audio files are likely to be misclassified as German and vice versa. Both languages belong the family of Germanic languages. }
 	\label{tab:language_family_crnn}
@@ -221,10 +222,10 @@ German and English language samples have a tendency to be misclassified as the r
 	\centering
 	\begin{tabularx}{\textwidth}{l|rrrr}
 	      & EN     & DE     & FR     & ES \\ \midrule
-	  EN  & 6648   & 140    & 45     & 61 \\
-	  DE  & 152    & 6639   & 62     & 44 \\
-	  FR  & 68     & 59     & 6742   & 27 \\
-	  ES  & 75     & 83     & 42     & 6697 \\
+	  EN  & \cellcolor{lightgray} 6648   & 140    & 45     & 61 \\
+	  DE  & 152    & \cellcolor{lightgray} 6639   & 62     & 44 \\
+	  FR  & 68     & 59     & \cellcolor{lightgray} 6742   & 27 \\
+	  ES  & 75     & 83     & 42     & \cellcolor{lightgray} 6697 \\
 	\end{tabularx}
 	\caption{Confusion matrix of the Inception-v3 CRNN. Despite its deeper architecture it makes similar classes of mistakes as our proposed CRNN. }
 	\label{tab:language_family_inception}

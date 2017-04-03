@@ -7,7 +7,7 @@
 In this thesis we present an approach to language identification systems. We approach this task by using deep learning techniques. We transfer the given audio classification problem into an image based task to apply image recognition algorithms. Our contributions can be summarized as follows:
 \begin{itemize}
 	\item We investigate the suitability of convolutional neural networks to the task of language identification. We propose a hybrid network, combing the descriptive powers of convolutional neural networks with the ability of recurrent neural networks to learn time series. This approach is called convolutional recurrent neural network (CRNN). 
-	\item We implemented such a CRNN system in Python using the deep learning framework Keras and TensorFlow. 
+	\item We implemented a CNN and a CRNN system in Python using the deep learning framework Keras and TensorFlow. We show that the CRNN approach outperforms all other methods in every single evaluation with respect to accuracy and F1 score.
 	\item To train our system we gathered our own large scale dataset of audio recordings. We explain how we obtained and processed more than a thousand hours of human speech data suitable for our task.
 	\item We assessed several machine learning metrics on our system with respect to our test data. Furthermore, we investigated the influence of noisy environments on our system. We discuss the system's ability to differentiate between several languages and how such a system can be extended to more languages.
 	\item To showcase our system we developed a web service demo application using our best performing model. Further, we published said model for use by others.

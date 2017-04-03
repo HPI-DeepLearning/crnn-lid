@@ -13,14 +13,14 @@ For the scope of this thesis we decide to limit ourselves to a number of  langua
 
 	The EU Speech Repository\footnote{\url{https://webgate.ec.europa.eu/sr/}, accessed 10.03.2017} is a collection of video resources for interpretation students provided for free by the European Commission. The dataset consists of debates of the the European Parliament as well as committee press conferences, interviews and tailor-made training material from EU interpreters. All audio clips are recorded in the speaker's native language and feature exactly one speaker.
 	
-		With 131 hours of speech data it is significantly smaller then the YouTube dataset . We obtained material in four languages: English, German, French, and Spanish
+		With 131 hours of speech data it is significantly smaller then the YouTube dataset. We obtained material in four languages: English, German, French, and Spanish. Prior to downloading the data, we gathered and processed every single webpage containing a single video in our target language by using the Selenium website end-to-end testing framework. We downloaded and extracted the audio channel of the source videos using the command line tool youtube-dl\footnote{\url{http://youtube-dl.net}, accessed 23.03.2017 \todo{double check url}}.
 
 \subsection{YouTube News Collection}
 \label{sec:youtube_news}
 
 	Following the approach of Montavon \cite{montavon2009deep} who used podcasts and radio broadcasts as input data we looked for large, public sources of speech audio. Both podcasts and radio stations are unsuited for this thesis' language identification task for several reasons: Podcasts are usually restricted to a single speaker and lack variety. Radio, on the other hand, contains a lot less speech content and consists mainly of music and songs. Consequently we decided on using news broadcasts which provide high quality speech audio data suitable to our needs. To obtain a large variety of languages and gather enough hours of speech audio we sourced the majority of our data from YouTube. 
 	
-	For each target language we manually selected one or more YouTube channels of respected news outlets, e.g. BBC and CNN for English. Using more than one channel for each language has the benefit of collection a wide variety of accents, speech patterns and intonations. For a full list of channels refer to table \ref{tab:channels}. All channels were chosen regardless of their content, their political views or journalistic agenda.
+	For each target language we manually selected one or more YouTube channels of respected news outlets, e.g. BBC and CNN for English. Using more than one channel for each language has the benefit of collection a wide variety of accents, speech patterns and intonations. For a full list of channels refer to table \ref{tab:channels}. All channels were chosen regardless of their content, their political views or journalistic agenda. Again, we downloaded the data using the command line tool youtube-dl and saved only the audio channel.
 	
 	\begin{table}[]
 	\centering
@@ -67,6 +67,6 @@ Audio Sampling Rate   & 48kHz  & 48kHz  & 48kHz   \\
 \end{table}
 
 \todo{Compare to related work dataset}
-\todo{how did i obtain the data / youtube-dl}	
+
 
 
