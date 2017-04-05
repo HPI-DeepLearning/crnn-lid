@@ -66,7 +66,7 @@ Neural networks have a multitude of hyperparameters that influence the training 
 	\item[Weight Regularization] In order to reduce our model generalization error we make modify its learning algorithm known as regularization terms. We employed the L\textsuperscript{2} norm\cite[chapter 7.1.1, p. 231]{Goodfellow-et-al-2016}, sometimes also known as weight decay, as a weight regularizer for all convolutional and fully connected layers to improve the models generality. This regularization strategy drives the weights closer to the origin by adding a regularization term to our loss function. We penalize our loss with a weight decay value of 0.001. Additional regularization happens through the use of batch normalization layers.
 	\item[Epochs] We limited the model training to a maximum of 50 epochs when using the Adam solver. We usually reached convergence well below this threshold. For training sessions with SGD we increased this parameter considerably since the weight updates per epoch are smaller and more training iterations are needed to reach convergence. To speed up our workflow we employed an early stopping policy and stopped a training if the validation accuracy and loss did not increase within a ten epoch window.
 	\item[Metrics] We observed the loss, accuracy, recall, precision, f1 measure for both the training and validation set during model training. All values were saved to log files and visualized as graphs in TensorBoard. A complete summary of all assessed metric can be found in section \ref{sec:metrics}.
-	\item[Loss] As is common for multivariate classification all models were trained with a softmax cross-entropy loss function. \todo{explain more a ref section in theoretic background }
+	\item[Loss] As is common for multivariate classification all models were trained with a softmax cross-entropy loss function. \todo{explain more. add ref to section in theoretic background }
 	\end{description}
 
 
@@ -189,8 +189,6 @@ The increased performance, however, does not come without a cost. With a total o
     	\caption{Performance measurement comparison between our CNN and CRNN models and Inception-v3 based models. With a top accuracy of 0.96 the Inception style CRNN performs best but needs more than five times the amount of parameters compared to our proposed model architecture.}
     	\label{fig:news_results}
 	\end{figure}
-	
-	\todo{Plot trainings loss as a space filler?}
 
 
 \subsubsection{Inter Language Discrimination} 
@@ -214,7 +212,6 @@ German and English language samples have a tendency to be misclassified as the r
 	\caption{Confusion matrix of our best performing CRNN. English audio files are likely to be misclassified as German and vice versa. Both languages belong the family of Germanic languages. }
 	\label{tab:language_family_crnn}
 	\end{table}
-	\todo{add background colors to confusion matrix}
 
 	The confusion matrix for the Inception-v3 CRNN, table \ref{tab:language_family_inception}, match our observations for the other model. Again, German exhibits the most classification errors. 
 	
@@ -260,8 +257,9 @@ Overall we note that even deep convolutional recurrent networks are still subjec
 	\toprule
 	Dataset & \multicolumn{2}{c}{CRNN} & \multicolumn{2}{c}{Inception-v3 CRNN} \\  
                 & Accuracy  & F1    & Accuracy  & F1   \\ \midrule
-white noise     & 0.63      & 0.63  & 0.91      & 0.91 \\
-cracking noise  & 0.82      & 0.83  & 0.93      & 0.93 \\
+No Noise		& 0.91		& 0.91	& 0.96		& 0.96 \\                
+White Noise     & 0.63      & 0.63  & 0.91      & 0.91 \\
+Cracking Noise  & 0.82      & 0.83  & 0.93      & 0.93 \\
  	\bottomrule
 	\end{tabularx}
 	\caption{Accuracy and F1 score for our models evaluated on the speech data augmented with two different types of noise.}
@@ -272,9 +270,9 @@ cracking noise  & 0.82      & 0.83  & 0.93      & 0.93 \\
 
 \subsubsection{Background Music Robustness} 
 \label{sec:music_robustness}
-Many real world audio applications involve a some form of music. Therefore we evaluated our model to see if language identification was still possible when mixing speech with music. For this experiment we used two different test sets. For the first series we augmented our existing YouTube news dataset with randomly sampled background music in a similar fashion to the background noise augmentation. The background audio was obtained from Soundcloud\footnote{\url{https://soundcloud.com/royalty-free-audio-loops}, accessed 01.03.2017} and features royalty free, instrument-only music from various genres, including Pop, Dubstep, Rock and Electro amongst others. 
-We normalized the volume of these sounds and overlaid them onto our speech data while trying to stay below the speech audio volume. In the best cases the two audio streams blend nicely with the background music producing a soft but noticeable ambient effect, while retaining the clarity of the speech. In other cases the audio levels and volume are over-accentuate for one or the other. The final result, however, does neither resemble a song nor a piece of music. We changed neither the tempo nor the pitch of our speakers and the rhythm of the vocals does not match the rhythm of the background audio. Therefore we gathered a small second test set of XXX \todo{insert number of songs} songs for each of the following genres: Pop, Rock, Hiphop, and Folk. 
-Given that our training set does not intentionally include samples with music or songs we expected the performance do be drastically lower then for pure speech samples.
+Many real world audio applications involve some form of music. For example, image speaking into your mobile phone from a busy cafe with background music or doing a voice chat session at home while the TV is running. Therefore we evaluated our model to see if language identification was still possible when mixing speech with music. For this experiment we used two different test sets. For the first series we augmented our existing YouTube news dataset with randomly sampled background music similarly to the background noise augmentation. The background audio was obtained from Soundcloud\footnote{\url{https://soundcloud.com/royalty-free-audio-loops}, accessed 01.03.2017} and features royalty free, instrument-only music from various genres, including Pop, Dubstep, Rock and Electro, amongst others. 
+We normalized the volume of these tracks and overlaid them onto our speech data while trying to stay below the speech audio volume. In the best cases the two audio streams blend nicely with the background music producing a soft but noticeable ambient effect, while retaining the clarity of the speech. In some other cases the audio levels and volume are over-accentuate for one or the other. The final result, however, does neither resemble a song nor a piece of music. We changed neither the tempo nor the pitch of our speakers and the rhythm of the vocals does not match the rhythm of the background audio. Therefore we gathered a small second test set of XXX \todo{insert number of songs} songs for each of the following genres: Pop, Rock, Hiphop, and Folk. 
+Given that our training set does not intentionally include samples with music or songs we expected the performance do be drastically lower then for pure speech samples. Additionally it should be noted that a person's singing voice is different from one's speaking voice. \todo{find good source / example}
 
 	\begin{table}[]
 	\centering
@@ -282,6 +280,7 @@ Given that our training set does not intentionally include samples with music or
 	\toprule
 Dataset & \multicolumn{2}{c}{CRNN} & \multicolumn{2}{c}{Inception-v3 CRNN} \\   
                   & Accuracy  & F1    & Accuracy   & F1   \\ \midrule
+No Music		  & 0.91		  & 0.91	  & 0.96	  & 0.96 \\                     
 Background Music  & 0.70      & 0.70  & 0.89  & 0.89 \\
 Pop Songs         & 0.XX      & 0.XX  & 0.XX  & 0.XX \\
 Rock Songs        & 0.XX      & 0.XX  & 0.XX  & 0.XX \\
@@ -296,10 +295,10 @@ Folk Songs        & 0.XX      & 0.XX  & 0.XX  & 0.XX \\
 
 \subsubsection{Model Extensibility} 
 \label{sec:extensibility}
-So far all our experiments were conducted on datasets consisting of only four languages: English, German, French and Spanish. We complemented these with two new languages spoken by millions around the globe: Mandarin Chinese and Russian. The goal of this experiment was to learn whether we could easily expand our model to other languages. 
-We increased our existing YouTube news dataset with samples taken from Chinese and Russian news channels yielding the extended YouTube news dataset described in section \ref{sec:youtube_news}. In order to maintain the class distribution for six languages we had to decrease the number of training samples of the existing samples slightly. Table \ref{tab:dataset_comparison} contains the details for the extended YouTube news dataset.
+So far, all our experiments were conducted on datasets consisting of only four languages: English, German, French and Spanish. We extended the existing set with two new languages spoken by millions around the globe: Mandarin Chinese and Russian. The goal of this experiment was to learn whether we could expand our model to other languages. 
+We increased our existing YouTube news dataset with samples taken from Chinese and Russian news channels which now altogether forms the extended YouTube news dataset described in section \ref{sec:youtube_news}. In order to maintain the class distribution for six languages we had to decrease the number of training samples of the existing samples slightly. Table \ref{tab:dataset_comparison} contains the details for the extended YouTube news dataset.
 
-For this experiment we first finetuned our previous best CNN by replacing the final fully connected layers and adjusted the number of output nodes to accommodate for six classes. The resulting model served as the basis for training the CRNN in a similar manner as in earlier experiments. Applied on the test set we measured an accuracy of 0.92 and F1-score of 0.92. Both measurements match our previous evaluation with four languages on the YouTube news dataset as laid out in section \ref{sec:results_news} proving that the proposed CRNN architecture can easily be extended to cover more languages. Figure \ref{fig:6lang} shows individual performance measure of each language. Mandarin Chinese outperforms all other languages with a top accuracy of 0.96, which could be interpreted as it sounding the most contrasting to western languages and featuring its own unique intonation. We also noted that Russian was most frequently misclassified as Spanish and vice-versa. In contrast to our previous observation German is no longer the worst performing class, but English takes that role now. This is in part due to a significant number of misclassification as Russian samples.
+For this experiment we first finetuned our previous best CNN by replacing the final fully connected layers and adjusted the number of output nodes to accommodate for six classes. The resulting model served as the basis for training the CRNN in a similar manner as in earlier experiments. Applied on the test set we measured an accuracy of 0.92 and F1-score of 0.92. Both measurements match our previous evaluation with four languages on the YouTube news dataset as laid out in section \ref{sec:results_news} proving that the proposed CRNN architecture can be extended to cover more languages. Figure \ref{fig:6lang} shows individual performance measures for each language. Mandarin Chinese outperforms all other languages with a top accuracy of 0.96, which could be interpreted as it sounding the most contrasting to western languages and featuring its own unique intonation. We also noted that Russian was most frequently misclassified as Spanish and vice-versa. In contrast to our previous observation German is no longer the worst performing class, but English takes that role now. This is in part due to a significant number of misclassification as Russian samples.
 
 	\begin{table}[]
 	\centering
@@ -323,7 +322,7 @@ RUS  & 0.92     & 0.90      & 0.92    & 0.91 \\
 	\begin{figure}[]
   		\centering
     	\includegraphics[width=\textwidth, keepaspectratio]{plots/results_6lang_plot.pdf}
-    	\caption{Individual performance measurements for each of our six target languages: English, German, French, Spanish, Mandarin Chinese, and Russian. Chinese exhibits the lowest misclassification rate while English performs the worst. Overall the model performance is consistent with previous evaluations on four languages as highlighted in section \ref{sec:results_news}.}
+    	\caption{Individual performance measurements for each of our six target languages: English, German, French, Spanish, Mandarin Chinese, and Russian. Chinese exhibits the best misclassification rate while English performs the worst. Overall the model performance is consistent with previous evaluations on four languages as highlighted in section \ref{sec:results_news}.}
     	\label{fig:6lang}
 	\end{figure}
 
@@ -331,36 +330,43 @@ Given that both new languages are rooted within their own respective language fa
 
 \subsubsection{Visualizations} 
 \label{sec:visualization}
-All previous sections described and evaluated our model by measuring various performance indicators and applying them to different datasets. In this section we will present plots underlining earlier observations from a different perspective.
-
-	\begin{figure}[h]
-  		\centering
-    	\includegraphics[width=\textwidth, keepaspectratio]{plots/tsne.pdf}
-    	\caption{A 2D t-SNE plot of the high dimensional vector representation of our YouTube news samples. All four language classes form distinct clusters confirming the network learned effective representations of the audio features.}
-    	\label{fig:tsne}
+All previous sections described and evaluated our model by measuring various performance indicators and applying them to different datasets. In this section we will present plots underlining earlier observations from a visual perspective.
+	
+	\begin{figure}
+	\centering
+	\begin{minipage}{.5\textwidth}
+	  \centering
+	  \includegraphics[width=\linewidth]{plots/tsne.pdf}
+	\end{minipage}%
+	\begin{minipage}{.5\textwidth}
+	  \centering
+	  \includegraphics[width=\linewidth]{plots/tsne_6lang.pdf}
+	\end{minipage}
+	\caption{Two-dimensional t-SNE plots of the high dimensional vector representation of our YouTube news samples for a model trained with four and six languages,  respectively. All language classes form distinct clusters confirming that the network learned effective representations of the audio features.}
+	\label{fig:tsne}
 	\end{figure}
 
-First we visualized the high dimensional language vector embedding space using the  t-distributed stochastic neighbor embedding (\ac{tsne}) algorithm\cite{maaten2008visualizing}. t-SNE is a nonlinear dimensionality reduction technique employed to map high dimensional data into 2D or 3D space for plotting. We applied this machine learning algorithm to the first 2000 predictions of our second to last fully connected layer right before the classifier and managed to project our 1024 dimensional YouTube news data into a 2D space. Figure \ref{fig:tsne} shows the resulting plot highlighting a good separation of our four language classes as independent clusters confirming the network learned effective representations of the audio features. Note that French and Spanish split very nicely while German and English have some overlap. This is in line with our previous observations of classification errors as described in section \ref{sec:youtube_news}.
+First we visualized the high-dimensional language vector embedding space using the  t-distributed stochastic neighbor embedding (\ac{tsne}) algorithm\cite{maaten2008visualizing}. t-SNE is a nonlinear dimensionality reduction technique employed to map high dimensional data into 2D or 3D space for plotting. We applied this machine learning algorithm to the first 2000 predictions of our second to last fully connected layer right before the classifier and managed to project our 1024 dimensional YouTube news data into a 2D space. Figure \ref{fig:tsne} shows the resulting plot highlighting a good separation of our four language classes as independent clusters confirming the network learned effective representations of the audio features. Note that French and Spanish split very nicely while German and English have some overlap. This is in line with our previous observations of classification errors as described in section \ref{sec:youtube_news}.
 
-A primary advantage of deep neural networks is their ability to identify and learn useful features on their own making them powerful and versatile. From an end user's perspective they can appear as a bit of a black box and it remains unclear which features they ultimately deem relevant. In order to get a better understanding of our model we visualized its convolutional layers. In figure \ref{fig:conv_filter} we visualized nine of the highest activating filters of the final convolutional layer. In order to obtain these filters we performed back propagation from the output of the filter back to an input image. This yielded the gradients of the output of the filter with respect to the input image pixels. We used that to perform gradient ascent, searching for the image pixels that maximize the output of the filter.
+A primary advantage of deep neural networks is their ability to identify and learn useful features without requiring a data scientist to manually define these. Therefore one does not need any prior knowledge of the domain, a fact that makes these techniques so powerful and versatile. From an outsider's perspective they can appear as a bit of a black box and it remains unclear which features they ultimately deem relevant. In order to gain a better understanding of our model we visualized its convolutional layers. Figure \ref{fig:conv_filter} visualizes nine of the highest activating filters of the final convolutional layer. To obtain these filters we performed back propagation from the output of the filter back to an input image. This yielded the gradients of the output of the filter with respect to the input image pixels. We used that to perform gradient ascent, searching for the image pixels that maximize the output of the filter. \todo{consider adding source}
 
-Visualizations for the lower level convolutional layers resulted in images of very simple geometric shapes like lines and circles which matched our expectations. With increasing network depth each convolutional layer's features combined and evolved into more complex shapes resembling our input domain. In figure \ref{fig:conv_filter} we can identify the familiar ripple like patterns that form frequency activations over time. This proves that the network learned these structures as we hypothesized earlier. We can also identify that some filters specialize in high frequency whereas others focus on low frequencies. Furthermore, it can be observed that the filters only react to a short and specific span of time within the spectrogram, all of which are less than one second in duration.
+Visualizations for the lower-level convolutional layers resulted in images of very simple geometric shapes like lines and circles which matched our expectations. With increasing network depth each convolutional layer's features combined and evolved into more complex shapes resembling our input domain. In figure \ref{fig:conv_filter} we can identify the familiar ripple like patterns that form frequency activations over time. This proves that the network learned these structures as we hypothesized earlier. We can also identify that some filters specialize in high frequency whereas others focus on low frequencies. Furthermore, it can be observed that the filters only react to a short and specific span of time within the spectrogram, all of which are less than one second in duration.
 
 	\begin{figure}[h]
   		\centering
     	\includegraphics[width=\textwidth, keepaspectratio]{img/conv_filter.png}
-    	\caption{Visualization of nine filters of the final convolutional layer. Note the ripple like patterns responsible for detecting different frequency spans in the input audio.}
+    	\caption{Visualization of nine filters in the final convolutional layer. Note the ripple-like patterns responsible for detecting different frequency spans in the input audio.}
     	\label{fig:conv_filter}
 	\end{figure}
 
 \subsubsection{Discussion} 
 \label{sec:comparison}
-In this section we introduced and compared different CNN and CRNN architectures for language identification and proved that these models can be used to accurately solve our research task. We showed that these results hold true regardless of the input audio source and across various languages. This thesis also confirms that audio tasks can be solved within the image domain using spectrogram image representations. As hypothesized we were able to prove that our system learned the audio and frequency structures of these spectrogram images. We demonstrated that the learned intermediate language representations were indeed universal and not language specific and could easily be applied to other languages as well.
+In this section we introduced and compared different CNN and CRNN architectures for language identification and proved that these models can be used to solve our research task to a satisfying quality. This thesis confirms that audio tasks can be solved within the image domain using spectrogram image representations. As hypothesized we were able to prove that our system learned the audio and frequency structures of these spectrogram images. We showed that these results hold true regardless of the input audio source and across various languages. Further, we  demonstrated that the learned intermediate language representations were indeed universal and not language specific and could easily be applied to other languages as well.
  Our approach of combining convolutional neural networks with bidirectional long short term memory cells showed a consistent improvement over baseline CNNs. In general we were able boost accuracy by at least 1\%. Furthermore, we established that an Inception-v3 style CRNN outperformed all other approaches both in terms of accuracy (0.96) as well as with noise robustness. 
 
 We presented several augmented datasets to evaluate both noise and background music robustness. We were content to note that the noise resistance of the Inception-v3 CRNN reached acceptable levels without us having to modify or restructure our algorithm. This reaffirms our believe in deep learning techniques as a viable tool for audio tasks.
 
-Our CRNN approach interpreted every vector entry along the x-axis as a separate time step for the recurrent layer. Hence, all results gathered here are representative of only ten seconds of an audio file. We believe that in a production ready system we could increase the performance by doing a majority voting across multiple segments of a longer audio file.
+Our CRNN approach interpreted every vector entry along the x-axis as a separate time step for the recurrent layer. Hence, all results gathered here are representative of only ten seconds of an audio file. We believe that in a production ready system we could increase the prediction performance by doing a majority voting across multiple segments of a longer audio file. \todo{consider do this as part of the demo}
 
 \todo{Anything else here???}
 
