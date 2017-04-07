@@ -1,24 +1,24 @@
 \section{Dataset Compilation}
 \label{sec:datasets}
-	In this section we will explain the structure of our datasets and how we obtained them.
+	In this chapter we explain the structure of our datasets and how we obtained them.
 
 	Recent advances in deep learning were fueled by the availability of high performance hardware, especially massively parallel computing graphic processors units (\ac{gpu}), and of large-scale, well-annotated, public datasets, for example ImageNet \cite{ILSVRC15} for the computer vision domain. Historically, within the language identification community the TIMIT corpus of read speech \cite{garofolo1993darpa} has long been the default test set. TIMIT contains a total of 5.4 hours, consisting of 10 sentences spoken by each of 630 speakers from 8 major dialect regions of the United States. All samples are recorded at 16kHz, which is a significantly lower quality than the 48kHz that are standard today . Given the short span of each individual sound clip, the overall corpus duration and restriction to only one language TIMIT was unsuited for this thesis. Therefore, it was necessary to obtain our data elsewhere. 
   
   	This thesis uses two primary datasets collected and processed by us. We processed speeches, press conferences, and statements from the European Parliament and collected news broadcasts sourced from YouTube.
 
 \subsection{Language Selection}  
-For the scope of this thesis we decide to limit ourselves to a number of  languages spoken by many millions around the world. We focused our efforts on languages with a high availability of public speech content present in the various data sources explained below, namely the EU Speech Repository and YoutTube. From a linguistic standpoint we also made sure to include language from within the same language family with  similar phonetics for comparison reason. More on the similarities of related languages in section \ref{sec:lang_discrimination}. Following these guidelines we decided on two Germanic languages, English and German, and two Romance languages, French and Spanish. We later extended our selection to Russian and Mandarin Chinese.
+For the scope of this thesis we decided to limit ourselves to a number of  languages spoken by many millions around the world. We focused our efforts on languages with a high availability of public speech content present in the various data sources explained below, namely the EU Speech Repository and YouTube. From a linguistic standpoint we also made sure to include language from within the same language family with  similar phonetics for comparison reason. More on the similarities of related languages in section \ref{sec:lang_discrimination}. Following these guidelines we decided on two Germanic languages, English and German, and two Romance languages, French and Spanish. We later extended our selection to Russian and Mandarin Chinese.
 
 \subsection{EU Speech Repository}
 
-	The EU Speech Repository\footnote{\url{https://webgate.ec.europa.eu/sr/}, accessed 10.03.2017} is a collection of video resources for interpretation students provided for free by the European Commission. The dataset consists of debates of the the European Parliament as well as committee press conferences, interviews and tailor-made training material from EU interpreters. All audio clips are recorded in the speaker's native language and feature exactly one speaker.
+	The EU Speech Repository\footnote{\url{https://webgate.ec.europa.eu/sr/}, accessed 10.03.2017} is a collection of video resources for interpretation students provided for free by the European Commission. The dataset consists of debates of the the European Parliament as well as committee press conferences, interviews and tailor-made training material from EU interpreters. Each single audio clip is recorded in the speaker's native language and features exactly one speaker. Overall, however, the dataset consists of many different male and female speakers adding a nice variety to the data.
 	
 		With 131 hours of speech data it is significantly smaller then the YouTube dataset. We obtained material in four languages: English, German, French, and Spanish. Prior to downloading the data, we gathered and processed every single webpage containing a single video in our target language by using the Selenium website end-to-end testing framework. We downloaded and extracted the audio channel of the source videos using the command line tool youtube-dl\footnote{\url{https://github.com/rg3/youtube-dl}, accessed 23.03.2017}.
 
 \subsection{YouTube News Collection}
 \label{sec:youtube_news}
 
-	Following the approach of Montavon \cite{montavon2009deep} who used podcasts and radio broadcasts as input data we looked for large, public sources of speech audio. Both podcasts and radio stations are unsuited for this thesis' language identification task for several reasons: Podcasts are usually restricted to a single speaker and lack variety. Radio, on the other hand, contains a lot less speech content and consists mainly of music and songs. Consequently we decided on using news broadcasts which provide high quality speech audio data suitable to our needs. To obtain a large variety of languages and gather enough hours of speech audio we sourced the majority of our data from YouTube. 
+	Following the approach of Montavon \cite{montavon2009deep} who used podcasts and radio broadcasts as input data we looked for large, public sources of speech audio. Both podcasts and radio stations have disadvantages for this thesis' language identification task for several reasons: Podcasts are usually restricted to one single speaker and lack variety. Radio, on the other hand, contains a lot less speech content and consists mainly of music and songs. Consequently we decided on using news broadcasts which provide high quality male and female speech audio data suitable to our needs. To obtain a large variety of languages and gather enough hours of speech audio we sourced the majority of our data from YouTube. 
 	
 	For each target language we manually selected one or more YouTube channels of respected news outlets, e.g. BBC and CNN for English. Using more than one channel for each language has the benefit of collection a wide variety of accents, speech patterns and intonations. For a full list of channels refer to table \ref{tab:channels}. All channels were chosen regardless of their content, their political views or journalistic agenda. Again, we downloaded the data using the command line tool youtube-dl and saved only the audio channel.
 	
@@ -54,7 +54,7 @@ For the scope of this thesis we decide to limit ourselves to a number of  langua
 \centering
 \begin{tabularx}{\textwidth}{lXXX}
 \toprule
-Feature               & EU Speech Repository & YouTube News & YouTube News \mbox{Extended} \\ 
+               & EU Speech Repository & YouTube News & YouTube News \mbox{Extended} \\ 
 \midrule
 Languages             & English, German, French, Spanish & English, German, French, Spanish & English, German, French, Spanish, Russian, Chinese \\
 Total audio duration  & 131h   & 942h   & 1508h   \\
