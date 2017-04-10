@@ -126,7 +126,7 @@ Flatten                 & 6144   &               &             \\
 \mbox{Fully Connected}  & 4      &               &             \\
   \bottomrule
   \end{tabularx}
-  \caption{The layerwise architecture for the convolutional neural network CNN\_C. With seven convolutional layers this network design is deeper than the other two proposed CNN architectures. Additionally, the number of feature maps were increased to 512 units compared to the 256 units of the CNN\_A network. Overall this network is deeper and consists of a high number of parameters than the other two designs.}
+  \caption{The layerwise architecture for the convolutional neural network CNN\_C. With seven convolutional layers this network design is deeper than the other two proposed CNN architectures. Additionally, the number of feature maps were increased to 512 units compared to the 256 units of the CNN\_A network. Overall this network is deeper and consists of a higher number of parameters than the other two designs.}
   \label{tab:layers_CNN_C}
   \end{table} 
     
@@ -152,7 +152,7 @@ Reshape                   & $53\times256$           &        &         \\
 \mbox{Fully Connected}    & 4                       &        &         \\
   \bottomrule
   \end{tabularx}
-  \caption{The layerwise architecture for the convolutional recurrent neural network.}
+  \caption{The layerwise architecture for the convolutional recurrent neural network. The network consists of two parts, a CNN and a bidirectional LSTM. It shares the same CNN architecture as the previously introduced CNN\_A. The final convolutional layer is sliced into time steps along the x-axis (time axis) and serves as input to LSTM.}
   \label{tab:layers_CRNN}
   \end{table}
   
