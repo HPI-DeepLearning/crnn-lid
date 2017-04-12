@@ -1,11 +1,8 @@
 import argparse
 import numpy as np
-from yaml import load
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, roc_curve
-from scipy.optimize import brentq
-from scipy.interpolate import interp1d
+import os
+import sys
 from keras.models import load_model
-from keras.utils.np_utils import to_categorical
 
 from data_loaders.SpectrogramGenerator import SpectrogramGenerator
 
@@ -34,5 +31,9 @@ if __name__ == "__main__":
     parser.add_argument('--model', dest='model_dir', required=True)
     parser.add_argument('--input', dest='input_file', required=True)
     cli_args = parser.parse_args()
+
+    if not os.path.isfile(cli_args.input_file):
+        sys.exit("Input is not a file.")
+
 
     predict(cli_args)
