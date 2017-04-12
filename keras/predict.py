@@ -7,26 +7,25 @@ from scipy.interpolate import interp1d
 from keras.models import load_model
 from keras.utils.np_utils import to_categorical
 
-from data_loaders import SpectrogramGenerator
+from data_loaders.SpectrogramGenerator import SpectrogramGenerator
 
 def predict(cli_args):
 
-    config = {"pixel_per_second": 50, "input_shape": [129, 100, 1], "num_classes": 4}
-    data_generator = SpectrogramGenerator(cli_args.input_file, config)
+    config = {"pixel_per_second": 50, "input_shape": [129, 500, 1], "num_classes": 4}
+    data_generator = SpectrogramGenerator(cli_args.input_file, config, shuffle=False, run_only_once=True).get_generator()
+    data = [np.divide(image, 255.0) for image in data_generator]
+    data = np.stack(data)
 
     # Model Generation
     model = load_model(cli_args.model_dir)
 
-    probabilities = model.predict_generator(
-        data_generator.get_data(should_shuffle=False, is_prediction=True),
-        nb_worker=1,  # parallelization messes up data order. careful!
-        pickle_safe=True
-    )
+    probabilities = model.predict(data)
 
     classes = np.argmax(probabilities, axis=1)
-    average_prob = np.mean(probabilities, axis=1)
+    average_prob = np.mean(probabilities, axis=0)
+    average_class = np.argmax(average_prob)
 
-    print classes, average_prob
+    print classes, average_class, average_prob
     return probabilities
 
 if __name__ == "__main__":
