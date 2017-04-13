@@ -127,14 +127,16 @@ Our CRNN architecture outperformed all CNN approaches significantly. With a top-
 
 \subsubsection{Effect of Audio Duration} 
 \label{sec:duration}
-In all previous experiments we split the audio recordings into ten second segments, which translated to an image dimension of 500x129 pixels for the spectrogram. We decided on 10 second audio snippets to replicate on the setup of the \ac{nist} LRE 2015 \footnote{\url{https://www.nist.gov/itl/iad/mig/2015-language-recognition-evaluation}, accessed 15.02.2017} challenge. To study the effect of the audio duration on classification performance we set up a version of the EU Speech Repository dataset with non-overlapping five seconds snippets but left the number of frequency bins unchanged. Hence, we reduced the input dimensions to 250x129 pixels and could not just use our previously trained models but had to retrain new models.
+In all previous experiments we split the audio recordings into ten second segments, which translated to an image dimension of 500x129 pixels for the spectrogram. We decided on 10 second audio snippets to replicate on the setup of the \ac{nist} LRE 2015 \footnote{\url{https://www.nist.gov/itl/iad/mig/2015-language-recognition-evaluation}, accessed 15.02.2017} challenge. To study the effect of the audio duration on classification performance we set up two versions of the EU Speech Repository dataset with non-overlapping five and twenty second snippets but left the number of frequency bins unchanged. Hence, we changed the input dimensions to 250x129 pixels and 1000x129 pixels, respectively, and could not just use our previously trained models but had to retrain new models.
 
-To set a baseline we used the same CNN\_A architecture as explained in the previous section. When completely training it from scratch we achieved an accuracy of 0.81 falling short of the results achieved with ten second snippets. Next, we applied some transfer learning and finetuned CNN\_A on the new five second dataset. Since the convolutional layers are not bound to a specific input size and given that the frequency features did not change in dimension we were able to reuse the complete  convolutional weights. For the finetuning we froze the convolutional layers, confident in their ability to detect frequency features, and only retrained the final two fully connected layers. With the bisection of the input data the amount of model parameters were greatly reduced, especially the fully connected layer weights. To account for this we finetuned one model with a fully connected layer of 512 outputs and a second one with the default 1024 outputs. Overall this yielded an accuracy of 0.88 and 0.89, respectively. We concluded that the effect of the smaller fully connected layer is only marginally better. 
+To set a baseline we used the same CNN\_A architecture as explained in the previous section. When completely training the five second version from scratch we achieved an accuracy of 0.81 falling short of the results achieved with ten second snippets. Next, we applied some transfer learning and finetuned CNN\_A on the new five second dataset. Since the convolutional layers are not bound to a specific input size and given that the frequency features did not change in dimension we were able to reuse the complete  convolutional weights. For the finetuning we froze the convolutional layers, confident in their ability to detect frequency features, and only retrained the final two fully connected layers. With the bisection of the input data the amount of model parameters were greatly reduced, especially the fully connected layer weights. To account for this we finetuned one model with a fully connected layer of 512 outputs and a second one with the default 1024 outputs. Overall this yielded an accuracy of 0.88 and 0.89, respectively. We concluded that the effect of the smaller fully connected layer is only marginally better. 
 
 After establishing a solid CNN foundation we applied the same CRNN approach as previously highlighted. Due to the shorter audio duration the final pooling layer only features 5 output units along the x-axis compared to the 13 output units of the ten second CRNN. When interpreted as a sequence of time steps and fed into the bidirectional LSTM the accuracy improved only marginally to 0.90. We suspect that the number of time steps was too little to take full advantage of the recurrent network layer.
 In an effort to increase the number of output units of the final pooling layer and hence increase the sequence length we applied 1x2 rectangular pooling tweak again. We changed the final two pooling layers and increased the number of output units along the x-axis to 22. The y-axis remained unaffected. The resulting accuracy of 0.90 and the F1 score of 0.91 remained comparable to the previous model and did not bring the desired effect. 
 
-In summary we believe that decreasing the duration of the audio snippets used for training has a negative effect on the classification performance. While it is possible to train and finetune CNNs that match their ten second counterparts we found that the CRNN approach does not boost the model effectiveness in a similar manner.
+For the twenty second version we trained the network from scratch using the CNN\_A architecture. This yielded an accuracy of 0.90, which is comparable to its ten second counterpart. This experiment uses double the amount of pixels along the x-axis as the ten second baseline. This expansion of data led to an increase in computation time. At the same time, we felt that our LID system is more flexible when requiring shorter input audio snippets rather then longer one. We concluded that these longer snippets did neither improve our accuracy nor did they make the LID system more attractive overall.
+
+In summary we believe that both decreasing and increasing the duration of the audio snippets used for training has a negative effect on the classification performance. While it is possible to train and finetune CNNs that match their ten second counterparts we found that the CRNN approach does not boost the model effectiveness in a similar manner.
 \todo{consider evaluating longer snippets}
 	
 	\begin{table}[]
@@ -142,12 +144,13 @@ In summary we believe that decreasing the duration of the audio snippets used fo
 	\begin{tabularx}{\textwidth}{lrr}
 	\toprule
   Model Architecture                            & Accuracy  & F1   \\ \midrule
-  CNN from scratch                              & 0.81      & 0.81 \\
-  CNN finetuned with 1024 Fully Connected Units & 0.88      & 0.89 \\
-  CNN finetuned with 512 Fully Connected Units  & 0.89      & 0.89 \\
-  CRNN with 5 time steps                        & 0.90      & 0.91 \\
-  CRNN with 22 time steps                       & 0.90      & 0.91 \\ \midrule
-  CRNN (10s) for reference                      & 0.98      & 0.98 \\ 
+  CNN (5s) from scratch                              & 0.81      & 0.81 \\
+  CNN (5s) finetuned with 1024 Fully Connected Units & 0.88      & 0.89 \\
+  CNN (5s) finetuned with 512 Fully Connected Units  & 0.89      & 0.89 \\
+  CNN (20s) from scratch                             & 0.90      & 0.90 \\
+  CRNN (5s) with 5 time steps                        & 0.90      & 0.91 \\
+  CRNN (5s) with 22 time steps                       & 0.90      & 0.91 \\ \midrule
+  CRNN (10s) for reference                           & 0.98      & 0.98 \\ 
  	\bottomrule
 	\end{tabularx}
 	\caption{Various CNN and CRNN model configurations trained on five second audio samples. The best performing five second CRNN still falls short of its ten second counterpart with an accuracy of 0.90 and 0.98, respectively.}

@@ -6,6 +6,8 @@ from keras.models import load_model
 
 from data_loaders.SpectrogramGenerator import SpectrogramGenerator
 
+class_labels = ["EN", "DE", "FR", "ES", "CN", "RU"]
+
 def predict(cli_args):
 
     config = {"pixel_per_second": 50, "input_shape": [129, 500, 1], "num_classes": 4}
@@ -22,7 +24,7 @@ def predict(cli_args):
     average_prob = np.mean(probabilities, axis=0)
     average_class = np.argmax(average_prob)
 
-    print classes, average_class, average_prob
+    print classes, class_labels[average_class], average_prob
     return probabilities
 
 if __name__ == "__main__":
