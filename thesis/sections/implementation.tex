@@ -10,12 +10,11 @@ This section outlines the software resources of our language identification syst
 	All models are persisted to disk during training, including a summary of the layer architecture as well as their weights. This makes it easy to load, evaluate and deploy all models later. During the evaluation phase all performance metrics (accuracy, precision, recall, F1 score) are calculated using the Scikit Learn\cite{scikit-learn} framework. All measurements are logged and visualized using TensorBoard\footnote{\url{https://www.tensorflow.org/how_tos/summaries_and_tensorboard/}, accessed 30.01.2017}, both for the training and validation set. Having the ability to easily study and compare different metrics such as accuracy and loss across several training runs made it very comfortable to continuously monitor the progress of our research. Figure \ref{fig:tensorboard} shows a TensorBoard instance with metric plots for several models. We regularly compared different approaches and models against each other and used these plots to select the best performing systems for further experiments.
 	\begin{figure}[]
   		\centering
-    	\includegraphics[width=\textwidth,keepaspectratio]{img/tensorboard.png}
-    	\caption{Training accuracy and loss of different models visualized in TensorBoard. We regularly tried different approaches and model architectures and plotted multiple evaluation measures for comparison. This workflow enabled us to judge the impact of each experiment and measure the overall performance progress of the system.}
+    	\includegraphics[width=\textwidth,keepaspectratio]{img/tensorboard2.png}
+    	\caption{A TensorBoard instance showing training loss and validation accuracy of two different models. We regularly tried different approaches and model architectures and plotted multiple evaluation measures for comparison. This workflow enabled us to judge the impact of each experiment and measure the overall performance progress of the system.}
     	\label{fig:tensorboard}
 	\end{figure}		
-	\todo{use screenshit with zoomed in plots}
-	
+
 \subsection{Data Preprocessing}
 \label{sec:data_processing}
 
