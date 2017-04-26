@@ -6,13 +6,15 @@ import numpy as np
 import fnmatch
 from predict import predict
 from collections import namedtuple
-
+from keras.models import load_model
+from data_loaders.SpectrogramGenerator import SpectrogramGenerator
 from sklearn.metrics import classification_report, accuracy_score
 
-# model_name = "logs/2017-01-02-13-39-41/weights.06.model"
+model_name = "logs/2017-01-02-13-39-41/weights.06.model"
+model = load_model(model_name)
+
 # model_name = "/home/mpss2015m_1/master-thesis/keras/logs/2016-12-16-16-28-42/weights.20.model"
 
-DummyCLIArgs = namedtuple("DummyCLIArgs", ["model_dir", "input_file"])
 
 LABELS = {
     "english": 0,
@@ -20,6 +22,25 @@ LABELS = {
     "french": 2,
     "spanish": 3,
 }
+class_labels = ["EN", "DE", "FR", "ES", "CN", "RU"]
+
+def predict(input_file):
+
+    config = {"pixel_per_second": 50, "input_shape": [129, 500, 1], "num_classes": 4}
+    data_generator = SpectrogramGenerator(input_file, config, shuffle=False, run_only_once=True).get_generator()
+    data = [np.divide(image, 255.0) for image in data_generator]
+    data = np.stack(data)
+
+    # Model Generation
+    probabilities = model.predict(data)
+    probabilities = probabilities[3:-5] # ignore first 30 sec and last 50 sec
+
+    classes = np.argmax(probabilities, axis=1)
+    average_prob = np.mean(probabilities, axis=0)
+    average_class = np.argmax(average_prob)
+
+    print(classes, class_labels[average_class], average_prob)
+    return average_class
 
 def recursive_glob(path, pattern):
     for root, dirs, files in os.walk(path):
@@ -44,9 +65,8 @@ def eval(root_dir):
         classes = []
 
         for file in files:
-            probabilities = predict(DummyCLIArgs(model_name, file))
-            average_prob = np.mean(probabilities, axis=0)
-            average_class = np.argmax(average_prob)
+            print(file)
+            average_class = predict(file)
             classes.append(average_class)
 
         y_true = np.full((len(classes)), LABELS[lang])
@@ -59,4 +79,4 @@ def eval(root_dir):
 if __name__ == '__main__':
 
     eval("/data/tom/songs/hiphop")
-    eval("/data/tom/songs/hiphop")
+    eval("/data/tom/songs/pop")

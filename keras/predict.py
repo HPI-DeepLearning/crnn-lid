@@ -24,7 +24,7 @@ def predict(cli_args):
     average_prob = np.mean(probabilities, axis=0)
     average_class = np.argmax(average_prob)
 
-    print classes, class_labels[average_class], average_prob
+    print(classes, class_labels[average_class], average_prob)
     return probabilities
 
 if __name__ == "__main__":

@@ -40,6 +40,7 @@ def evaluate(cli_args):
 
     # Model Generation
     model = load_model(cli_args.model_dir)
+    print(model.summary())
 
     probabilities = model.predict_generator(
         data_generator.get_data(should_shuffle=False, is_prediction=True),

@@ -51,7 +51,7 @@ def visualize_cluster(cli_args):
     model = Sequential()
     for i, layer in enumerate(ref_model.layers[:-1]):
         model.add(layer)
-        model.layers[i].set_weights(ref_model.layers[i].get_weights())
+        model.layers[i].set_weights(layer.get_weights())
     model.compile("adam", "categorical_crossentropy")
 
     probabilities = model.predict_generator(

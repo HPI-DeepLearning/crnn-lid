@@ -1,4 +1,6 @@
 import topcoder
+import topcoder_finetune
+import topcoder_deeper
 import topcoder_crnn
 import topcoder_small
 import topcoder_5s_finetune
