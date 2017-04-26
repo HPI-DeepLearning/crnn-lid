@@ -61,11 +61,6 @@ class VinylBackgroundSpectrogramGenerator(object):
             noisy_speech = speech.overlay(noise - 10, loop=True)
             noisy_speech.export(noisy_speech_file.name, format="wav")
 
-            print(noisy_speech_file.name)
-            print("speech", speech.dBFS)
-            print("noise", noise.dBFS)
-            print("mix", noisy_speech.dBFS)
-
             # shutil.copyfile(noisy_speech_file.name, os.path.join("/extra/tom/news2/debug", "mixed_" + os.path.basename(noisy_speech_file.name)))
 
             with tempfile.NamedTemporaryFile(suffix='.png') as image_file:
