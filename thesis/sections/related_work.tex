@@ -22,16 +22,18 @@ Spoken Language Processing:
 Music information retrieval (MIR), Automatic Speech Recognition (ASR), Language Identification (LID)
 
 Many higher level characteristics of sound relate to the energies in different frequency bands. This explains the utility of time-frequency representations of audio such as spectrograms, which a frequently used in literature.\cite{montavon2009deep, dieleman2013, multiscalelee2009unsupervised, wulfing2012unsupervised, henaff2011unsupervised} Alternatively, more classical machine learning systems and ivector systems usually rely on Mel-Frequency Cepstral Coeffiecient (MFCC) vectors. \cite{} Others have evaluated the use of raw waveform audio directly.\cite{dieleman2014end, collobert2016wav2letter}
-Collobert et al. introduced Wav2Letter\cite{collobert2016wav2letter}: an end-to-end convolutional neural network speech recognition. They evaluated their system with three different input representations: Mel-Frequency Cepstral Coeffiecient (MFCC), spectrograms and raw waveform data. Their fully convolutional neural network performed best with MFCC vectors as input. Yet, power spectrograms still outperformed raw waveform inputs. This observation is inline with Dieleman et al.\cite{dieleman2014end} who also note that spectrograms are computationally cheaper given there already reduced and compacted representation. Raw audio, especially when sampled at a high rate of 44kHz, would increase the amount of striding width and windows sizes of convolutional layers.       
+Collobert et al. introduced Wav2Letter\cite{collobert2016wav2letter}: an end-to-end convolutional neural network speech recognition. They evaluated their system with three different input representations: Mel-Frequency Cepstral Coeffiecient (MFCC), spectrograms and raw waveform data. Their fully convolutional neural network performed best with MFCC vectors as input. Yet, power spectrograms still outperformed raw waveform inputs. This observation is inline with Dieleman et al.\cite{dieleman2014end} who also note that spectrograms are computationally cheaper given there already reduced and compacted representation. Raw audio, especially when sampled at a high rate of 44kHz, would increase the amount of striding width and windows sizes of convolutional layers.  
+Deng et al. \cite{deng2013recent} reported noticeably lower speech recognition errors using large-scale deep neural networks when using mel filter-bank spectrograms compared to MFCC features. 
 
 
 
 augmentation:
 - cropping scaling, {szegedy2015going}
 
-only LSTM \cite{gonzalez2014automatic, graves2013speech}
+only LSTM \cite{gonzalez2014automatic, graves2013speech, abdic2015detecting}
 
-only NN \cite{gonzalez2014automatic, han2013trap}
+Alongside the rise of popularity of neural networks within the computer vision community we can witness its use for audio based tasks as well. Early LID system integrate and combine shallow neural networks within their ivector systems\cite{gonzalez2014automatic, han2013trap, matejka2014neural, van2014transfer}. These models usually feature no more than three layers and consist solely of pure neural networks / fully connected layers. While these system neither benefit from the more efficient computation of CNNs nor the expressiveness of deeper systems they already were able to improve existing systems.
+
 
 ivector
 \cite{dehak2011language}
