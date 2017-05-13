@@ -1,0 +1,6 @@
+Flask==0.10.1
+Flask-Cors==1.10.2
+Jinja2==2.7.3
+Routes==2.0
+Werkzeug==0.9.6
+requests==2.3.0

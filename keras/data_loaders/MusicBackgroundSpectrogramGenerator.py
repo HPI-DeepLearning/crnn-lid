@@ -59,7 +59,7 @@ class MusicBackgroundSpectrogramGenerator(object):
             noisy_speech = speech.overlay(noise - 5, loop=True)
             noisy_speech.export(noisy_speech_file.name, format="wav")
 
-            shutil.copyfile(noisy_speech_file.name, os.path.join("/extra/tom/news2/debug", "mixed_" + os.path.basename(noisy_speech_file.name)))
+            # shutil.copyfile(noisy_speech_file.name, os.path.join("/extra/tom/news2/debug", "mixed_" + os.path.basename(noisy_speech_file.name)))
 
             with tempfile.NamedTemporaryFile(suffix='.png') as image_file:
                 command = "{} -n remix 1 rate 10k spectrogram -y {} -X {} -m -r -o {}". format(noisy_speech_file.name, height, pixel_per_sec, image_file.name)

@@ -12,6 +12,7 @@ sys.path.append(lib_dir)
 from SpectrogramGenerator import SpectrogramGenerator
 from NoisyBackgroundSpectrogramGenerator import NoisyBackgroundSpectrogramGenerator
 from VinylBackgroundSpectrogramGenerator import VinylBackgroundSpectrogramGenerator
+from MusicBackgroundSpectrogramGenerator import MusicBackgroundSpectrogramGenerator
 from create_csv import create_csv
 
 def directory_to_spectrograms(args):
@@ -31,7 +32,7 @@ def directory_to_spectrograms(args):
                  "chinese",
                  "russian"]
 
-    generators = [VinylBackgroundSpectrogramGenerator(os.path.join(source, language), config, shuffle=False, run_only_once=True) for language in languages]
+    generators = [MusicBackgroundSpectrogramGenerator(os.path.join(source, language), config, shuffle=False, run_only_once=True) for language in languages]
     generator_queues = [SpectrogramGen.get_generator() for SpectrogramGen in generators]
 
     for language in languages:

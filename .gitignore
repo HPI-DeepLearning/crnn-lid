@@ -68,6 +68,9 @@ target/
 */log/**
 */logs/**
 /datasets/**
+*/node_modules/*
+/web-server/audio
+/web-server/model
 
 *.iml
 **/.texpadtmp/**

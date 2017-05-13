@@ -1,0 +1,71 @@
+@import "result-page.less";
+@import "home-page.less";
+
+nav {
+  padding: 0 20px;
+}
+
+.file-field input.file-path {
+  // width: 90%!important;
+  width: ~"calc(100% - 100px) !important";
+}
+
+.brand-logo img {
+  margin: 8px;
+  float: left;
+}
+
+.form-submit {
+  margin-top: 20px;
+
+  & .preloader-wrapper {
+    margin-bottom: -12px;
+  }
+
+  & button {
+    margin-right: 20px;
+  }
+}
+
+.spinner-enter {
+  opacity: 0;
+  transition: opacity .5s ease-in;
+}
+.spinner-enter-active {
+  opacity: 1;
+}
+
+.card-link {
+  cursor: pointer;
+}
+
+.card-title {
+  color: black!important;
+}
+
+.card-panel .card-title {
+  line-height: 48px;
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.dropzone {
+  width: 100%;
+  height: 150px;
+  border: black dashed;
+}
+
+.oval-mask-container {
+  position: relative;
+
+  .oval-mask {
+    position: absolute;
+    border-radius: 70%;
+    width: 400px;
+    border: 4px solid red;
+    top: 0;
+    height: ~"calc(100% - 8px)";
+    left: 240px;
+  }
+
+}
