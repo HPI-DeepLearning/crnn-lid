@@ -1,123 +1,41 @@
 \section{Related Work}
 \label{sec:related_work}
+In this chapter we layout related work concerning neural network designs in general and hybrid networks used for language identification. Additionally, we highlight related work on suitable input feature representations for machine learning on audio files. Finally, we present research on i-vector systems, the traditional approach to LID. 
 
--wavenet?
+- wavenet?
+- vgg
+- augmentation:
+	- cropping scaling, {szegedy2015going}
+	
+	
+The i-vector system characterizes languages and utterances with vectors obtained by projecting their speech data onto a total variability space T where language and channel informationis dense. It is generally expressed as:S=m+Tw (1)where w is called an i-vector and m and S are the GMM super-vector of the language independent UBM and language adapted model, respectively.
 
-With good results in the ImageNet competition, the AlexNet\cite{krizhevsky2012imagenet}, VGGNet\cite{simonyan2014very} and GoogLeNet / Inception\cite{szegedy2015going} have become the de-facto standard.
 
-Szegedy et al. reported several iterations of Google's convolutional neural network architecture, called GoogLeNet or Inception\cite{szegedy2015going, szegedy2016rethinking, szegedy2016inception}. These deep and very deep convolutional neural networks repeatedly set the state of the art record for minimal classification errors in the ImageNet Large Scale Visual Recognition Competition (ILSVRC). The presented network architectures present a number of advantages to previous CNN designs such as VGG. They introduced so called inception modules or mini networks that aim to factorize convolutions with larger filter size in order to accelerate training time and reduce the amount of model parameters. The idea is to replace larger spatial filter (e.g 5$\times$5 and 7$\times$7) which are disproportionally expensive in terms of computation with less expensive smaller inception modules with any loss of visual expressiveness. The inception modules are represented as a sequence of 3$\times$3 convolutions followed by a 1$\times$1 convolution. In case of 5$\times$5 filters they were able to achieve a gain of 28\% in computational speed up. The resulting Inception-v2 and Inception-v3 networks consist of 42 layers and are trained using the RMSProp\cite{tieleman2012lecture} optimizer. Compared to the VGG style networks they feature a lower overall computational cost while boosting better accuracy on image vision tasks.
+With good results in the ImageNet Large Scale Visual Recognition Challenge (ILSVRC)\cite{ILSVRC15}, the AlexNet\cite{krizhevsky2012imagenet}, VGGNet\cite{simonyan2014very} and GoogLeNet / Inception\cite{szegedy2015going} have become the de-facto standard. 
+Szegedy et al. reported several iterations of Google's convolutional neural network architecture, called GoogLeNet or Inception\cite{szegedy2015going, szegedy2016rethinking, szegedy2016inception}. These deep and very deep convolutional neural networks repeatedly set the state of the art record for minimal classification errors in the ImageNet competition. The presented network architectures present a number of advantages to previous CNN designs such as VGG. They introduced so called inception modules or mini networks that aim to factorize convolutions with larger filter size in order to accelerate training time and reduce the amount of model parameters. The idea is to replace larger spatial filter (e.g 5$\times$5 and 7$\times$7) which are disproportionally expensive in terms of computation with less expensive smaller inception modules with any loss of visual expressiveness. The inception modules are represented as a sequence of 3$\times$3 convolutions followed by a 1$\times$1 convolution. In case of 5$\times$5 filters they were able to achieve a gain of 28\% in computational speed up. The resulting Inception-v2 and Inception-v3 networks consist of 42 layers and are trained using the RMSProp\cite{tieleman2012lecture} optimizer. Compared to the VGG style networks they feature a lower overall computational cost while boosting better accuracy on image vision tasks.
 
 A second innovation introduced by the inception networks is the use of a technique called batch normalization\cite{ioffe2015batch}. Training deep neural networks is complicated by the fact that the distribution of each layer's input changes during training, as the parameters of the previous layer change. This slows down trainings by requiring lower learning rates and careful parameter initialization. They refer to this phenomenon as internal covariate shift. The proposed solution to this problem is to normalize the inputs of each mini batch for the following layer. This results into a number of benefits. Foremost they were able to drastically reduce the time need to converge their models. Batch normalization enabled them to use higher learning rates without running into the vanishing or exploding gradient problem. Furthermore batch normalization acts as model regularizer positively affecting the generalization ability of the network. In turn this eliminates the need for dropout layers as regularizers. They conclude that simply by adding batch normalization to the convolutional layers of the inception network they were able to beat the state of the art of the ILSVRC challenge.
 
 Shi et al.\cite{shi2016end} proposed an end-to-end trainable neural network for image-based sequence recognition and its application to scene text recognition. In their approach they used a hybrid neural network consisting of a convolutional part and a recurrent part for optical character recognition (OCR). They used convolutional layers as robust feature extractors for the input images and interpreted the resulting feature maps as a sequence of feature vectors. This sequence is fed into a LSTM network to capture the contextual information within the sequence. The whole CRNN was jointly trained with a connectionist temporal classification (CTC) loss \cite{graves2006connectionist} to output a sequence of letters. The found a VGG-based network architecture of seven convolutional layers with max pooling followed by a bidirectional LSTM to work best. They report that the use of batch normalization greatly accelerated their training time. Additionally they employed 1$\times$2 sized rectangular pooling windows instead of conventional squared ones. This tweak yielded feature maps of larger width and hence longer sequences for the RNN.
 
-Song et al.\cite{song2015end} reported the use of an end-to-end trainable hybrid convolutional recurrent neural network for automatic speech recognition (ASR). They focussed on classifying a phoneme sequence of the input speech sample as part of an ASR system. Their proposed network consists of four convolutional layers, followed by two fully connected layers and is finalized by two LSTM layers. The network was jointly trained on the TIMIT dataset using CTC loss and used mel-filter bank greyscale images as input. Given the short length of the individual phonemes they operates on audio snippets of 15-25 milliseconds. Similarly to Shi et al. they resort to using rectangular pooling layers to obtain longer feature vector sequences. Their reported results are competitive to traditional gaussian mixture models and hidden markov models for ASR tasks. 
+
+Much of the research around audio representations and spoken language processing is rooted in various related research communities: Music information retrieval (MIR), Automatic Speech Recognition (ASR) and Language Identification (LID). Alongside the rise of popularity of neural networks within the computer vision community we can witness its use for audio based tasks as well. Early LID system integrate and combine shallow neural networks within their i-vector systems\cite{gonzalez2014automatic, han2013trap, matejka2014neural, richardson2015unified}. These models usually feature no more than three layers and consist solely of pure neural networks / fully connected layers. While these system neither benefit from the more efficient computation of CNNs nor the expressiveness of deeper systems they already were able to improve existing systems.
+
+Song et al.\cite{song2015end} reported the use of an end-to-end trainable hybrid convolutional recurrent neural network for automatic speech recognition (ASR). They focussed on classifying a phoneme sequence of the input speech sample as part of an ASR system. Their proposed network consists of four convolutional layers, followed by two fully connected layers and is finalized by two LSTM layers. The network was jointly trained on the TIMIT dataset using CTC loss and used mel-filter bank greyscale images as input. Given the short length of the individual phonemes they operates on audio snippets of 15-25 milliseconds. Similarly to Shi et al.\cite{shi2016end} they resort to using rectangular pooling layers to obtain longer feature vector sequences. Their reported results are competitive to traditional gaussian mixture models and hidden markov models for ASR tasks. 
 
 Amodei et al. presented the Deep Speech 2 system for speech recognition for English and Mandarin Chinese. Their CRNN features only three convolutional layers followed by seven bidirectional RNN or GRU layers. The model was trained end to end using CTC loss and uses a sequence of spectrograms of power normalized audio as input. The model outputs a sequence of graphemes and uses a language model together with beam search to reconstruct the words from the audio. They found LSTMs and GRU cells to perform similarly as a choice for the RNN part. GRU cells, however, needed less computations and were less likely to diverge. For the CNN part they evaluated both the use of 1D time-only domain convolutions and 2D frequency-time domain convolutions. 2D Convolutions fared better especially with regard to noisy data. 
 Deep Speech 2 was trained with 12.000 hours of English Speech and 9.000 hours of Mandarin Chinese. Additionally they increased their dataset with augmented data boosting both their effective size of corpus as well as improving their noise robustness. Around 40\% of the original audio was augmented with randomly selected audio clips. For their evaluation they also tested the system on accented speech and noisy speech read in cafés, streets, etc. In both scenarios the model's performance deteriorates.
 
-
-
-Spoken Language Processing:
-Music information retrieval (MIR), Automatic Speech Recognition (ASR), Language Identification (LID)
-
-Many higher level characteristics of sound relate to the energies in different frequency bands. This explains the utility of time-frequency representations of audio such as spectrograms, which a frequently used in literature.\cite{montavon2009deep, dieleman2013, multiscalelee2009unsupervised, wulfing2012unsupervised, henaff2011unsupervised} Alternatively, more classical machine learning systems and ivector systems usually rely on Mel-Frequency Cepstral Coeffiecient (MFCC) vectors. \cite{} Others have evaluated the use of raw waveform audio directly.\cite{dieleman2014end, collobert2016wav2letter}
+There are many different types if audio representations used for spoken language processing tasks. Many higher level characteristics of sound relate to the energies in different frequency bands. This explains the utility of time-frequency representations of audio such as spectrograms, which a frequently used in literature.\cite{montavon2009deep, dieleman2013, multiscalelee2009unsupervised, wulfing2012unsupervised, henaff2011unsupervised} Alternatively, more classical machine learning systems and i-vector systems usually rely on Mel-Frequency Cepstral Coeffiecient (MFCC) vectors\cite{richardson2015unified, dehak2011front, garcia2011analysis} or derivatives such as perceptual linear prediction (PLP) coefficients \cite{gonzalez2014automatic}. Others have evaluated the use of raw waveform audio directly.\cite{dieleman2014end, collobert2016wav2letter}
 Collobert et al. introduced Wav2Letter\cite{collobert2016wav2letter}: an end-to-end convolutional neural network speech recognition. They evaluated their system with three different input representations: Mel-Frequency Cepstral Coeffiecient (MFCC), spectrograms and raw waveform data. Their fully convolutional neural network performed best with MFCC vectors as input. Yet, power spectrograms still outperformed raw waveform inputs. This observation is inline with Dieleman et al.\cite{dieleman2014end} who also note that spectrograms are computationally cheaper given there already reduced and compacted representation. Raw audio, especially when sampled at a high rate of 44kHz, would increase the amount of striding width and windows sizes of convolutional layers.  
-Deng et al. \cite{deng2013recent} reported noticeably lower speech recognition errors using large-scale deep neural networks when using mel filter-bank spectrograms compared to MFCC features. 
+Deng et al. \cite{deng2013recent} reported noticeably lower speech recognition errors using large-scale deep neural networks when using mel-scale filter-bank spectrograms compared to MFCC features. 
+
+
+Prior to the neural network based deep learning systems above many researchers focussed on so called identity vector (i-vector) systems for spoken language processing tasks. Dehak et al.\cite{dehak2011front} introduced i-vector systems for speaker verification tasks. I-vectors are a representations obtained by mapping a sequence of frames of a given utterance into a low-dimensional vector space, referred to as the total 	variability space, based on a factor analysis technique. Typically such a system is design as follows. A feature extractor is used to turn an audio file into a 20 dimensional mel-frequency cepstral coefficient (MFCC) vector or a 56 dimensional shifted delta cepstral (SDC) vector. These are used to train a unified background model (UBM), a speaker and language-independent Gaussian mixture model (GMM). Different speakers have different subspaces within this universal acoustical cluster, the UBM. The trained high dimensional GMM supervector is decomposed into its individual components to obtain individual speaker and language dependent characteristic. Matrix decomposition methods like principal component analysis (PCA) can be used for that. The i-vector is whitened by subtracting a global mean, scaled by the inverse square root of a global covariance matrix, and then normalized to unit length\cite{garcia2011analysis}. Typically the i-vector is a compact representation of 400-600 dimensions. Finally, a score between the model and test i-vector is computed. The simplest scoring measure is the cosine distance between the embedded i-vectors of languages. 
+Other research\cite{dehak2011front} experimented with linear discriminant analysis (LDA) and neighborhood component analysis (NCA) for dimensionality reduction of the UBM. Sizov et al. reported the use of probabilistic linear discriminant analysis (PLDA) for this job.\cite{sizov2016discriminating}
+While many systems share i-vectors as the input to a classifier the actual type of classification algorithm varies widely. For language identification Dehak et. al\cite{dehak2011front} used support vector machines (SVM) with cosine kernels. Others\cite{martinez2011language} employed logistic regression or used a simple three layer neural network\cite{plchot2016bat}. Gonzalez et al.\cite{gonzalez2015frame} outperform all previous attempts by using a four layer deep neural network. Gelly et al.\cite{gelly2016language} presented the use of bidirectional LSTMs with i-vectors. Other submissions\cite{lee20162015, torres2008mitll, ng2016sheffield} to NIST LRE 2015 challenge\cite{lre2015} include many further research and approach with i-vector systems including the use of stacked bottleneck features, bayesian unit discovery and model fusions. This feature engineering around i-vectors results in more complex systems with an increasing number of processing and computational steps in their pipeline.
 
 
 
-augmentation:
-- cropping scaling, {szegedy2015going}
 
-only LSTM \cite{gonzalez2014automatic, graves2013speech, abdic2015detecting}
-
-Alongside the rise of popularity of neural networks within the computer vision community we can witness its use for audio based tasks as well. Early LID system integrate and combine shallow neural networks within their ivector systems\cite{gonzalez2014automatic, han2013trap, matejka2014neural, van2014transfer}. These models usually feature no more than three layers and consist solely of pure neural networks / fully connected layers. While these system neither benefit from the more efficient computation of CNNs nor the expressiveness of deeper systems they already were able to improve existing systems.
-
-
-ivector
-\cite{dehak2011language}
-
-input features PLP \cite{gonzalez2014automatic}
-
-    \subsubsection{A UNIFIED DEEP NEURAL NETWORK FOR SPEAKER AND LANGUAGE RECOGNITION}
-    \begin{itemize}
-        \item \cite{richardson2015unified}
-        \item Almost identical: Deep Neural Network Approaches to Speaker and Language Recognition \cite{richardson2015deep}
-        \item high level overview of i-vector system
-        \item Task: Language Recogniton + Speaker Recognition
-        \item use bottleneck feature in the second to last layer
-        \item input 7 static cepstra appended with 49 SDC
-        \item DNN has 7 hidden layers of 1024 nodes each with the exception of the 6th bottleneck layer which has 64 nodes
-        \item LRE11
-    \end{itemize}
-    
-    \subsubsection{EXTRACTING DEEP NEURAL NETWORK BOTTLENECK FEATURES USING LOW-RANK MATRIX FACTORIZATION
-    }
-    \begin{itemize}
-        \item \cite{zhang2014extracting}
-        \item bottle neck feature improve classification results
-        \item Task: Automatc Speech Recogniton (ASR)
-        \item get bottleneck feature by low rank matrix factorization
-        \item this is done by replacing the usual softmax layer weights by a linear layer with a small number of hidden units followed by a softmax layer
-        \item BN laier is always last layer
-        \item linear layer = FC without activation func
-        \item uses DNN with 5 FCs with 1024 hidden units each + sigmoid activations + 1 BN layer
-        \item softmax cross entropy loss 
-        \item 23 critical-band energies are obtained from a Mel filter-bank, with conversation-side-based mean subtraction = 150 dimensions
-        \item further reduciton of output by PCA
-        \item hybrid system of DNN + BN feeding into DNN + BN
-        
-    \end{itemize}
-
-\subsection{LRE 2015}
-
-    \subsubsection{BAT System Description for NIST LRE 2015}
-    \begin{itemize}
-        \item \cite{plchot2016bat}
-        \item participate in the "Fixed" and "Open" LRE Challenge
-        \item segment data using automated Voice Activity Detection = previously trained NN
-        \item 3042 segments (248 hours of speech) in train set and 42295 segments (146 hours of speech) in dev set.
-        \item inputs 24 log Mel-scale filter bank outputs augmented with fundamental frequency features from 4 different f0 esti- mators
-        \item used i-vector system
-        
-    \end{itemize}
-    
-    \subsubsection{Discriminating Languages in a Probabilistic Latent Subspace}
-    \begin{itemize}
-        \item \cite{sizovdiscriminating}
-        \item Probabilistic Linear Discriminant Analysis (PLDA) model
-        \item In this paper, we review state-of-the-art generative methods, based on the Total Variability (TV) model [10], with the aim to improve their performance with discriminative fine-tuning of each language cluster at a time.
-        \item TV maps audio into single low-dimensional vector, i-vector, that contains speaker, channel, and phonetic variability
-        
-    \end{itemize}
-    
-    \subsubsection{Evaluation of an LSTM-RNN System in Different NIST Language Recognition Frameworks}
-    \begin{itemize}
-        \item \cite{zazo2016evaluation}
-        \item used a one directional LSTM
-        \item perform significantly better than i-vectors systems in LRE
-        \item nice high level description of how LSTMs work
-        \item inputs: random chunks of 2 seconds from which MFCC-SDC (Shifted Delta Coefficients) 
-        \item softmax cross entropy loss
-        \item use last frame for scoring
-        \item comparison if i-vector baseline to LSTM
-        \item only used training data for 8 languages with more than 200hours of data
-        \item US English (eng), Span- ish (spa), Dari (dar), French (fre), Pashto (pas), Russian (rus), Urdu (urd), Chinese Mandarin (chi)
-        \item data split into 3, 10 and 30 seconds
-        \item model: two hidden layers of 512 units followed by an output layer. The hidden layers are uni-directional LSTM layers while the output layer is a softmax with as many units as languages in the cluster
-        \item LSTM os only better for short utterance (<= 10s)
-        \item LSTM uses less parameters than i-vector
-        
-    \end{itemize}
-    
-    \subsubsection{Frame-by-frame language identification in short utterances using deep neural networks}
-    \begin{itemize}
-        \item \cite{gonzalez2015frame}
-        \item highlights the downsides/disadvantages of i-vector systems
-        
-    \end{itemize}
-    
-    
-  
-    
+       
