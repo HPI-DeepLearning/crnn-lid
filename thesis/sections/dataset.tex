@@ -68,14 +68,11 @@ Audio Sampling Rate   & 48kHz  & 48kHz  & 48kHz   \\
 
 \subsection{Other Datasets}
 \label{sec:other datasets}
-\begin{itemize}
-\item TIMIT	
-\item NIST LRE
-\item Wall Street Journal (WSJ) corpus (english only)
-\item Libri Speech Corpus (English only) 
-\end{itemize}
+The decision to source our own dataset was largely influenced by the limited availability, lack of language choices and the sample size of existing speech datasets. The Linguistic Data Consortium (LDC)\footnote{\url{https://www.ldc.upenn.edu}, accessed 15.05.2017} is the collector and maintainer of many speech datasets. Unfortunately, access is restricted to paying members only. For instance the aforementioned TIMIT corpus is amongst their datasets. The also maintain the NIST Language Recognition Evaluation (LRE) challenge\cite{lre2015} dataset. 
 
-\todo{Compare to related work datasets}
+Other datasets like the Wall Street Journal corpus\cite{charniak2000bllip}, a collection of readouts from the WSJ, is only available in English and does not fit our research tasks to identify multiple languages. Similarly, the Libri Speech corpus\cite{panayotov2015librispeech} is restricted to 1000 hours of 16kHz read English speech as well. This data is derived from free public domain  audio book readings from LibriVox\footnote{\url{https://librivox.org/}, accessed 15.05.2017}, which also covers other languages than English. However, as stated earlier, we deliberately decided against using read out speech, as we found it unrepresentative of regular conversational speech.  Yet another free public domain dataset is Voxforge\footnote{\url{http://www.voxforge.org}, accessed 15.05.2017} which includes speech samples in different languages. Yet, for our deep learning approach we found the number of available samples per language lacking. Their English data is made up from less then 10 hours of audio data.
+
+Finally, some large scale datasets remain unpublished. Gonzalez-Dominguez et al.\cite{gonzalez2015frame, gonzalez2015real} reported the Google 5M LID corpus, a collection of voice recording from various Google services such as voice search and the speech input API on the Android operation system. Similarly, Baidu build their own proprietary Mandarin Chinese corpus consisting of 9.400 hours of speech data for their DeepSpeech 2 system\cite{amodei2015deep}.
 
 
 
