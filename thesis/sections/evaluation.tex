@@ -75,13 +75,14 @@ In this section we discuss the evaluation metrics used throughout our experiment
 \begin{description}
     \item[Accuracy] is a common measure in machine learning and is defined as the ratio of correctly classified samples to all samples in the dataset. In the context of language identification this translates as:
      
-    	$$
-		\operatorname{accuracy} = \frac{
-			\abs{ \{ \text{correctly identified language samples} \} }
-			}{
-			\abs{ \{ \text{all language samples} \} }
-			}
-		$$
+
+	$$
+	\operatorname{accuracy} = \frac{
+	   \vert \{ \text{correctly identified language samples} \} \vert
+	  }{
+	   \vert \{ \text{all language samples} \} \vert
+	  }
+	$$
      
     
     \item[Precision and Recall] Precision defines the ratio of retrieved language samples that are correctly identified as belonging to said language. Recall is the fraction of correctly identified language samples to all samples belonging to this language. Both measures are calculated using true and false positives as well as false negatives. These are defined as follows. \textit{True positives} are all samples belonging to one language which were correctly identified as belonging to said language. In contrast, \textit{false positives} are samples belonging to a language which were identified as belonging to another language. Lastly, \textit{false negatives} are the samples belonging to a language which were incorrectly identified as not belonging to said language.
