@@ -20,7 +20,7 @@ Regardless of an algorithms purpose machine learning can typically divided into 
 The system described in this thesis is a supervised classification approach using a large scale labeled training dataset.
 
 \subsubsection{Classification}
-Classification in the context of machine learning refers to task of assigning a data sample to a class. Classification algorithm are a form of supervised learning and hence need a training dataset of labeled data. The input to classifier are referred to as \textit{features}. Classical machine learning algorithms such as support vector machine (\ac{svm}) or a linear classifier usually require input features carefully designed by a domain expert to be a good representation of the original problem. This process is often referred to as \textit{feature engineering}. In contrast, deep learning classifiers such as \textit{neural networks} are able to directly work on the raw data representations. This has the benefit to build machine learning systems without the need for a domain expert but comes at the price of increased computation requirements. For computer vision tasks, for example, it used to be customary to train classical systems on preprocessed and extracted features of an images such as SIFT key points\cite{lowe1999object} or HOG descriptors\cite{dalal2005histograms}. Deep learning systems, on the other hand, are capable of processing the complete raw pixels of the input image.
+Classification in the context of machine learning refers to task of assigning a data sample to a class. Classification algorithm are a form of supervised learning and hence need a training dataset of labeled data. The input to classifier are referred to as \textit{features}. Classical machine learning algorithms such as support vector machine (\ac{svm}) or a linear classifier usually require input features carefully designed by a domain expert to be a good representation of the original problem. This process is often referred to as \textit{feature engineering}. In contrast, deep learning classifiers such as \textit{neural networks} are able to directly work on the raw data representations. This has the benefit to build machine learning systems without the need for handcrafted features of a domain expert but comes at the price of increased computation requirements. For computer vision tasks, for example, it used to be customary to train classical systems on preprocessed and extracted features of an images such as SIFT key points\cite{lowe1999object} or HOG descriptors\cite{dalal2005histograms}. Deep learning systems, on the other hand, are capable of processing the complete raw pixels of the input image.
 
 	\begin{figure}[]
   		\centering
@@ -32,11 +32,27 @@ Classification in the context of machine learning refers to task of assigning a 
 Figure \ref{fig:classifiers} shows an example of two binary classifiers divide a simple dataset into two classes in 2D space. On the left-hand side is linear classifier dividing all points along a straight line. While this sort of classifier is very easy to train and understand it lacks the necessary foundation to divide more complex datasets. On the right-hand side is a neural network (more details in the next section) featuring a more complex, yet more accurate decision boundary. 
 
 \subsection{Building Blocks of Deep Neural Networks}
+Modern deep learning systems are constructed in a layer-wise fashion. Each layer does a non-linear computation to extract some feature and learns a representation of the input data before passing on its outputs to the next layer in the architecture. The term "deep" learning itself is not clearly defined but usually refers to having a at least two layered model. Typical state of the art systems have more than ten or more layers, some recent publication\cite{he2016deep} are even going as deep as 152 layers. While the total number of layers is be no means an indicator for an accurate and precise model it introduces the possibility to capture a larger and more generalized data representation.
 
-
-\subsubsection{Fully Connected Layer}
+\subsubsection{Fully Connected Layers}
 \subsubsection{Convolutional Layers}
+
+	\begin{figure}[]
+  		\centering
+    	\includegraphics[width=\textwidth, keepaspectratio]{img/convolution.pdf}
+    	\caption{A convolution of an image using a 3$\times$3 kernel. Each pixel in the output image is the weighted sum of nine pixels in the input image. The weights are defined by applied kernel and are learned by the model.}
+    	\label{fig:convolution}
+	\end{figure}
+
 \subsubsection{Pooling Layers}
+
+	\begin{figure}[]
+  		\centering
+    	\includegraphics[width=\textwidth, keepaspectratio]{img/convnet.pdf}
+    	\caption{A typical convolutional neural network architecture. An input image is fed through a series of convolutional and pooling layers. Each convolution extracts higher level features and increases number of feature maps. Each pooling layer subsamples the data, typically reducing the x and y dimension by half. A final fully connected layer serves as classifier able to predict an output value.}
+    	\label{fig:convnet}
+	\end{figure}
+
 \subsubsection{Batch Normalization Layers?}
 \subsubsection{Softmax Loss Function}
 

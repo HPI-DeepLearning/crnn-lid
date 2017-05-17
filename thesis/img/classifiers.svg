@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="268.85938"
+     inkscape:cx="311.71653"
      inkscape:cy="396.91638"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -116,12 +116,6 @@
        cx="250.71429"
        cy="631.29077"
        r="3.2142856" />
-    <circle
-       r="3.2142856"
-       cy="613.79077"
-       cx="182.85715"
-       id="circle4177"
-       style="opacity:1;fill:#3467cc;fill-opacity:1;stroke:#3366cc;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <circle
        style="opacity:1;fill:#3366cc;fill-opacity:1;stroke:#3366cc;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="circle4179"
@@ -228,12 +222,6 @@
        id="circle4236"
        style="opacity:1;fill:#3366cc;fill-opacity:1;stroke:#3366cc;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <circle
-       style="opacity:1;fill:#3467cc;fill-opacity:1;stroke:#3366cc;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="circle4238"
-       cx="384.85715"
-       cy="613.79077"
-       r="3.2142856" />
-    <circle
        r="3.2142856"
        cy="659.14795"
        cx="427.71429"
@@ -269,12 +257,6 @@
        cx="442.71429"
        cy="602.71936"
        r="3.2142856" />
-    <path
-       sodipodi:nodetypes="cc"
-       inkscape:connector-curvature="0"
-       id="path4252"
-       d="m 400.21429,589.14792 c 35.35714,9.28571 34.64285,122.14286 34.64285,122.14286"
-       style="fill:none;fill-rule:evenodd;stroke:#cc0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -299,5 +281,11 @@
          x="351.07141"
          id="tspan4260"
          sodipodi:role="line">b</tspan></text>
+    <path
+       inkscape:connector-curvature="0"
+       id="path4300"
+       d="m 414.5,588.79078 c 0,0 20.45526,7.97112 24.38384,28.32826 3.01588,19.7842 -15.81363,19.2354 -17.95648,40.30682 1.16658,14.23218 15.25736,20.37673 29.39356,24.66758 13.32628,4.04501 15.25051,28.12591 15.25051,28.12591"
+       style="fill:none;fill-rule:evenodd;stroke:#cc0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       sodipodi:nodetypes="cccsc" />
   </g>
 </svg>
