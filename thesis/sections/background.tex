@@ -35,7 +35,35 @@ Figure \ref{fig:classifiers} shows an example of two binary classifiers divide a
 Modern deep learning systems are constructed in a layer-wise fashion. Each layer does a non-linear computation to extract some feature and learns a representation of the input data before passing on its outputs to the next layer in the architecture. The term "deep" learning itself is not clearly defined but usually refers to having a at least two layered model. Typical state of the art systems have more than ten or more layers, some recent publication\cite{he2016deep} are even going as deep as 152 layers. While the total number of layers is be no means an indicator for an accurate and precise model it introduces the possibility to capture a larger and more generalized data representation.
 
 \subsubsection{Fully Connected Layers}
+While early \emph{neural networks} were inspired and named after discoveries in biology, particularly the neurons in animal brains, modern interpretations treat \emph{artificial neural networks} as a mathematical model of interconnected artificial neurons or a series or matrix operations.\cite{mcculloch1943logical, rosenblatt1958perceptron}\\ 
+\emph{Feed forward neural networks} are designed as a chain of layers, each applying a affine transformation. Each layer uses the output of the previous layer as an input and all connections are directed without any self references. $ f(x) = f_i(f_{i-1}(...f_1(x))) $ where $x \in \mathbb{R}^n $ is an input vector. The first and last layer are referred to as input and output layer.
+
+ When feeding an input vector $x \in \mathbb{R}^n $ into a neural network, it computes an affine transformation: 
+ $$
+ f(x, W, b) = g(W^Tx + b)
+ $$
+
+where $g$ is an activation function, $W \in\mathbb{R}^{n \times m} $ a weight matrix, and a bias $b \in\mathbb{R}^m $.\cite[ch. 6, p. 192]{Goodfellow-et-al-2016} Both the weights and biases are trainable parameters and updated during the learning process. The activation function needs to be a non-linearity in order to learn a non-linear function. chain of the otherwise linear transformations. Otherwise our chain of linear transformation is unable to model more complex contexts. A typical activation function candidate for neural networks are \emph{Rectified linear units (\ac{relu})}\cite{nair2010rectified}:
+$$
+g(x) = max(x, 0)
+$$
+
+Within the deep learning community we refer to neural networks also as \emph{fully connected (\ac{fc})} layers owning to the fact the each artificial neuron is connected to all outputs of the previous layer. Figure \ref{fig:nn} shows an example of a three layered neural network. Any layer not connected to the input or output is referred to as hidden layer. In our example we only have single output prediction and hence a binary classifier. For multi class tasks we can add more output neurons. Typically \emph{fully connected} layers are used as final layers of a deep neural network architecture serving as a classifier.
+
+	\begin{figure}[]
+  		\centering
+    	\includegraphics[width=0.5\textwidth, keepaspectratio]{img/nn.pdf}
+    	\caption{A neural network with three layers. Each layer is connected to all output of the previous layer. All central layers, which are not connected to either the inputs or the output, are referred to as hidden layers. Note, that all connections between the neurons are directed and do not include self references. Therefore, we refer to these model as feed forward neural networks.}
+    	\label{fig:nn}
+	\end{figure}
+
 \subsubsection{Convolutional Layers}
+
+Consider a convolutional layer with an $m \times m$ kernel applied to a squared input $x \in\mathbb{R}^{n \times n}$ at location $i, j$. In order to compute the convolution for such an input we need to sum up the weighted contributions of the previous layer:
+$$
+x^l_{ij} = \sum_{a=0}^{m-1}\sum_{b=0}^{m-1} W_{ab} y^{l-1}_{(i+a)(i+b)}
+$$
+where $l$ is the current layer, $ W \in\mathbb{R}^{m \times m} $ a weight matrix referred to as kernel, and $y \in\mathbb{R}^{n \times n} $ the output of the previous layer.
 
 	\begin{figure}[]
   		\centering
@@ -48,13 +76,14 @@ Modern deep learning systems are constructed in a layer-wise fashion. Each layer
 
 	\begin{figure}[]
   		\centering
-    	\includegraphics[width=\textwidth, keepaspectratio]{img/convnet.pdf}
+    	\includegraphics[width=0.6\textwidth, keepaspectratio]{img/convnet.pdf}
     	\caption{A typical convolutional neural network architecture. An input image is fed through a series of convolutional and pooling layers. Each convolution extracts higher level features and increases number of feature maps. Each pooling layer subsamples the data, typically reducing the x and y dimension by half. A final fully connected layer serves as classifier able to predict an output value.}
     	\label{fig:convnet}
 	\end{figure}
 
 \subsubsection{Batch Normalization Layers?}
 \subsubsection{Softmax Loss Function}
+\subsubsection{Back Propagation Through Time}
 
 \subsection{Recurrent Neural Networks}
 \subsubsection{Long Short Term Memory Networks}
