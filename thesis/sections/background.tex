@@ -1,71 +1,74 @@
 \section{Theoretical Background}
 \label{sec:theoretical_background}
-In this chapter we introduce the theoretical background of the machine learning algorithms used throughout this thesis. We explain the different machine learning concepts and the purpose of a classifier. Furthermore, we lay the foundations for the individual build blocks and layers of deep neural network system. We explain the differences between convolutional neural network and recurrent neural networks and follow up by describing hybrid models constructed of both of these. More specifically, we describe the convolutional recurrent neural network (CRNN) architecture as used in this thesis. Finally, we present different representations for audio file suitable for machine learning tasks.
+In this chapter, we introduce the theoretical background of the machine learning algorithms used throughout this thesis. We explain the different machine learning concepts and the purpose of \emph{classifiers}. Furthermore, we lay the foundations for the individual building blocks and layers of deep neural network systems. We explain the differences between \emph{convolutional neural networks} (CNN) and \emph{recurrent neural networks} (RNN) and continue by describing hybrid models composed of both of these. More specifically, we describe the \emph{convolutional recurrent neural network} (CRNN) architecture as used in this thesis. Finally, we present different representations of audio data suitable for machine learning tasks.
 
 \subsection{Machine Learning}
-\todo{more bla bla}
-\subsubsection{Types of Machine Learning}
-The field of machine learning covers a multitude of different learning algorithms. While each of these is based on a different mathematical foundation they also serve many different purposes. \textit{Classification} algorithms divide their data into two or more distinct classes. Each new input sample can then be assigned to one of these learned classes. For example we could image an app that automatically classifies pictures of food recognizes and names the respective dishes. While classification results are always discrete values a \textit{regression} algorithm outputs continuous values instead. For example image a regressor that predicts the future price of your favorite food based on historical price data. For other purposes it is more important to know which data samples are similar to each other and form a group of their own. \textit{Clustering} algorithms can divide data into groups and unlike with classification these group are usually not know ahead of time. For instance a customer management system could cluster everyone into distinct clusters of different focus groups.
+The field of machine learning covers a multitude of different learning algorithms. While each of these is based on a different mathematical foundation, they also serve many different purposes. \textit{Classification} algorithms divide input data into two or more distinct classes. Each new input sample can then be assigned to one of these learned classes. For example, we could imagine an app that automatically classifies pictures of food and recognizes and names the respective dishes. While classification results are always discrete values, a \textit{regression} algorithm outputs continuous values instead. An example is a regressor predicting the future price of your favorite food based on historical price data. For other purposes, it is more important to know which data samples are similar to each other and form a group of their own. \textit{Clustering} algorithms divide data into groups and, unlike with classification, these group are usually not known before. For instance, a customer management system could cluster everyone into distinct clusters of different focus groups.
 
-Regardless of an algorithms purpose machine learning can typically divided into three categories from a high level point of view:
+Regardless of an algorithm's purpose, machine learning can be typically divided into three categories from a high-level point of view:
 
 	\begin{description}
-		\item[Supervised Learning] is the task of building a machine learning model with label training data. Every data sample used during training is a pair consisting of a vector or matrix representation of the data and a label identifying the data as belonging to a certain class. Typically a label is represented as a single number or one-hot encoded vector. Supervised learning algorithms learn a inference function that maps every data sample to its expected output label. A trained model should then be able to infer a suitable output class or value for new unknown data. 
-				
-		\item[Unsupervised Learning] is the task of building a machine learning model with unlabeled training data. Unlike for supervised learning all training samples do not include a label of the desired model outcome. Unsupervised Learning algorithms learn a function by  detecting the hidden structures inside the data. Many clustering algorithms fall into this category.
-		
-		\item[Reinforcement Learning] is the task of building a machine learning model without a set of classical training data. Instead a reinforcement learning system is set within a specific environment and executes a set of actions. Each action's effect on the environment is measured and reward is calculated. This rewards maximizes the training of the system to find some actions or a sequence of actions to be effective towards achieving a goal. This setup is similar to simulations in some ways. 
+		\item[Supervised Learning] is the task of building a machine learning model with labeled training data. Every data sample used during training is a pair consisting of a vector or matrix representation of the data and a label identifying the data as belonging to a certain class. Typically, a label is represented as a single number or a one-hot-encoded vector. Supervised learning algorithms learn an inference function mapping every data sample to its expected output label. A trained model should then be able to infer a suitable output class or value for new unknown data.
+
+		\item[Unsupervised Learning] is the task of building a machine learning model with unlabeled training data. Unlike with supervised learning, none of the training samples include labels of the desired model outcome. Unsupervised learning algorithms learn a function by detecting the hidden structures inside the data. Many clustering algorithms fall into this category.
+
+		\item[Reinforcement Learning] is the task of building a machine learning model without a set of classical training data. Instead, a reinforcement learning system is set within a specific environment and executes a set of actions. Each action's effect on the environment is measured, and reward is calculated. By maximizing this reward, the system finds actions that are most effective towards achieving the specified task. This setup is similar to simulations.
 	\end{description}
 
-The system described in this thesis is a supervised classification approach using a large scale labeled training dataset.
+The system described in this thesis is a supervised classification approach using a large-scale labeled training dataset.
 
-\subsubsection{Classification}
-Classification in the context of machine learning refers to task of assigning a data sample to a class. Classification algorithm are a form of supervised learning and hence need a training dataset of labeled data. The input to classifier are referred to as \textit{features}. Classical machine learning algorithms such as support vector machine (\ac{svm}) or a linear classifier usually require input features carefully designed by a domain expert to be a good representation of the original problem. This process is often referred to as \textit{feature engineering}. In contrast, deep learning classifiers such as \textit{neural networks} are able to directly work on the raw data representations. This has the benefit to build machine learning systems without the need for handcrafted features of a domain expert but comes at the price of increased computation requirements. For computer vision tasks, for example, it used to be customary to train classical systems on preprocessed and extracted features of an images such as SIFT key points\cite{lowe1999object} or HOG descriptors\cite{dalal2005histograms}. Deep learning systems, on the other hand, are capable of processing the complete raw pixels of the input image.
+\subsubsection*{Classification}
+\emph{Classification} in the context of machine learning refers to the task of assigning a data sample to the corresponding class. Classification algorithms are a form of supervised learning and, hence, need a training dataset of labeled data. The input to classifiers is referred to as \emph{features}. Classical machine learning algorithms, such as \emph{support vector machines} (\ac{svm}) and linear classifiers, usually require input features carefully designed by domain experts as a good representation of the original problem. This process is often referred to as \emph{feature engineering}. In contrast, deep learning classifiers such as \emph{neural networks} are able to directly work on the raw data representations. This has the benefit of building machine learning systems without the need for handcrafted features of domain experts but comes at the price of increased computational requirements. For computer vision tasks, for example, it used to be customary to train classical systems on preprocessed and extracted image features, such as SIFT key points~\cite{lowe1999object} or HOG descriptors~\cite{dalal2005histograms}. Deep learning systems, on the other hand, are capable of processing all the original raw pixels of the input image.
 
-	\begin{figure}[]
+
+Figure \ref{fig:classifiers} shows an example of two binary classifiers divide a simple dataset into two classes in 2D space.
+%
+	\begin{figure}[tp]
   		\centering
     	\includegraphics[width=\textwidth, keepaspectratio]{img/classifiers.pdf}
-    	\caption{An example of two classifiers: A linear classifier (a) divides the data using a straight line but misclassifies two data points. A neural network (b) is able to learn a more complex decision boundary and separates the dataset without errors.}
+    	\caption{An example of two classifiers: A \emph{linear classifier}~(a) divides the data using a straight line but misclassifies two data points. A \emph{neural network}~(b) is able to learn a more complex decision boundary and separates the dataset without errors.}
     	\label{fig:classifiers}
 	\end{figure}
-
-Figure \ref{fig:classifiers} shows an example of two binary classifiers divide a simple dataset into two classes in 2D space. On the left-hand side is linear classifier dividing all points along a straight line. While this sort of classifier is very easy to train and understand it lacks the necessary foundation to divide more complex datasets. On the right-hand side is a neural network (more details in the next section) featuring a more complex, yet more accurate decision boundary. 
+%
+On the left-hand side is linear classifier dividing all points along a straight line. While this sort of classifier is very easy to train and understand it lacks the necessary foundation to divide more complex datasets. On the right-hand side is a neural network (more details in the next section) featuring a more complex, yet more accurate decision boundary.
 
 \subsection{Building Blocks of Deep Neural Networks}
-Modern deep learning systems are constructed in a layer-wise fashion. Each layer does a non-linear computation to extract some feature and learns a representation of the input data before passing on its outputs to the next layer in the architecture. The term "deep" learning itself is not clearly defined but usually refers to having a at least two layered model. Typical state of the art systems have more than ten or more layers, some recent publication\cite{he2016deep} are even going as deep as 152 layers. While the total number of layers is be no means an indicator for an accurate and precise model it introduces the possibility to capture a larger and more generalized data representation.
+Modern deep learning systems are composed in a layer-wise fashion. Each layer performs a nonlinear computation to extract features and learns a representation of the input data before passing on its outputs to the next layer in the architecture. The term \emph{deep learning} itself is not clearly defined but usually refers to having an at least two-layered model. Typical state-of-the-art systems have more than ten layers, some recent publications are even going as deep as \num{152}~layers~\cite{he2016deep}. While the total number of layers is, by no means, an indicator for an accurate and precise model, it makes capturing a larger and more generalized data representation possible.
 
-\subsubsection{Fully Connected Layers}
-While early \emph{neural networks} were inspired and named after discoveries in biology, particularly the neurons in animal brains, modern interpretations treat \emph{artificial neural networks} as a mathematical model of interconnected artificial neurons or a series or matrix operations.\cite{mcculloch1943logical, rosenblatt1958perceptron}\\ 
-\emph{Feed forward neural networks} are designed as a chain of layers, each applying a affine transformation. Each layer uses the output of the previous layer as an input and all connections are directed without any self references. $ f(x) = f_i(f_{i-1}(...f_1(x))) $ where $x \in \mathbb{R}^n $ is an input vector. The first and last layer are referred to as input and output layer.
+\subsubsection{Neural Networks and Fully-Connected Layers}
+While early \emph{neural networks} were inspired and named after discoveries in biology, particularly the neurons in animal brains, modern interpretations treat \emph{artificial neural networks} as a mathematical model of interconnected artificial neurons or a series of matrix operations~\cite{mcculloch1943logical, rosenblatt1958perceptron}.
 
- When feeding an input vector $x \in \mathbb{R}^n $ into a neural network, it computes an affine transformation: 
- $$
- f(x, W, b) = g(W^Tx + b)
- $$
+\emph{Feedforward neural networks} are designed as a chain of layers, each applying an affine transformation. Each layer uses the output of the previous layer as an input, and all connections are directed without any self-references, $ f(\vecsym{x}) = f_i(f_{i-1}(...(f_1(\vecsym{x})))) $, where $\vecsym{x} \in \mathbb{R}^n $ is an input vector. The first and last layer are referred to as the \emph{input} and \emph{output} layer, respectively.
 
-where $g$ is an activation function, $W \in\mathbb{R}^{n \times m} $ a weight matrix, and a bias $b \in\mathbb{R}^m $.\cite[ch. 6, p. 192]{Goodfellow-et-al-2016} Both the weights and biases are trainable parameters and updated during the learning process. The activation function needs to be a non-linearity in order to learn a non-linear function. chain of the otherwise linear transformations. Otherwise our chain of linear transformation is unable to model more complex contexts. A typical activation function candidate for neural networks are \emph{Rectified linear units (\ac{relu})}\cite{nair2010rectified}:
+When fed with an input vector $x$, a neural network computes an affine transformation:
 $$
-g(x) = max(x, 0)
+f(\vecsym{x}, \matsym{W}, \vecsym{b}) = g(\matsym{W}^T\vecsym{x} + \vecsym{b})
+$$
+where $g$ is function $g: \mathbb{R}^n \rightarrow \mathbb{R}$, $\matsym{W} \in\mathbb{R}^{n \times m} $ an $n \times m$ \emph{weight matrix}, and $\vecsym{b} \in\mathbb{R}^m $ a \emph{bias term}~\cite[p.~192]{Goodfellow-et-al-2016}. Both the weights and biases are trainable parameters and updated during the learning process. By itself, the chain of linear transformations can only model linear relations. To model more complex scenarios, $g$ is a nonlinear \emph{activation function}. Typical candidates for activation functions in neural networks are \emph{rectified linear units} (\ac{relu})~\cite{nair2010rectified}:
+$$
+g(x) = \operatorname{max}(x, 0)
 $$
 
-Within the deep learning community we refer to neural networks also as \emph{fully connected (\ac{fc})} layers owning to the fact the each artificial neuron is connected to all outputs of the previous layer. Figure \ref{fig:nn} shows an example of a three layered neural network. Any layer not connected to the input or output is referred to as hidden layer. In our example we only have single output prediction and hence a binary classifier. For multi class tasks we can add more output neurons. Typically \emph{fully connected} layers are used as final layers of a deep neural network architecture serving as a classifier.
-
-	\begin{figure}[]
+Within the deep learning community, neural networks are also referred to as \emph{fully-connected} layers (\ac{fc}), owing to the fact that each artificial neuron is connected to all outputs of the previous layer. Figure~\ref{fig:nn} shows an example of a three-layer neural network.
+%
+	\begin{figure}[tp]
   		\centering
     	\includegraphics[width=0.5\textwidth, keepaspectratio]{img/nn.pdf}
-    	\caption{A neural network with three layers. Each layer is connected to all output of the previous layer. All central layers, which are not connected to either the inputs or the output, are referred to as hidden layers. Note, that all connections between the neurons are directed and do not include self references. Therefore, we refer to these model as feed forward neural networks.}
+    	\caption{A neural network with three layers. Each layer is connected to all outputs of the previous layer. All central layers, which are neither connected to the network's inputs or output, are referred to as \emph{hidden layers}. Note that all connections between the neurons are directed and do not include self-references. Therefore, we refer to these models as \emph{feedforward neural networks}.}
     	\label{fig:nn}
 	\end{figure}
+%
+Any layer not connected to the input or output is referred to as a \emph{hidden layer}. In our example, we only have a single output neuron and, hence, a binary classifier for the two classes. For multi-class tasks, we can add more output neurons. Typically, fully-connected layers are used as final layers of a deep neural network architecture serving as a classifier.
 
 \subsubsection{Convolutional Layers}
 
-Consider a convolutional layer with an $m \times m$ kernel applied to a squared input $x \in\mathbb{R}^{n \times n}$ at location $i, j$. In order to compute the convolution for such an input we need to sum up the weighted contributions of the previous layer:
+Consider a convolutional layer with an $m \times m$ kernel applied to a squared input $\matsym{X} \in\mathbb{R}^{n \times n}$ at location $i, j$. In order to compute the convolution for such an input we need to sum up the weighted contributions of the previous layer:
 $$
-x^l_{ij} = \sum_{a=0}^{m-1}\sum_{b=0}^{m-1} W_{ab} y^{l-1}_{(i+a)(i+b)}
+\matsym{X}^l_{ij} = \sum_{a=0}^{m-1}\sum_{b=0}^{m-1} \matsym{W}_{ab} \matsym{Y}^{l-1}_{(i+a)(i+b)}
 $$
-where $l$ is the current layer, $ W \in\mathbb{R}^{m \times m} $ a weight matrix referred to as kernel, and $y \in\mathbb{R}^{n \times n} $ the output of the previous layer.
+where $l$ is index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m} $ a weight matrix referred to as \emph{kernel}, and $\matsym{Y} \in\mathbb{R}^{n \times n} $ the output of the previous layer.
 
-	\begin{figure}[]
+	\begin{figure}[tp]
   		\centering
     	\includegraphics[width=\textwidth, keepaspectratio]{img/convolution.pdf}
     	\caption{A convolution of an image using a 3$\times$3 kernel. Each pixel in the output image is the weighted sum of nine pixels in the input image. The weights are defined by applied kernel and are learned by the model.}
@@ -74,7 +77,7 @@ where $l$ is the current layer, $ W \in\mathbb{R}^{m \times m} $ a weight matrix
 
 \subsubsection{Pooling Layers}
 
-	\begin{figure}[]
+	\begin{figure}[tp]
   		\centering
     	\includegraphics[width=0.6\textwidth, keepaspectratio]{img/convnet.pdf}
     	\caption{A typical convolutional neural network architecture. An input image is fed through a series of convolutional and pooling layers. Each convolution extracts higher level features and increases number of feature maps. Each pooling layer subsamples the data, typically reducing the x and y dimension by half. A final fully connected layer serves as classifier able to predict an output value.}
