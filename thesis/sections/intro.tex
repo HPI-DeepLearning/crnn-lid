@@ -1,19 +1,25 @@
 \section{Introduction}
 
+% context
+% identify problem
+% minimal related work
+% contributions → sehr explizit, nicht zu detailliert
+% structure
+
 TODO
 
 Deep convolutional networks have become the mainstream method for a solving various computer vision tasks, such as image classification\cite{russakovsky2015imagenet}, object detection\cite{russakovsky2015imagenet, everingham2010pascal}, text detection\cite{Yang2016SceneTextRegAR, jaderberg2014synthetic}, semantic segmentation\cite{dai2016instance, girshick2014rich}, tracking\cite{nam2016learning}, image retrieval\cite{tolias2015particular}, and many others.
 
 \subsection{Contributions}
-In this thesis we present a novel approach to language identification systems using deep learning techniques. For this, we transfer the given audio classification problem into an image-based task to apply image recognition algorithms on the transformed data. Our contributions can be summarized as follows:
+In this thesis, we present a novel approach to language identification systems using deep learning techniques. For this, we transfer the given audio classification problem into an image-based task to apply image recognition algorithms on the transformed data. Our contributions can be summarized as follows:
 \begin{itemize}
-	\item We investigate the suitability of convolutional neural networks for the task of language identification. As a solution to this challenge, we propose a hybrid network, combining the descriptive powers of convolutional neural networks (\ac{cnn}) with the ability of recurrent neural networks (\ac{rnn}) to capture temporal features. This approach is called convolutional recurrent neural network (CRNN). 
-	\item We implemented a CNN and a CRNN system in Python using the deep learning framework Keras and TensorFlow. We show that the CRNN approach outperforms all other methods in every single evaluation with respect to accuracy and F1 score.
-	\item To train our system we compiled our own large scale dataset of audio recordings. We explain how we obtained and processed more than a thousand hours of suitable human speech recording for our task.
-	\item We assessed several machine learning metrics on our system with respect to our test data. Furthermore, we investigated the influence of noisy environments on our system. We discuss the system's ability to differentiate between several languages and how such a system can be extended to more languages.
-	\item To showcase our system we developed a web service demo application employing our best performing model. Ultimately, we published our best performing model for use by others.
-\end{itemize} 
+	\item We investigate the suitability of \emph{convolutional neural networks} (\ac{cnn}) for the task of language identification. As a solution to this challenge, we propose a hybrid network, combining the descriptive powers of convolutional neural networks with the ability of \emph{recurrent neural networks} (\ac{rnn}) to capture temporal features. This approach is called \emph{convolutional recurrent neural network} (CRNN).
+	\item We implement a CNN and a CRNN system in Python using the deep learning frameworks Keras and TensorFlow. We show that the CRNN approach outperforms all other methods in every single evaluation with respect to accuracy and F1~score.
+	\item To train our system, we compile our own large-scale dataset of audio recordings. We explain how we obtain and process more than a thousand hours of suitable human speech recording for our task.
+	\item We assess several machine learning metrics on our system with respect to our test data. Furthermore, we investigate the influence of noisy environments on our system. We discuss the system's ability to differentiate between several languages and extend the system to even more languages.
+	\item To showcase our system, we develop a web service demo application employing our best-performing model, which is published for use by others.
+\end{itemize}
 
 
 \subsection{Outline of the Thesis}
-This thesis is structured as follows: In chapter \ref{sec:lid} we introduce the language identification problem and state our research hypotheses. Chapter \ref{sec:theoretical_background} explains the theoretical background of the deep learning techniques and algorithms used in this thesis. Chapter \ref{sec:related_work} introduces related work and alternative approaches to the language identification (\ac{lid}) task. In chapter \ref{sec:datasets} we describe the audio datasets we collected for training and evaluation of our system. Implementation details are outlined in chapter \ref{sec:implementation}. Further, we describe the network architectures of our models. Evaluation results are reported and discussed in chapter \ref{sec:evaluation} and followed up by various experiments for assessing the music and noise robustness of our system. In chapter \ref{sec:demo} we propose a web service to showcase a potential use case for language identification. Finally, we close this thesis by summarizing all our observations in chapter \ref{sec:summary} and outline future work.
+This thesis is structured as follows. In Chapter~\ref{sec:lid}, we introduce the language identification problem and state our research hypotheses. Chapter~\ref{sec:theoretical_background} explains the theoretical background of the deep learning techniques and algorithms used in this thesis. Chapter~\ref{sec:related_work} introduces related work and alternative approaches to the language identification task (\ac{lid}). In Chapter~\ref{sec:datasets}, we describe the audio datasets we collected for training and evaluating our system. Implementation details are outlined in Chapter~\ref{sec:implementation}. Further, we describe the network architectures of our models. Evaluation results are reported and discussed in Chapter~\ref{sec:evaluation} and followed up by various experiments for assessing the robustness of our system to music and noise. In Chapter~\ref{sec:demo}, we propose a web service to showcase a potential use case for language identification. Finally, we close this thesis by summarizing all our observations in Chapter~\ref{sec:summary} and outline future work.
