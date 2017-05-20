@@ -76,7 +76,7 @@ where $l$ is index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m}
 	\begin{figure}[tp]
   		\centering
     	\includegraphics{img/convolution.pdf}
-    	\caption{A convolution of an image using a $3 \times 3$ kernel. Each pixel in the output image is the weighted sum of \num{9}~pixels in the input image. The weights are not fixed but instead learned by the model.}
+    	\caption{A convolution operation on an image using a $3 \times 3$ kernel. Each pixel in the output image is the weighted sum of \num{9}~pixels in the input image. The weights are not fixed but instead learned by the model.}
     	\label{fig:convolution}
 	\end{figure}
 
@@ -85,7 +85,7 @@ where $l$ is index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m}
 	\begin{figure}[tp]
   		\centering
     	\includegraphics{img/convnet.pdf}
-    	\caption{A typical convolutional neural network architecture. An input image is fed through a series of convolutional and pooling layers. Each convolution extracts higher level features and increases number of feature maps. Each pooling layer subsamples the data, typically reducing the x and y dimension by half. A final fully connected layer serves as classifier able to predict an output value.}
+    	\caption{A typical \emph{convolutional neural network} architecture. An input image is fed through a series of convolutional and pooling layers. Each convolution extracts higher-level features and increases the number of feature maps. Each pooling layer subsamples the data, typically reducing the $x$ and $y$ dimension by half. A final, fully-connected layer serves as a classifier to predict the output value.}
     	\label{fig:convnet}
 	\end{figure}
 
