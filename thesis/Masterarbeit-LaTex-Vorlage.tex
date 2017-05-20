@@ -10,7 +10,7 @@
 \usepackage[T1]{fontenc}          % Schriftkodierung mit Umlauten
 \usepackage{textcomp,amsmath}     % Mathezeichen etc.
 \usepackage{graphicx}             % Graphiken einbinden
-
+\usepackage{floatrow}
 
 \usepackage{acro}                 % List of abbriviations 
 \usepackage[toc,page]{appendix}   % Appendixes
@@ -74,6 +74,18 @@ University of Potsdam, Germany
 
 \newcommand{\matsym}[1]{\boldsymbol{#1}}
 \newcommand{\vecsym}[1]{\boldsymbol{#1}}
+
+\DeclareNewFloatType{listing}{placement=tphb, fileext=lol, within=chapter}
+\floatname{listing}{Listing}
+\floatsetup[listing]{heightadjust=all}
+\captionsetup[listing]{style=base, format=hang}
+
+\lstset{ %
+	language=bash,                % choose the language of the code
+	basicstyle=\ttfamily,       % the size of the fonts that are used for the code
+	aboveskip=0pt,
+	belowskip=0pt
+}
 
 \pagestyle{headings}    % Seitenstil mit Kapitelüberschriften in der Kopfzeile
 
