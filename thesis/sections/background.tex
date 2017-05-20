@@ -59,6 +59,8 @@ Within the deep learning community we refer to neural networks also as \emph{ful
 
 \subsubsection{Convolutional Layers}
 
+Convolutional networks are simply neural networks that use convolution in place of general matrix multiplication in at least one of their layers.
+
 Consider a convolutional layer with an $m \times m$ kernel applied to a squared input $x \in\mathbb{R}^{n \times n}$ at location $i, j$. In order to compute the convolution for such an input we need to sum up the weighted contributions of the previous layer:
 $$
 x^l_{ij} = \sum_{a=0}^{m-1}\sum_{b=0}^{m-1} W_{ab} y^{l-1}_{(i+a)(i+b)}
