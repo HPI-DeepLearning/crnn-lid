@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="418.25555pt"
-   height="100.70776pt"
-   viewBox="0 0 522.81946 125.8847"
+   width="418.25558pt"
+   height="108.20776pt"
+   viewBox="0 0 522.8195 135.25969"
    id="svg5217"
    version="1.1"
    inkscape:version="0.92.1 r"
@@ -58,7 +58,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="2"
      inkscape:cx="216.93374"
-     inkscape:cy="-7.9830187"
+     inkscape:cy="-3.9830199"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -92,7 +92,7 @@
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-285.65095)">
+     transform="translate(0,-280.02596)">
     <g
        id="g5945"
        transform="matrix(1.0035998,0,0,1.0035998,-1.6340294,-1.2565277)"
@@ -363,13 +363,13 @@
       <text
          transform="scale(0.99989402,1.000106)"
          id="text6747"
-         y="294.42499"
+         y="288.82077"
          x="34.581375"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:0%;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99641305px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;stroke-width:0.99641305px"
            id="tspan6751"
-           y="294.42499"
+           y="288.82077"
            x="34.581375"
            sodipodi:role="line">input image</tspan></text>
       <text
@@ -377,11 +377,11 @@
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:0%;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#0084c8;fill-opacity:1;stroke:none;stroke-width:0.99641305px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="87.221428"
-         y="408.57501"
+         y="412.31116"
          id="text6753"><tspan
            sodipodi:role="line"
            x="87.221428"
-           y="408.57501"
+           y="412.31116"
            id="tspan6757"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;fill:#0084c8;stroke-width:0.99641305px">convolution</tspan></text>
       <rect
@@ -560,25 +560,25 @@
       <text
          transform="scale(0.99989402,1.000106)"
          id="text6791"
-         y="408.57501"
+         y="412.31116"
          x="192.02299"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:0%;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#dc0000;fill-opacity:1;stroke:none;stroke-width:0.99641305px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;fill:#dc0000;stroke-width:0.99641305px"
            id="tspan6793"
-           y="408.57501"
+           y="412.31116"
            x="192.02299"
            sodipodi:role="line">pooling</tspan></text>
       <text
          transform="scale(0.99989402,1.000106)"
          id="text6795"
-         y="408.57501"
+         y="412.31116"
          x="273.94781"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:0%;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#0084c8;fill-opacity:1;stroke:none;stroke-width:0.99641305px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;fill:#0084c8;stroke-width:0.99641305px"
            id="tspan6797"
-           y="408.57501"
+           y="412.31116"
            x="273.94781"
            sodipodi:role="line">convolution</tspan></text>
       <text
@@ -586,23 +586,23 @@
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:0%;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#dc0000;fill-opacity:1;stroke:none;stroke-width:0.99641305px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="354.75812"
-         y="408.57501"
+         y="412.31116"
          id="text6799"><tspan
            sodipodi:role="line"
            x="354.75812"
-           y="408.57501"
+           y="412.31116"
            id="tspan6801"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;fill:#dc0000;stroke-width:0.99641305px">pooling</tspan></text>
       <text
          transform="scale(0.99989402,1.000106)"
          id="text6805"
-         y="408.57501"
+         y="412.31116"
          x="445.01593"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:0%;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99641305px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            id="tspan4858"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;fill:#000000;stroke-width:0.99641305px"
-           y="408.57501"
+           y="412.31116"
            x="445.01593"
            sodipodi:role="line">fully connected</tspan></text>
       <text
@@ -610,30 +610,30 @@
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:0%;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99641305px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="260.36899"
-         y="294.42499"
+         y="288.82077"
          id="text6840"><tspan
            sodipodi:role="line"
            x="260.36899"
-           y="294.42499"
+           y="288.82077"
            id="tspan6844"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;stroke-width:0.99641305px">feature maps</tspan></text>
       <text
          transform="scale(0.99989402,1.000106)"
          id="text6846"
-         y="294.42499"
+         y="288.82077"
          x="503.6163"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:0%;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99641305px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.20964718px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;stroke-width:0.99641305px"
            id="tspan6850"
-           y="294.42499"
+           y="288.82077"
            x="503.6163"
            sodipodi:role="line">output</tspan></text>
       <path
          sodipodi:nodetypes="ccccccc"
          inkscape:connector-curvature="0"
          id="path6877"
-         d="m 105.23296,309.45165 c 2.1348,-4.19686 5.8475,-4.02897 5.8475,-4.02897 h 144.07236 c 0,0 3.24861,-0.50363 5.11491,-3.69323 1.86629,3.1896 5.1149,3.69323 5.1149,3.69323 h 144.07235 c 0,0 3.71271,-0.16789 5.84751,4.02897"
+         d="m 105.23296,307.58338 c 2.1348,-4.19686 5.8475,-4.02897 5.8475,-4.02897 h 144.07236 c 0,0 3.24861,-0.50363 5.11491,-3.69323 1.86629,3.1896 5.1149,3.69323 5.1149,3.69323 h 144.07235 c 0,0 3.71271,-0.16789 5.84751,4.02897"
          style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.74730974;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <g
          style="stroke-width:1.54759109"
