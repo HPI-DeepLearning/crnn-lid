@@ -53,7 +53,7 @@ Within the deep learning community, neural networks are also referred to as \emp
 %
 	\begin{figure}[tp]
   		\centering
-    	\includegraphics[width=0.5\textwidth, keepaspectratio]{img/nn.pdf}
+    	\includegraphics{img/nn.pdf}
     	\caption{A neural network with three layers. Each layer is connected to all outputs of the previous layer. All central layers, which are neither connected to the network's inputs or output, are referred to as \emph{hidden layers}. Note that all connections between the neurons are directed and do not include self-references. Therefore, we refer to these models as \emph{feedforward neural networks}.}
     	\label{fig:nn}
 	\end{figure}
@@ -70,8 +70,8 @@ where $l$ is index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m}
 
 	\begin{figure}[tp]
   		\centering
-    	\includegraphics[width=\textwidth, keepaspectratio]{img/convolution.pdf}
-    	\caption{A convolution of an image using a 3$\times$3 kernel. Each pixel in the output image is the weighted sum of nine pixels in the input image. The weights are defined by applied kernel and are learned by the model.}
+    	\includegraphics{img/convolution.pdf}
+    	\caption{A convolution of an image using a $3 \times 3$ kernel. Each pixel in the output image is the weighted sum of \num{9}~pixels in the input image. The weights are not fixed but instead learned by the model.}
     	\label{fig:convolution}
 	\end{figure}
 
@@ -79,7 +79,7 @@ where $l$ is index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m}
 
 	\begin{figure}[tp]
   		\centering
-    	\includegraphics[width=0.6\textwidth, keepaspectratio]{img/convnet.pdf}
+    	\includegraphics{img/convnet.pdf}
     	\caption{A typical convolutional neural network architecture. An input image is fed through a series of convolutional and pooling layers. Each convolution extracts higher level features and increases number of feature maps. Each pooling layer subsamples the data, typically reducing the x and y dimension by half. A final fully connected layer serves as classifier able to predict an output value.}
     	\label{fig:convnet}
 	\end{figure}
