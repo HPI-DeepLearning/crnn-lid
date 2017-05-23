@@ -71,7 +71,7 @@ Consider a convolutional layer with an $m \times m$ kernel applied to a squared 
 $$
 \matsym{X}^l_{ij} = \sum_{a=0}^{m-1}\sum_{b=0}^{m-1} \matsym{W}_{ab} \matsym{Y}^{l-1}_{(i+a)(i+b)}
 $$
-where $l$ is index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m} $ a weight matrix referred to as \emph{kernel}, and $\matsym{Y} \in\mathbb{R}^{n \times n} $ the output of the previous layer.
+where $l$ is the index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m} $ a weight matrix referred to as \emph{kernel}, and $\matsym{Y} \in\mathbb{R}^{n \times n} $ the output of the previous layer.
 
 	\begin{figure}[tp]
   		\centering
@@ -106,12 +106,12 @@ where $l$ is index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m}
     	\label{fig:crnn}
 	\end{figure}
 	
-	\begin{figure}[]
-  		\centering
-    	\includegraphics[width=\textwidth, keepaspectratio]{img/crnn2.pdf}
-    	\caption{An alternative approach for a hybrid CRNN network. Each single feature map of the final convolutional layer is fed to separate LSTM networks as a 2D input. Each LSTM interprets the vector entries along the x-axis as time steps and operates on thin slice of the data. The output of the final time step of each LSTM is concatenated into a single vector serving as the input to a fully connected classification layer.}
-    	\label{fig:crnn}
-	\end{figure}
+%	\begin{figure}[]
+%  		\centering
+%    	\includegraphics[width=\textwidth, keepaspectratio]{img/crnn2.pdf}
+%    	\caption{An alternative approach for a hybrid CRNN network. Each single feature map of the final convolutional layer is fed to separate LSTM networks as a 2D input. Each LSTM interprets the vector entries along the x-axis as time steps and operates on thin slice of the data. The output of the final time step of each LSTM is concatenated into a single vector serving as the input to a fully connected classification layer.}
+%    	\label{fig:crnn}
+%	\end{figure}
 
     \begin{itemize}
         \item Convolutional Recurrent Neural Networks
@@ -119,12 +119,25 @@ where $l$ is index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m}
     \end{itemize}
 
 \subsection{Audio Representations}
-\label{sec:audio_representations}
-    \begin{itemize}
-        \item MFCC
-        \item Spectrogram (harmonics, formants)
-        \item https://home.cc.umanitoba.ca/~robh/howto.html
-        \item Waveform
-        \item Mel-scale
-        \item frequency --> phoneme --> word --> sentence --> language
-    \end{itemize}
+There are many different representations for audio data. Many people are familiar with waveform representation which is usually represented as a plot of signal amplitude along a time axis. A raw waveform representation is typically not used directly used as input to machine learning systems.
+Other representations such as \emph{spectrogram} images or \emph{mel-frequency cepstral coefficients} (MFCCs) vectors are more common. To obtain these we to transform the original audio signal.
+
+First, we discretize the audio signal into into a list \emph{spectral vectors} (a spectrum) by applying a Fourier transformation. Each spectral vector consists of amplitude and frequencies pairs at a point in time. When visualizing these we get a spectrogram image as shown in Figure~\ref{fig:waveform}. 
+%
+	\begin{figure}[tp]
+  		\centering
+    	\includegraphics{img/waveform.pdf}
+    	\caption{Different visual representation for a ten second audio file. a) shows a familiar waveform representation. b) shows the spectrum of frequencies known as spectrogram. Spectrogram images  are a commonly used representation for audio learning tasks.}
+    	\label{fig:waveform}
+	\end{figure}
+%
+
+The time domain is along $x$ axis and the frequency domain in Hz is along the $y$ axis. Additionally, the color intensity for each data point represents the amplitude or loudness value for a given frequency at that point of time. Spectrograms are especially useful for studying time--frequency features such as \emph{phonemes}. A phoneme is the smallest unit of sound expressing part of an word or single letters. While phonemes themselves are universally shared across different languages, their arrangement as a sequence forms the individual sounds and words distinctive to one language. Frequencies form phonemes which in turn form words. These can be combined to sentences or assemble the vocabulary of a language.
+Within a spectrogram image we can clearly see distinct, bright, ripple-like patters, each representing a heightened frequency activation at that time. Due to the anatomy of the human vocal cords we emit sounds vibrating on multiple frequencies while speaking. 
+The frequency axis is divide into multiple \emph{formants}, defined as a range of frequencies of a complex sound in which there is an absolute or relative maximum in the sound spectrum. There are several formants ranging form the lower speech frequencies to the higher ones. Voxels can be identified by their difference in the lower F1 and higher F2 format. Already, we note that there is a lot more information encoded into theses images then first meets the eye and, hence, a lot of speech processing systems use spectrograms.
+
+MFCC is obtained by using linear cosine transform of log power spectrum on a nonlinear mel-frequency scale. This means that, first the powers of the spectrum are mapped onto the \emph{mel-scale}. The mel-scale groups frequencies onto a perceptual scale of equally distanced audio pitch values \cite{stevens1937scale}: 
+$$
+\vecsym{m} = 2595 \log_{10}\left(1+{\frac {f}{700}}\right)
+$$
+where $\vecsym{m}$ are the resulting mels and $f$ frequencies in Hz. The mel-scale is modeled after human ear's deficiency to differentiate adjacent frequencies. Effectively this groups frequencies together into bins with many, smaller bins for lower frequencies and only a few larger for the higher frequencies. Further, we calculate the powers of the mel-spectrum and apply the logarithm to these. The resulting energies are fed into a \emph{discrete cosine transformation} of which we keep the first 13 coefficients as our MFFC vector \cite{sahidullah2012design}. 
