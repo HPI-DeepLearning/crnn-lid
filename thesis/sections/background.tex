@@ -64,41 +64,51 @@ Within the deep learning community, neural networks are also referred to as \emp
 Any layer not connected to the input or output is referred to as a \emph{hidden layer}. In our example, we only have a single output neuron and, hence, a binary classifier for the two classes. For multi-class tasks, we can add more output neurons. Typically, fully-connected layers are used as final layers of a deep neural network architecture serving as a classifier.
 
 \subsubsection{Convolutional Layers}
-
-Convolutional networks are simply neural networks that use convolution in place of general matrix multiplication in at least one of their layers.
-
-Consider a convolutional layer with an $m \times m$ kernel applied to a squared input $\matsym{X} \in\mathbb{R}^{n \times n}$ at location $i, j$. In order to compute the convolution for such an input we need to sum up the weighted contributions of the previous layer:
+\emph{Convolutional neural networks} (CNN) are simply neural networks that use convolution in place of general matrix multiplication in at least one of their layers. CNN specialize in processing data that has grid-like structure, such as the 2D grid of pixels of an input image as in our case. As the name suggests, they make use of the mathematical \emph{convolution} operation. For computer vision tasks this can be expressed as the weighted sum of a two-dimensional weight matrix $ \matsym{K} \in\mathbb{R}^{m \times n} $ (often referred to as kernel or filter) and an input $ \matsym{X} \in\mathbb{R}^{o \times p} $:
 $$
-\matsym{X}^l_{ij} = \sum_{a=0}^{m-1}\sum_{b=0}^{m-1} \matsym{W}_{ab} \matsym{Y}^{l-1}_{(i+a)(i+b)}
-$$
-where $l$ is the index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \times m} $ a weight matrix referred to as \emph{kernel}, and $\matsym{Y} \in\mathbb{R}^{n \times n} $ the output of the previous layer.
-
+	\matsym{Y}_{i, j} = \sum_m \sum_n \matsym{X}_{i + m, j + n} \matsym{K}_{m, n}
+$$	
+	where $\matsym{Y}_{i, j}$ is a pixel in the output, $i$ and $j$ are the indices of a pixel in the input and output image. Typical kernels for CNNs have a square size of $3 \times 3$. Figure~\ref{fig:convolution} shows the convolution of a single pixel $\matsym{Y}_{i, j}$ in the output layer.
 	\begin{figure}[tp]
   		\centering
     	\includegraphics{img/convolution.pdf}
     	\caption{A convolution operation on an image using a $3 \times 3$ kernel. Each pixel in the output image is the weighted sum of \num{9}~pixels in the input image. The weights are not fixed but instead learned by the model.}
     	\label{fig:convolution}
 	\end{figure}
+	All pixels involved in the calculation of $\matsym{Y}_{i, j}$ are referred to as its \emph{receptive field}. 
+
+Kernels are learned during the training and can be thought of feature detectors. This concept is often used in the field of image processing where predefined kernels such as a Sobel filters are used for edge detection and Gaussian filters for blurring. Similarly, a CNN learns to detect simple features such as edges in lower layers. Convolutional layers at the end of the network architecture combine these simple  features to compound shaped features able to reliably identify an input. 
+
+Unlike artificial neural networks CNN need fewer parameters through the use of \emph{weight sharing}. A fully-connected neural network of $m$ inputs and $n$ outputs requires $m \times n$ weight parameters. A convolutional layer, on the other hand, each member of the kernel is used on every position of the input. Instead of learning parameters for every position in the input is only uses one set of $k \times k \times c \times o$ weights, where $k$ is the kernel size, $c$ the number of channels in the input, and $o$ the number of desired output channels (often called feature maps). For instance, a $100 \times 100 \times 3$ RGB color input image would require $100 \times 100 \times 3 \times 128 = 3840000$ weight parameters for a fully-connected layer with \num{128} outputs. In contrast, a CNN only uses $3 \times 3 \times 3 \times 128 = 3456$ weight parameters for a two-dimensional kernel of size $3 \times 3$ and for the same number of output units.
+
+Typically, a CNN does not only learn one kernel but several, one for each desired output dimension. Other hyperparameters include the \emph{stride} and amount of \emph{zero padding}. The former defines by how many pixels the kernel is translated on the input. The latter specifies how to handle convolutions along the edge of an input where the kernel would need to include pixels from outside the image. Similarly to fully-connected layers, an nonlinear activation function is applied on the output of a convolutional layer as well.  
 
 \subsubsection{Pooling Layers}
+A convolutional layer is typically followed by a \emph{pooling} layer (sometimes also called subsampling or downsampling layer). Pooling layers are used reduced the spatial dimensions (width and height) on the input data. \emph{Max pooling}, for instance, only outputs the maximum value within its neighborhood. Similar to convolutions, pooling uses a $n \times $ kernel parameter to determine which input pixels are effected by the subsampling.
 
-	\begin{figure}[tp]
+	While pooling leads to a reduction in information, this has two main benefits. First, pooling improves the computing efficiency of a network since next layers in the network architecture need to process less data. Typically, $2 \times 2$ pooling with a stride of \num{2} is used, effectively halving every input along the width and height dimension. 	
+	Second, pooling helps against overfitting.
+	
+	Figure~\ref{fig:convnet} shows an example of a typical convolutional neural network constructed from convolutional, pooling and fully-connected layers.
+		\begin{figure}[tp]
   		\centering
     	\includegraphics{img/convnet.pdf}
     	\caption{A typical \emph{convolutional neural network} architecture. An input image is fed through a series of convolutional and pooling layers. Each convolution extracts higher-level features and increases the number of feature maps. Each pooling layer subsamples the data, typically reducing the $x$ and $y$ dimension by half. A final, fully-connected layer serves as a classifier to predict the output value.}
     	\label{fig:convnet}
 	\end{figure}
+	Typically, an alternating sequence of convolutional layers followed by pooling layers is finalized by a fully-connected layer serving as a  classifier.
 
-\subsubsection{Batch Normalization Layers?}
 \subsubsection{Softmax Loss Function}
 \subsubsection{Back Propagation Through Time}
 
 \subsection{Recurrent Neural Networks}
 \subsubsection{Long Short Term Memory Networks}
 
-\subsection{Hybrid Networks}
+\subsection{Convolutional Recurrent Neural Networks}
 \label{sec:hybrid_networks}
+While both CNNs and RNNs can be used completely on their own, for some task it is worthwhile to use a combination of both. These \emph{hybrid networks} can combine the best of both worlds. Specifically, in this thesis we are using \emph{convolutional recurrent neural network} consisting of a CNN part and an RNN part. Tang et al. first introduced this architecture in the context of document classification \cite{tang2015document}.
 
+The convolutional part is responsible for detecting and extracting local visual features into an intermediate audio representation. A recurrent part is tasked with temporal summarization of these features taking the global structure into account. Figure~\ref{fig:crnn}
 	\begin{figure}[]
   		\centering
     	\includegraphics[width=\textwidth, keepaspectratio]{img/crnn.pdf}
@@ -120,14 +130,14 @@ where $l$ is the index of the current layer, $ \matsym{W} \in\mathbb{R}^{m \time
 
 \subsection{Audio Representations}
 There are many different representations for audio data. Many people are familiar with waveform representation which is usually represented as a plot of signal amplitude along a time axis. A raw waveform representation is typically not used directly used as input to machine learning systems.
-Other representations such as \emph{spectrogram} images or \emph{mel-frequency cepstral coefficients} (MFCCs) vectors are more common. To obtain these we to transform the original audio signal.
+Other representations such as \emph{spectrogram} images or \emph{mel-frequency cepstral coefficients} (MFCCs) vectors are more common. To obtain both of these we need to transform the original audio signal.
 
 First, we discretize the audio signal into into a list \emph{spectral vectors} (a spectrum) by applying a Fourier transformation. Each spectral vector consists of amplitude and frequencies pairs at a point in time. When visualizing these we get a spectrogram image as shown in Figure~\ref{fig:waveform}. 
 %
 	\begin{figure}[tp]
   		\centering
     	\includegraphics{img/waveform.pdf}
-    	\caption{Different visual representation for a ten second audio file. a) shows a familiar waveform representation. b) shows the spectrum of frequencies known as spectrogram. Spectrogram images  are a commonly used representation for audio learning tasks.}
+    	\caption{Different visual representations for a ten second audio file. a) shows a familiar waveform representation. b) shows the spectrum of frequencies known as spectrogram. Spectrogram images  are a commonly used representation for audio learning tasks.}
     	\label{fig:waveform}
 	\end{figure}
 %
