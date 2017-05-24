@@ -1,9 +1,6 @@
 \section{Experiments and Evaluation}
 \label{sec:evaluation}
-% TODO: add more context
-% In Chapter~6, we detailed our new network architecture and its implementation
-% In this chapter, we study how our network performs given the datasets presented in Chapter~5
-In this chapter, we present and discuss the results of training the outlined neural network architecture for spoken-language identification. We perform an evaluation on our system, while assessing several performance metrics.
+In Chapter~\ref{sec:implementation}, we detailed our network architecture and its implementation. In this chapter, we study how our network performs given the datasets presented in Chapter~\ref{sec:datasets}. We present and discuss the results of training the outlined neural network architecture for spoken-language identification. We perform an evaluation on our system, while assessing several performance metrics.
 
 Further, we experiment with modified model architectures to maximize the model's accuracy, improve its noise robustness and study the effect of background music on the neural network. To assess the real-world performance of the LID system, we augment our data to simulate various noisy environments. Lastly, we evaluate the classification performance of our approach and discuss the system's interlanguage discrimination capabilities and extensibility to other languages.
 
@@ -67,7 +64,7 @@ Further, we experiment with modified model architectures to maximize the model's
 	\item[Weight Regularization] comprises any modification we make to a learning algorithm that is intended to reduce its generalization error but not its training error. We employ the L\textsuperscript{2} norm~\cite[p.~231]{Goodfellow-et-al-2016} (sometimes also known as \emph{weight decay}) as a weight regularizer for all convolutional and fully-connected layers to improve the model's generality. This regularization strategy drives the weights closer to the origin by adding a regularization term to our loss function. We penalize the loss value with a weight decay value of \num{0.001}. Additional regularization happens through the use of batch normalization layers.
 	\item[Epochs] We limit the model training phase to a maximum of \num{50}~epochs when using the Adam solver. We usually reach convergence well below this threshold. For training sessions with SGD, we increas this parameter considerably, since the weight updates per epoch are smaller, and more training iterations are needed to reach convergence. To speed up our workflow, we employ an early-stopping policy and stop training if the validation accuracy and loss value do not considerably change within a ten-epoch window.
 	\item[Metrics] We observe loss, accuracy, recall, precision, and F1 score for both the training and validation set while training the model. All values were are to log files and visualized as graphs in TensorBoard. A complete summary of all assessed metrics can be found in Section~\ref{sec:metrics}.
-	\item[Loss] As is common for multivariate classifications, all models are trained with a softmax cross-entropy loss function. \todo{explain more. in theoretical background. add ref to section}
+	\item[Loss] As is common for multivariate classifications, all models are trained with a softmax cross-entropy loss function.
 	\end{description}
 
 
@@ -129,7 +126,7 @@ CNN\_A outperforms both of the other network architectures with respect to all t
 With a top-1 accuracy of \num{0.90}, CNN\_A trumps CNN\_B and CNN\_C with \num{0.74} and \num{0.68}, respectively. Comparing the F1 score, we get a very similar result: \num{0.90} versus \num{0.74} and \num{0.68}. This experiment confirms a few of our initial hypotheses (as outlined in Section~\ref{sec:task-specification}). First, convolutional neural networks are a successful technique for classifying speech audio data. Second, spectrogram images are meaningful representations for audio and retain enough information for language identification. Third, larger kernels for the initial convolutional layers are, indeed, favorable, since the increased receptive field captures both the time and the frequency domain better.
 
 Based on these findings, we did further experimented with CNN\_A. Mishkin et al. were able to gain a small improvement in accuracy by exchanging the convolutional layers' activation functions~\cite{mishkin2016systematic}. For this purpose, we replaced our ReLU activations with \emph{exponential linear units} (ELU)~\cite{clevert2015fast} but were unable to measure any improvement (with only \num{0.85} accuracy).
-Baoguan et al. proposed to use $1 \times 2$ rectangular pooling windows instead of the conventional square ones~\cite{shi2016end}\todo{check ref}. This tweak yields feature maps with larger width and, hence, more features along the time domain. In theory, this should increase the CNN's sensitivity to occurrences of frequencies at certain time intervals. For this experiment, we were unable to improve (\num{0.81} accuracy), but we come back to this technique for our CRNN approach in Section~\ref{sec:duration}.
+Shi et al. proposed to use $1 \times 2$ rectangular pooling windows instead of the conventional square ones~\cite{shi2016end}. This tweak yields feature maps with larger width and, hence, more features along the time domain. In theory, this should increase the CNN's sensitivity to occurrences of frequencies at certain time intervals. For this experiment, we were unable to improve (\num{0.81} accuracy), but we come back to this technique for our CRNN approach in Section~\ref{sec:duration}.
 
 The task of this thesis is to evaluate the use of deep convolutional recurrent networks for language identification. Therefore, we extend our previously best-performing CNN\_A with a bidirectional \ac{lstm} layer to capture time steps both forward from the start and backward from then end of an audio segment. Our model interprets the \ac{cnn} output as an intermediate high-dimensional representation of the audio frequencies. Every vector entry along the $x$~axis is used as a single time step and input to the LSTMs, as explained in Section~\ref{sec:hybrid_networks}. Confident in the features captured by our convolutional layers, we freeze them during the CRNN training phase to disable any further weight updates for these layers. Instead, we focus on training only the LSTMs weights and learning the frequency sequences of the audio samples. Our bidirectional LSTM layer trains two individual LSTMs with \num{512}~outputs each, one moving forward along the input sequence and one backward. Both outputs are concatenated to form a single output vector with a dimension of \num{1024}, which is followed by a single, fully-connected layer for classification.
 
@@ -262,7 +259,7 @@ The noise spectrogram in Figure~\ref{fig:noise} show that the white noise effect
 %
 	\begin{figure}[tp]
   		\centering
-    	\includegraphics[width=\textwidth, keepaspectratio]{img/noise_spectrograms.png}
+    	\includegraphics{img/noise_spectrograms.pdf}
     	\caption{Spectrograms generated from the raw data, augmented with white noise and mixed with a crackling noise emulating analog telephony or a bad voice chat connection. The white noise aggressively subdues most higher frequencies and pauses that decrease the classification performance. The crackling noise is less intrusive and, therefore, does not affect accuracy as much.}
     	\label{fig:noise}
 	\end{figure}
@@ -304,8 +301,8 @@ Additionally, it should be noted that the frequency activations of the instrumen
 %
 	\begin{figure}[tp]
   		\centering
-    	\includegraphics[width=\textwidth, keepaspectratio]{img/background_music.png}
-    	\caption{Spectrograms generated from the raw data and augmented with background music noise. The added background music is clearly visible in the resulting spectrogram and changes the classification performance. Note that the previously silent part on the right-hand side now shows frequency activations as well. Additionally, the original ripple-like patterns become a lot more subdued and unclear. Further, new frequency activation patterns along the bottom of the image become visibile.}
+    	\includegraphics{img/background_music.pdf}
+    	\caption{Spectrograms generated from the raw data and augmented with background music noise. The added background music is clearly visible in the resulting spectrogram and changes the classification performance. Note that the previously silent part on the right-hand side now shows frequency activations as well. Additionally, the original ripple-like patterns become a lot more subdued and unclear. Further, new frequency activation patterns along the bottom of the image become visible.}
     	\label{fig:background_music}
 	\end{figure}
 %

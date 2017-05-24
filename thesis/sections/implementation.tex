@@ -1,7 +1,6 @@
 \section{Implementation}
 \label{sec:implementation}
-This section outlines the software resources of our language identification system, explains the necessary data preprocessing steps, and describes the model architecture of our neural networks in more detail.
-% TODO: elaborate more, set chapter in context of this thesis
+This section outlines the software resources and frameworks used for implementing our language identification system. Given the datasets presented in Chapter~\ref{sec:datasets}, we describe the necessary data preprocessing steps to obtain the input audio representations for our network, as explained in Chapter~\ref{sec:theoretical_background}. Finally, we describe the concrete layer-wise model architecture of our CNNs and CRNN in detail.
 
 \subsection{Software}
 \label{sec:software}
@@ -30,7 +29,7 @@ We regularly compared different approaches and models against each other and use
 %
 	\begin{figure}[tp]
   		\centering
-    	\includegraphics[width=\textwidth,keepaspectratio]{img/frequencies.pdf}
+    	\includegraphics{img/frequencies.pdf}
     	\caption{The upper and lower frequency areas (\emph{formant}) for different vowels, typical for human speech. The lower speech formant $F_1$ has a total range of about \SI{300}{\hertz} to \SI{750}{\hertz} and the higher speech formant $F_2$ about \SI{900}{\hertz} up to over \SI{3000}{\hertz}. But each single spoken tone has a much narrower range for both formants.}
     	\label{img:frequencies}
 	\end{figure}
@@ -38,7 +37,9 @@ We regularly compared different approaches and models against each other and use
 
 Most phonemes in the English language do not exceed \SI{3000}{\hertz} in conversational speech.
 Consequently, we instructed SoX to only include frequencies of up to~\SI{5}{\kilo\hertz} in the spectrograms.
-The time axis ($x$~axis) is rendered at \num{25}~pixels per second. Each audio sequence is clipped into nonoverlapping ten-second segments. To avoid padding issues and segments shorter than ten seconds, the final segment is discarded. Since we gathered enough training data, we decided against padding with black pixels, which could be interpreted as silence and add unnaturally long speech pauses. We also decided against filtering silent sections within the ten-second audio segments to preserve the natural pauses between words and to not disturb the regular speech rhythm. Frequency intensities are mapped to an eight-bit grayscale range. We combined all audio channels into a single mono channel in order to generate only a single spectrogram image. The resulting grayscale images are saved as lossless, $500 \times 129$ PNG files. Listing~\ref{lst:spectrograms} shows the SoX command for generating a spectrogram image from an input audio file.
+The time axis ($x$~axis) is rendered at \num{25}~pixels per second. Each audio sequence is clipped into nonoverlapping ten-second segments. To avoid padding issues and segments shorter than ten seconds, the final segment is discarded. Since we gathered enough training data, we decided against padding with black pixels, which could be interpreted as silence and add unnaturally long speech pauses. We also decided against filtering silent sections within the ten-second audio segments to preserve the natural pauses between words and to not disturb the regular speech rhythm. 
+
+Frequency intensities are mapped to an eight-bit grayscale range. We combined all audio channels into a single mono channel in order to generate only a single spectrogram image. The resulting grayscale images are saved as lossless, $500 \times 129$ PNG files. Listing~\ref{lst:spectrograms} shows the SoX command for generating a spectrogram image from an input audio file.
 
 	\begin{listing}[tp]
 	\begin{lstlisting}[caption={SoX command and options used for generating monochrome spectrograms. All audio files were discretized into \num{129}~frequency buckets using a constant pixel width per time step, resulting in spectrogram images of $500 \times 129$ pixels.}, label={lst:spectrograms}]

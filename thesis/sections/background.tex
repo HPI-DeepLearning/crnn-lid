@@ -108,26 +108,19 @@ A convolutional layer is typically followed by a \emph{pooling} layer (sometimes
 \label{sec:hybrid_networks}
 While both CNNs and RNNs can be used completely on their own, for some task it is worthwhile to use a combination of both. These \emph{hybrid networks} can combine the best of both worlds. Specifically, in this thesis we are using \emph{convolutional recurrent neural network} consisting of a CNN part and an RNN part. Tang et al. first introduced this architecture in the context of document classification \cite{tang2015document}.
 
-The convolutional part is responsible for detecting and extracting local visual features into an intermediate audio representation. A recurrent part is tasked with temporal summarization of these features taking the global structure into account. Figure~\ref{fig:crnn}
+The convolutional part is responsible for detecting and extracting local visual features into an intermediary audio representation. A recurrent part is tasked with temporal summarization of these features taking the global structure into account. Figure~\ref{fig:crnn} show the architecture of a CRNN network. 
+%
 	\begin{figure}[]
   		\centering
-    	\includegraphics[width=\textwidth, keepaspectratio]{img/crnn.pdf}
-    	\caption{Our proposed CRNN hybrid network architecture consists of two networks. A CNN transforms our input images into an intermediary representation of our audio frequencies. The 3D output of final convolutional layer of the CNN is sliced along the x-axis (time axis) into 2D time steps still containing all feature map information. The output of the final LSTM time step is fed into a fully connected layer for classification.}
+    	\includegraphics[]{img/crnn.pdf}
+    	\caption{Our proposed CRNN hybrid network architecture consists of two parts. A CNN extracts local visual feature from our input images and outputs a intermediary representation of our audio frequencies. The output of the final convolutional layer is sliced along the time axis into time steps of frequency features for the LSTM. The output of the final LSTM time step is fed into a fully-connected layer for classification.}
     	\label{fig:crnn}
 	\end{figure}
+	%
+	The last convolutional layer of a CNN is replace with a LSTM layer. In the context of language identification, the outputs of the last convolutional layer result in a tensor $t \times f \times c$, where $t$ are time steps, $f$ the frequency features, and $c$ the feature map outputs of the CNN. This tensor is stacked along the frequency dimension and split along the time axis into $t$ time step inputs of $ f \times c$ for the LSTM.
 	
-%	\begin{figure}[]
-%  		\centering
-%    	\includegraphics[width=\textwidth, keepaspectratio]{img/crnn2.pdf}
-%    	\caption{An alternative approach for a hybrid CRNN network. Each single feature map of the final convolutional layer is fed to separate LSTM networks as a 2D input. Each LSTM interprets the vector entries along the x-axis as time steps and operates on thin slice of the data. The output of the final time step of each LSTM is concatenated into a single vector serving as the input to a fully connected classification layer.}
-%    	\label{fig:crnn}
-%	\end{figure}
-
-    \begin{itemize}
-        \item Convolutional Recurrent Neural Networks
-        \item What is their purpose? Averaging over predictions / majority voting
-    \end{itemize}
-
+	For this thesis we use a bidirectional LSTM that performs both forward and backward pass a long the time sequence. We combine that last output of the forward pass with the first output of backward into a single, concatenated output. Finally, this is fed into a fully-connected layer serving as a classifier.
+	
 \subsection{Audio Representations}
 There are many different representations for audio data. Many people are familiar with waveform representation which is usually represented as a plot of signal amplitude along a time axis. A raw waveform representation is typically not used directly used as input to machine learning systems.
 Other representations such as \emph{spectrogram} images or \emph{mel-frequency cepstral coefficients} (MFCCs) vectors are more common. To obtain both of these we need to transform the original audio signal.
