@@ -98,7 +98,21 @@ A convolutional layer is typically followed by a \emph{pooling} layer (sometimes
 	\end{figure}
 	Typically, an alternating sequence of convolutional layers followed by pooling layers is finalized by a fully-connected layer serving as a  classifier.
 
-\subsubsection{Softmax Loss Function}
+\subsubsection{Softmax Cross-Entropy Loss Function}
+The \emph{softmax} function is an activation function applied to last layer to obtain probability distribution. It maps any K-dimensional input vector $\vecsym{x} \in\mathbb{R}$ onto a vector with a $[0, 1]$ value distribution, where the sum of all entries is \num{1}:
+%
+$$
+\operatorname{softmax(}x\operatorname{)}_i= \frac{\exp^{x_i}}{\sum_{k=0}^K \exp^{x_k}}
+$$
+%
+In order to train a neural network we constantly calculate the difference between a desired output class $y$ and a predicted class $\hat{y}$. We refer to such an error measure between the approximated and expected output value as \emph{loss function}. A commonly applied loss function for multi-class classification problem, as presented in this thesis, is cross-entropy loss:
+%
+$$
+L_{cross\_entropy} = -log \left( \frac{\exp^{f_y}}{\sum_k \exp^{f_k}} \right)
+$$
+%
+where $f_y$ is the probability granted to the correct class and $f_k$ are probabilities of all classes. Since part of the formula contains a softmax calculation we refer to this loss function as \emph{softmax cross-entropy loss}.
+
 \subsubsection{Back Propagation Through Time}
 
 \subsection{Recurrent Neural Networks}
