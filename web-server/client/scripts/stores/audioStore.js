@@ -3,7 +3,7 @@ import alt from '../../alt';
 import AudioActions from '../actions/audioActions';
 import API from "../lib/api"
 
-import AudioThumbnail1 from "../../images/examples/audio.jpg"
+import AudioThumbnail1 from "../../images/examples/audio.png"
 
 
 class AudioStore {
@@ -16,19 +16,19 @@ class AudioStore {
     this.exampleAudio = [
       {
         id : 1,
-        thumbnail : "/dist/images/examples/audio.jpg",
+        thumbnail : "/dist/images/examples/audio.png",
         title : "CNN",
         language : "English",
       },
       {
         id : 2,
-        thumbnail : "/dist/images/examples/audio.jpg",
+        thumbnail : "/dist/images/examples/audio.png",
         title : "Dubsmash 2",
         language : "German",
       },
       {
         id : 3,
-        thumbnail : "/dist/images/examples/audio.jpg",
+        thumbnail : "/dist/images/examples/audio.png",
         title : "Voxforge",
         language : "English",
       }

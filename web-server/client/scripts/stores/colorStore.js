@@ -4,7 +4,7 @@ import alt from "../../alt";
 class ColorStore {
 
   constructor() {
-    this.colors = ["#2196F3", "#4dd0e1", "#e57373 ", "#4db6ac",  "#fff176", "#7986cb", "#a1887f", "#90a4ae", "#2e7d32", "#4527a0", "#c2185b", "#1565c0", "#e64a19", "#455a64"];
+    this.colors = ["#2196F3", "#4dd0e1", "#e57373 ", "#4db6ac",  "#fff176", "#7986cb", "#a1887f", "#90a4ae", "#2e7d32", "#4527a0", "#c2185b", "#1565c0", "#e64a19", "#455a64", "#8a716a", "#c2b8b2", "#197bbd", "#125e8a", "#204b57"];
   }
 
   static hash(text) {

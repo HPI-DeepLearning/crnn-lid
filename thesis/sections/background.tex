@@ -8,14 +8,14 @@ Machine learning is a subfield of computer science that provides systems with th
 \subsubsection{Types of Machine Learning}
 The field of machine learning covers a multitude of different learning algorithms. While each of these is based on a different mathematical foundation, they also serve many different purposes. \emph{Classification} algorithms divide input data into two or more distinct classes. Each new input sample can then be assigned to one of these learned classes. For example, we could imagine an app that automatically classifies pictures of food and recognizes and names the respective dishes. While classification results are always discrete values, a \emph{regression} algorithm outputs continuous values instead. An example is a regressor predicting the future price of your favorite food based on historical price data. For other purposes, it is more important to know which data samples are similar to each other and form a group of their own. \emph{Clustering} algorithms divide data into groups and, unlike with classification, these group are usually not known before. For instance, a customer management system could cluster everyone into distinct clusters of different focus groups.
 
-Regardless of an algorithm's purpose, machine learning can be typically divided into three categories from a high-level point of view:
+Regardless of an algorithm's purpose, machine learning typically can be divided into three categories from a high-level point of view:
 
 	\begin{description}
 		\item[Supervised Learning] is the task of building a machine learning model with labeled training data. Every data sample used during training is a pair consisting of a vector or matrix representation of the data and a label identifying the data as belonging to a certain class. Typically, a label is represented as a single number or a one-hot-encoded vector. Supervised learning algorithms learn an inference function mapping every data sample to its expected output label. A trained model should then be able to infer a suitable output class or value for new unknown data.
 
 		\item[Unsupervised Learning] is the task of building a machine learning model with unlabeled training data. Unlike with supervised learning, none of the training samples include labels of the desired model outcome. Unsupervised learning algorithms learn a function by detecting the hidden structures inside the data. Many clustering algorithms fall into this category.
 
-		\item[Reinforcement Learning] is the task of building a machine learning model without a set of classical training data. Instead, a reinforcement learning system is set within a specific environment and executes a set of actions. Each action's effect on the environment is measured, and reward is calculated. By maximizing this reward, the system finds actions that are most effective towards achieving the specified task. This setup is similar to simulations.
+		\item[Reinforcement Learning] is the task of building a machine learning model without a set of classical training data. Instead, a reinforcement learning system is set within a specific environment and executes a set of actions. Each action's effect on the environment is measured, and reward is calculated. By maximizing this reward, the system finds actions that are most effective towards achieving the specified task. This setup is similar to computer simulations in other problem domains.
 	\end{description}
 
 The system described in this thesis is a supervised classification approach using a large-scale labeled training dataset.
@@ -24,7 +24,7 @@ The system described in this thesis is a supervised classification approach usin
 \emph{Classification} in the context of machine learning refers to the task of assigning a data sample to the corresponding class. Classification algorithms are a form of supervised learning and, hence, need a training dataset of labeled data. The input to classifiers is referred to as \emph{features}. Classical machine learning algorithms, such as \emph{support vector machines} (\ac{svm}) and linear classifiers, usually require input features carefully designed by domain experts as a good representation of the original problem. This process is often referred to as \emph{feature engineering}. In contrast, deep learning classifiers such as \emph{neural networks} are able to directly work on the raw data representations. This has the benefit of building machine learning systems without the need for handcrafted features of domain experts but comes at the price of increased computational requirements. For computer vision tasks, for example, it used to be customary to train classical systems on preprocessed and extracted image features, such as SIFT key points~\cite{lowe1999object} or HOG descriptors~\cite{dalal2005histograms}. Deep learning systems, on the other hand, are capable of processing all the original raw pixels of the input image.
 
 
-Figure \ref{fig:classifiers} shows an example of two binary classifiers divide a simple dataset into two classes in 2D space.
+Figure \ref{fig:classifiers} shows an example of two binary classifiers dividing a simple dataset into two classes in 2D space.
 %
 	\begin{figure}[tp]
   		\centering
@@ -45,11 +45,11 @@ While early \emph{neural networks} were inspired and named after discoveries in 
 
 When fed with an input vector $x$, a neural network computes an affine transformation:
 $$
-f(\vecsym{x}, \matsym{W}, \vecsym{b}) = g(\matsym{W}^T\vecsym{x} + \vecsym{b})
+f(\vecsym{x}, \matsym{W}, \vecsym{b}) = \sigma(\matsym{W}^T\vecsym{x} + \vecsym{b})
 $$
-where $g$ is function $g: \mathbb{R}^n \rightarrow \mathbb{R}$, $\matsym{W} \in\mathbb{R}^{n \times m} $ an $n \times m$ \emph{weight matrix}, and $\vecsym{b} \in\mathbb{R}^m $ a \emph{bias term}~\cite[p.~192]{Goodfellow-et-al-2016}. Both the weights and biases are trainable parameters and updated during the learning process. By itself, the chain of linear transformations can only model linear relations. To model more complex scenarios, $g$ is a nonlinear \emph{activation function}. Typical candidates for activation functions in neural networks are \emph{rectified linear units} (\ac{relu})~\cite{nair2010rectified}:
+where $\sigma$ is function $\sigma: \mathbb{R}^n \rightarrow \mathbb{R}^n$, $\matsym{W} \in\mathbb{R}^{n \times m} $ an $n \times m$ \emph{weight matrix}, and $\vecsym{b} \in\mathbb{R}^m $ a \emph{bias term}~\cite[p.~192]{Goodfellow-et-al-2016}. Both the weights and biases are trainable parameters and updated during the learning process. By itself, the chain of linear transformations can only model linear relations. To model more complex scenarios, $\sigma$ is a nonlinear \emph{activation function}. Typical candidates for activation functions in neural networks are \emph{rectified linear units} (\ac{relu})~\cite{nair2010rectified}:
 $$
-g(x) = \operatorname{max}(x, 0)
+\sigma(\vecsym{x}) = \operatorname{max}(\vecsym{x}, 0)
 $$
 
 Within the deep learning community, neural networks are also referred to as \emph{fully-connected} layers (\ac{fc}), owing to the fact that each artificial neuron is connected to all outputs of the previous layer. Figure~\ref{fig:nn} shows an example of a three-layer neural network.
@@ -57,31 +57,36 @@ Within the deep learning community, neural networks are also referred to as \emp
 	\begin{figure}[tp]
   		\centering
     	\includegraphics{img/nn.pdf}
-    	\caption{A neural network with three layers. Each layer is connected to all outputs of the previous layer. All central layers, which are neither connected to the network's inputs or output, are referred to as \emph{hidden layers}. Note that all connections between the neurons are directed and do not include self-references. Therefore, we refer to these models as \emph{feedforward neural networks}.}
+    	\caption{A neural network with three layers. Each layer is connected to all outputs of the previous layer. All central layers, which are neither connected to the network's inputs or output, are referred to as \emph{hidden layers}. Note that all connections between the neurons are directed and do not include self-references. Therefore, we refer to these classes of models as \emph{feedforward neural networks}.}
     	\label{fig:nn}
 	\end{figure}
 %
-Any layer not connected to the input or output is referred to as a \emph{hidden layer}. In our example, we only have a single output neuron and, hence, a binary classifier for the two classes. For multi-class tasks, we can add more output neurons. Typically, fully-connected layers are used as final layers of a deep neural network architecture serving as a classifier.
+Any layer not directly connected to the input or output is referred to as a \emph{hidden layer}. In our example, we only have a single output neuron and, hence, a binary classifier for the two classes. For multi-class tasks, we can add more output neurons. Typically, fully-connected layers are used as final layers of a deep neural network architecture serving as a classifier.
 
 \subsubsection{Convolutional Layers}
-\emph{Convolutional neural networks} (CNN) are simply neural networks that use convolution in place of general matrix multiplication in at least one of their layers. CNN specialize in processing data that has grid-like structure, such as the 2D grid of pixels of an input image as in our case. As the name suggests, they make use of the mathematical \emph{convolution} operation. For computer vision tasks this can be expressed as the weighted sum of a two-dimensional weight matrix $ \matsym{K} \in\mathbb{R}^{m \times n} $ (often referred to as kernel or filter) and an input $ \matsym{X} \in\mathbb{R}^{o \times p} $:
+\emph{Convolutional neural networks} (CNN) are simply neural networks that use convolution in place of general matrix multiplication in at least one of their layers. CNN specialize in processing data that has grid-like structure, such as the 2D grid of pixels of an input image as in our case. As the name suggests, they make use of the mathematical \emph{convolution} operation. For computer vision tasks this can be thought of as the weighted sum of all pixels in a neighborhood. More formally, convolution layers are expressed as \cite{sun2014deep}: 
+%
 $$
-	\matsym{Y}_{i, j} = \sum_m \sum_n \matsym{X}_{i + m, j + n} \matsym{K}_{m, n}
-$$	
-	where $\matsym{Y}_{i, j}$ is a pixel in the output, $i$ and $j$ are the indices of a pixel in the input and output image. Typical kernels for CNNs have a square size of $3 \times 3$. Figure~\ref{fig:convolution} shows the convolution of a single pixel $\matsym{Y}_{i, j}$ in the output layer.
+\matsym{Y}^{j(r)} = \sigma \left( \vecsym{b}^{j(r)} + \sum_i \matsym{K}^{ij(r)} \ast \matsym{X}^{i(r)} \right)
+$$
+%
+where $\matsym{X}^i$ and $\matsym{Y}^j$ are the $i$-th input and $j$-th output map, respectively. $\matsym{K}^{ij}$ defines the kernel between those two maps and $\ast$ denotes the convolutional operation. $\sigma$ is an activation function, such as ReLU. $\vecsym{b}^j$ is the bias of the $j$-th output map and $r$ indicates a local region where weights are shared.
+
+Typical kernels for CNNs have a square size of $3 \times 3$. Thus, for each pixel in the output map a neighborhood of $3 \times 3 = 9$ pixels is evaluated by the convolutional operation.  Figure~\ref{fig:convolution} shows the convolution of a single pixel in the output map $\matsym{Y}^{j}$.
 	\begin{figure}[tp]
   		\centering
     	\includegraphics{img/convolution.pdf}
     	\caption{A convolution operation on an image using a $3 \times 3$ kernel. Each pixel in the output image is the weighted sum of \num{9}~pixels in the input image. The weights are not fixed but instead learned by the model.}
     	\label{fig:convolution}
 	\end{figure}
-	All pixels involved in the calculation of $\matsym{Y}_{i, j}$ are referred to as its \emph{receptive field}. 
+	All pixels involved in the calculation of this pixel are referred to as its \emph{receptive field}. 
 
 Kernels are learned during the training and can be thought of feature detectors. This concept is often used in the field of image processing where predefined kernels such as a Sobel filters are used for edge detection and Gaussian filters for blurring. Similarly, a CNN learns to detect simple features such as edges in lower layers. Convolutional layers at the end of the network architecture combine these simple  features to compound shaped features able to reliably identify an input. 
 
-Unlike artificial neural networks CNN need fewer parameters through the use of \emph{weight sharing}. A fully-connected neural network of $m$ inputs and $n$ outputs requires $m \times n$ weight parameters. A convolutional layer, on the other hand, each member of the kernel is used on every position of the input. Instead of learning parameters for every position in the input is only uses one set of $k \times k \times c \times o$ weights, where $k$ is the kernel size, $c$ the number of channels in the input, and $o$ the number of desired output channels (often called feature maps). For instance, a $100 \times 100 \times 3$ RGB color input image would require $100 \times 100 \times 3 \times 128 = 3840000$ weight parameters for a fully-connected layer with \num{128} outputs. In contrast, a CNN only uses $3 \times 3 \times 3 \times 128 = 3456$ weight parameters for a two-dimensional kernel of size $3 \times 3$ and for the same number of output units.
-
 Typically, a CNN does not only learn one kernel but several, one for each desired output dimension. Other hyperparameters include the \emph{stride} and amount of \emph{zero padding}. The former defines by how many pixels the kernel is translated on the input. The latter specifies how to handle convolutions along the edge of an input where the kernel would need to include pixels from outside the image. Similarly to fully-connected layers, an nonlinear activation function is applied on the output of a convolutional layer as well.  
+
+Unlike fully-connected artificial neural networks, CNNs need fewer parameters through the use of \emph{weight sharing}. A fully-connected neural network of $m$ inputs and $n$ outputs requires $m \times n$ weight parameters. A convolutional layer, on the other hand, each member of the kernel is used on every position of the input. Instead of learning parameters for every position in the input is only uses one set of $k \times k \times c \times o$ weights, where $k$ is the kernel size, $c$ the number of channels in the input, and $o$ the number of desired output channels (often called feature maps). For instance, a $100 \times 100 \times 3$ RGB color input image would require $100 \times 100 \times 3 \times 128 = 3840000$ weight parameters for a fully-connected layer with \num{128} outputs. In contrast, a CNN only uses $3 \times 3 \times 3 \times 128 = 3456$ weight parameters for a two-dimensional kernel of size $3 \times 3$ and for the same number of output units.
+
 
 \subsubsection{Pooling Layers}
 A convolutional layer is typically followed by a \emph{pooling} layer (sometimes also called subsampling or downsampling layer). Pooling layers are used reduced the spatial dimensions (width and height) on the input data. \emph{Max pooling}, for instance, only outputs the maximum value within its neighborhood. Similar to convolutions, pooling uses a $n \times $ kernel parameter to determine which input pixels are effected by the subsampling.
@@ -99,7 +104,7 @@ A convolutional layer is typically followed by a \emph{pooling} layer (sometimes
 	Typically, an alternating sequence of convolutional layers followed by pooling layers is finalized by a fully-connected layer serving as a  classifier.
 
 \subsubsection{Softmax Cross-Entropy Loss Function}
-The \emph{softmax} function is an activation function applied to last layer to obtain probability distribution. It maps any K-dimensional input vector $\vecsym{x} \in\mathbb{R}$ onto a vector with a $[0, 1]$ value distribution, where the sum of all entries is \num{1}:
+The \emph{softmax} function is an activation function applied to last layer to obtain probability distribution. It maps any $K \in\mathbb{N}^+$-dimensional input vector $\vecsym{x} \in\mathbb{R}^K$ onto a vector with a $[0, 1]$ value distribution, where the sum of all entries is \num{1}:
 %
 $$
 \operatorname{softmax(}x\operatorname{)}_i= \frac{\exp^{x_i}}{\sum_{k=0}^K \exp^{x_k}}
@@ -136,7 +141,7 @@ The convolutional part is responsible for detecting and extracting local visual 
 	For this thesis we use a bidirectional LSTM that performs both forward and backward pass a long the time sequence. We combine that last output of the forward pass with the first output of backward into a single, concatenated output. Finally, this is fed into a fully-connected layer serving as a classifier.
 	
 \subsection{Audio Representations}
-There are many different representations for audio data. Many people are familiar with waveform representation which is usually represented as a plot of signal amplitude along a time axis. A raw waveform representation is typically not used directly used as input to machine learning systems.
+There are many different representations for audio data. Many people are familiar with waveform representation which is usually represented as a plot of signal amplitude along a time axis. A raw waveform representation is typically not directly used as input to machine learning systems.
 Other representations such as \emph{spectrogram} images or \emph{mel-frequency cepstral coefficients} (MFCCs) vectors are more common. To obtain both of these we need to transform the original audio signal.
 
 First, we discretize the audio signal into into a list \emph{spectral vectors} (a spectrum) by applying a Fourier transformation. Each spectral vector consists of amplitude and frequencies pairs at a point in time. When visualizing these we get a spectrogram image as shown in Figure~\ref{fig:waveform}. 
