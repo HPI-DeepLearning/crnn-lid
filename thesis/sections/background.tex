@@ -121,7 +121,29 @@ where $f_y$ is the probability granted to the correct class and $f_k$ are probab
 \subsubsection{Back Propagation Through Time}
 
 \subsection{Recurrent Neural Networks}
-\subsubsection{Long Short Term Memory Networks}
+Unlike feedforward networks, \emph{recurrent neural networks} contain layers with back references forming a feedback loop or directed cycle. This allows them to maintain an internal state often referred to as memory. RNNs are commonly used to process a sequence of input data of arbitrary length, such as time series data. In the context of this thesis, we make use of RNNs to learn time series of audio frequencies.
+
+	RNNs have the benefit of incorporating the context of previous states into the current prediction. We think of an RNN as a loop where during each iteration we use the previous iteration's output as an additional input. In the context of our LID task this means that for every time step the RNN has knowledge about the utterances or frequency activation prior to the current time step.
+
+	While there are various forms of RNN implementation, we use \emph{Long Short-Term Memory} (LSTM) networks in this thesis \cite{hochreiter1997long}. There are two advantages for this. First, LSTMs overcome a problem known as  \emph{exploding gradients} when training the networks \cite[p.~288]{Goodfellow-et-al-2016}. Second, related work on spoken language understanding shows the usefulness of LSTMs for audio tasks. (see related work chapter for more details)
+
+\subsubsection{Long Short-Term Memory Networks}
+Unlike other RNNs, Long Short-Term Memory networks are designed to capture context over long as well as short periods of time. An LSTM network is composed of many, hidden LSTM cells. Each cell holds its internal state or memory and is carefully controlled by three, trainable \emph{gates} layers. Each gate controls the information flow and decides if the cell's state should be altered. Gates are represented as sigmoid function and element-wise multiplications of the input and previous cell's state. The sigmoid outputs numbers between zero and one, where zero blocks any changes and one completely accepts all modifications to cell's state.
+
+First, a \emph{forget gate} $\vecsym{f_t}$ selects which information to erase from the cell's state because it no longer deems it necessary. Next, the \emph{input gate} $\vecsym{i_t}$ controls which of the new information is stored in the cell's state. Last, the \emph{output gate} $\vecsym{o_t}$ regulates how state information is used for computing the output activation of the cell. Figure~\ref{fig:lstm} shows an LSTM cell with its three gates.
+
+The LSTM is calculated as follows:
+$$
+  \begin{aligned}
+\vecsym{f_t} &= \sigma_g(\matsym{W_{f}} \vecsym{x_t} + \matsym{U_{f}} \vecsym{y_{t-1}} + \vecsym{b_f}) \\
+\vecsym{i_t} &= \sigma_g(\matsym{W_{i}} \vecsym{x_t} + \matsym{U_{i}} \vecsym{y_{t-1}} + \vecsym{b_i}) \\
+\vecsym{o_t} &= \sigma_g(\matsym{W_{o}} \vecsym{x_t} + \matsym{U_{o}} \vecsym{y_{t-1}} + \vecsym{b_o}) \\
+\vecsym{c_t} &= \vecsym{f_t} \circ \vecsym{c_{t-1}} + \vecsym{i_t} \circ \sigma_c(\matsym{W_{c}} \vecsym{x_t} + \matsym{U_{c}} \vecsym{y_{t-1}} + \vecsym{b_c}) \\
+\vecsym{y_t} &= \vecsym{o_t} \circ \sigma_h(c_t)
+  \end{aligned}
+$$
+where $\vecsym{x_t}$ is an input vector and $\vecsym{y_t}$ is the output vector of the LSTM cell at the current time step $t$. $\vecsym{c_t}$ is the cell's new state as a result of the forget and input gate decisions. $\matsym{W}$, $\matsym{U}$, and $\vecsym{b}$ are weight matrices and bias terms of three gate functions, respectively. The activation functions $\sigma_h$ and $\sigma_g$ stand for the hyperbolic tangent and sigmoid functions, respectively.
+
 
 \subsection{Convolutional Recurrent Neural Networks}
 \label{sec:hybrid_networks}
