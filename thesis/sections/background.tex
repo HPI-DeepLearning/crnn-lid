@@ -28,18 +28,18 @@ Figure \ref{fig:classifiers} shows an example of two binary classifiers dividing
 %
 	\begin{figure}[tp]
   		\centering
-    	\includegraphics[width=\textwidth, keepaspectratio]{img/classifiers.pdf}
+    	\includegraphics{img/classifiers.pdf}
     	\caption{An example of two classifiers: A \emph{linear classifier}~(a) divides the data using a straight line but misclassifies two data points. A \emph{neural network}~(b) is able to learn a more complex decision boundary and separates the dataset without errors.}
     	\label{fig:classifiers}
 	\end{figure}
 %
-On the left-hand side is linear classifier dividing all points along a straight line. While this sort of classifier is very easy to train and understand it lacks the necessary foundation to divide more complex datasets. On the right-hand side is a neural network (more details in the next section) featuring a more complex, yet more accurate decision boundary.
+On the left-hand side is linear classifier dividing all points along a straight line. While this sort of classifier is very easy to train and understand, it lacks the necessary foundation to divide more complex datasets. On the right-hand side is a neural network (more details in the next section) featuring a more complex, yet more accurate decision boundary.
 
 \subsection{Building Blocks of Deep Neural Networks}
 Modern deep learning systems are composed in a layer-wise fashion. Each layer performs a nonlinear computation to extract features and learns a representation of the input data before passing on its outputs to the next layer in the architecture. The term \emph{deep learning} itself is not clearly defined but usually refers to having an at least two-layered model. Typical state-of-the-art systems have more than ten layers, some recent publications are even going as deep as \num{152}~layers~\cite{he2016deep}. While the total number of layers is, by no means, an indicator for an accurate and precise model, it makes capturing a larger and more generalized data representation possible.
 
 \subsubsection{Neural Networks and Fully-Connected Layers}
-While early \emph{neural networks} were inspired and named after discoveries in biology, particularly the neurons in animal brains, modern interpretations treat \emph{artificial neural networks} as a mathematical model of interconnected artificial neurons or a series of matrix operations~\cite{mcculloch1943logical, rosenblatt1958perceptron}.
+While early \emph{neural networks} were inspired and named after archetypes in biology, particularly the neurons in animal brains, modern interpretations treat \emph{artificial neural networks} as a mathematical model of interconnected artificial neurons or a series of matrix operations~\cite{mcculloch1943logical, rosenblatt1958perceptron}.
 
 \emph{Feedforward neural networks} are designed as a chain of layers, each applying an affine transformation. Each layer uses the output of the previous layer as an input, and all connections are directed without any self-references, $ f(\vecsym{x}) = f_i(f_{i-1}(...(f_1(\vecsym{x})))) $, where $\vecsym{x} \in \mathbb{R}^n $ is an input vector. The first and last layer are referred to as the \emph{input} and \emph{output} layer, respectively.
 
@@ -47,12 +47,12 @@ When fed with an input vector $x$, a neural network computes an affine transform
 $$
 f(\vecsym{x}, \matsym{W}, \vecsym{b}) = \sigma(\matsym{W}^T\vecsym{x} + \vecsym{b})
 $$
-where $\sigma$ is function $\sigma: \mathbb{R}^n \rightarrow \mathbb{R}^n$, $\matsym{W} \in\mathbb{R}^{n \times m} $ an $n \times m$ \emph{weight matrix}, and $\vecsym{b} \in\mathbb{R}^m $ a \emph{bias term}~\cite[p.~192]{Goodfellow-et-al-2016}. Both the weights and biases are trainable parameters and updated during the learning process. By itself, the chain of linear transformations can only model linear relations. To model more complex scenarios, $\sigma$ is a nonlinear \emph{activation function}. Typical candidates for activation functions in neural networks are \emph{rectified linear units} (\ac{relu})~\cite{nair2010rectified}:
+where $\sigma$ is a function $\sigma: \mathbb{R}^n \rightarrow \mathbb{R}^n$, $\matsym{W} \in\mathbb{R}^{n \times m} $ an $n \times m$ \emph{weight matrix}, and $\vecsym{b} \in\mathbb{R}^m $ a \emph{bias term}~\cite[p.~192]{Goodfellow-et-al-2016}. Both the weights and biases are trainable parameters and updated during the learning process. By itself, the chain of linear transformations can only model linear relations. To model more complex scenarios, $\sigma$ is a nonlinear \emph{activation function}. Typical candidates for activation functions in neural networks are \emph{rectified linear units} (\ac{relu})~\cite{nair2010rectified}:
 $$
 \sigma(\vecsym{x}) = \operatorname{max}(\vecsym{x}, 0)
 $$
 
-Within the deep learning community, neural networks are also referred to as \emph{fully-connected} layers (\ac{fc}), owing to the fact that each artificial neuron is connected to all outputs of the previous layer. Figure~\ref{fig:nn} shows an example of a three-layer neural network.
+Within the deep learning community, these standard neural networks are also referred to as \emph{fully-connected} layers (\ac{fc}), owing to the fact that each artificial neuron is connected to all outputs of the previous layer. Figure~\ref{fig:nn} shows an example of a three-layer neural network.
 %
 	\begin{figure}[tp]
   		\centering
@@ -81,11 +81,11 @@ Typical kernels for CNNs have a square size of $3 \times 3$. Thus, for each pixe
 	\end{figure}
 	All pixels involved in the calculation of this pixel are referred to as its \emph{receptive field}. 
 
-Kernels are learned during the training and can be thought of feature detectors. This concept is often used in the field of image processing where predefined kernels such as a Sobel filters are used for edge detection and Gaussian filters for blurring. Similarly, a CNN learns to detect simple features such as edges in lower layers. Convolutional layers at the end of the network architecture combine these simple  features to compound shaped features able to reliably identify an input. 
+Kernels are learned during the training and can be thought of feature detectors. This concept is often used in the field of image processing where predefined kernels such as a Sobel filters are used for edge detection and Gaussian filters for blurring. Similarly, a CNN learns to detect simple features such as edges in lower layers. Convolutional layers at the end of the network architecture combine these simple  features to compound, higher-level features able to reliably identify an input. For example, a lower layer may detect edges, a middle layer combines these into circles, and a final, high-level layer recognizes the inputs as tires of a car.
 
-Typically, a CNN does not only learn one kernel but several, one for each desired output dimension. Other hyperparameters include the \emph{stride} and amount of \emph{zero padding}. The former defines by how many pixels the kernel is translated on the input. The latter specifies how to handle convolutions along the edge of an input where the kernel would need to include pixels from outside the image. Similarly to fully-connected layers, an nonlinear activation function is applied on the output of a convolutional layer as well.  
+Typically, a CNN does not only learn one kernel but several, one for each desired output dimension. Other hyperparameters include the \emph{stride} and amount of \emph{zero padding}. The former defines by how many pixels the kernel is translated on the input. The latter specifies how to handle convolutions along the edge of an input where the kernel would need to include pixels from outside of the image. Similarly to fully-connected layers, an nonlinear activation function is applied on the output of a convolutional layer as well.  
 
-Unlike fully-connected artificial neural networks, CNNs need fewer parameters through the use of \emph{weight sharing}. A fully-connected neural network of $m$ inputs and $n$ outputs requires $m \times n$ weight parameters. A convolutional layer, on the other hand, each member of the kernel is used on every position of the input. Instead of learning parameters for every position in the input is only uses one set of $k \times k \times c \times o$ weights, where $k$ is the kernel size, $c$ the number of channels in the input, and $o$ the number of desired output channels (often called feature maps). For instance, a $100 \times 100 \times 3$ RGB color input image would require $100 \times 100 \times 3 \times 128 = 3840000$ weight parameters for a fully-connected layer with \num{128} outputs. In contrast, a CNN only uses $3 \times 3 \times 3 \times 128 = 3456$ weight parameters for a two-dimensional kernel of size $3 \times 3$ and for the same number of output units.
+Unlike fully-connected artificial neural networks, CNNs need fewer parameters through the use of \emph{weight sharing}. A fully-connected neural network of $m$ inputs and $n$ outputs requires $m \times n$ weight parameters. In a convolutional layer, on the other hand, each entry of the kernel matrix is used on every position of the input. Instead of learning parameters for every position in the input it only uses one set of $k \times k \times c \times o$ weights, where $k$ is the kernel size, $c$ the number of channels in the input, and $o$ the number of desired output channels (often called feature maps). For instance, a $100 \times 100 \times 3$ RGB color input image would require $100 \times 100 \times 3 \times 128 = 3840000$ weight parameters for a fully-connected layer with \num{128} output units. In contrast, a CNN only uses $3 \times 3 \times 3 \times 128 = 3456$ weight parameters for a two-dimensional kernel of size $3 \times 3$ and for the same number of output units.
 
 
 \subsubsection{Pooling Layers}
@@ -118,19 +118,51 @@ $$
 %
 where $f_y$ is the probability granted to the correct class and $f_k$ are probabilities of all classes. Since part of the formula contains a softmax calculation we refer to this loss function as \emph{softmax cross-entropy loss}.
 
-\subsubsection{Back Propagation Through Time}
+\subsubsection{Updating the Network}
+A single calculation run through the network for a given input is called \emph{forward pass}. In an untrained network, the output value is an rough estimate of the real, desired value sampled from the training data  and generally differs significantly. Therefore, we need to train and update our network parameters $\theta$ to minimize the error when comparing the estimated output value and the real, ground truth value from the training data. We use a cost or loss function $L(\theta)$, as introduced in the previous section, in order to quantify this error.
+
+In order to update the layer weights with respect to the loss function, we use a \emph{gradient descent}-based optimizer. Starting from the output layer, we do a \emph{backward pass} and calculate the gradients of the loss function with respect to the model parameters $\nabla_\theta L(\theta)$. The gradients can be efficiently computed using first-order derivates and the \emph{backpropagation} algorithm  \cite{rumelhart1985learning}.
+
+In the previous sections, we introduced neural networks as a directed graph of computations $ f(\vecsym{x}) = f_i(f_{i-1}(...(f_1(\vecsym{x})))) $. When calculating the partial derivates for each layer's function we can apply the chain rule of calculus. Goodfellow et al. provide the following example with can be applied to tensors without loss of generality \cite{Goodfellow-et-al-2016}. 
+
+Let $w \in\mathbb{R}$ be the input to the graph. We use the same function $f: \mathbb{R} \rightarrow \mathbb{R}$ as the operation that we apply at every step of a chain: $x = f(w)$, $y = f(x)$, $z = f(y)$. To compute the partial derivate $\partial z$, we apply the chain rule and obtain:
+$$
+\begin{aligned}
+&\phantom{{}={}} \frac{\partial z}{\partial w} \\&= \frac{\partial z}{\partial y} \frac{\partial x}{\partial y}  \frac{\partial x}{\partial w} \\
+&= f'(y) f'(x) f'(w) \\&= f'(f(f(w)))f'(f(w))f'(w) \\
+\end{aligned}
+$$
+
+As we can see in the example above, during the evaluation of these partial derivates some terms appear several times. The benefit of  backpropagation is to only calculate these once and reuse them efficiently where needed. This is especially helpful for deep networks with many layers.
+
+The obtained gradients are a good indicator of how updates to the model parameters affect the overall loss metric. All network parameters are updated in proportion to the negative of this error derivative with respect to each weight. This update process to the parameters, especially the model weights, is an iterative procedure. During each training iteration we update the new model parameters $\theta'$ such that:
+$$
+\theta' = \theta - \varepsilon \nabla_\theta L(\theta)
+$$
+where $\varepsilon \in\mathbb{R}$ is a fairly small number known as the \emph{learning rate}. 
+
+We use the method of \emph{gradient descent} to optimize the gradient $\nabla_\theta L(\theta)$. Typically, the loss, and by extension the gradient, is calculated by summing over all samples in the training set during each training step, which becomes quite challenging to compute. There are different variations of gradient descent, each with its own tricks and tweaks to speed up the calculations. \emph{Stochastic gradient descent}, for instance, only calculates the loss and gradient on a \emph{mini-batch} with a small, defined size $n$ of training samples resulting in an estimate of the gradient. This is trade-off between computation speed versus and the accuracy of the gradient estimate. The mini-batch $n$ typically ranges from at least one sample to a few hundred depending on the hardware capabilities and network architecture used during training.
+
 
 \subsection{Recurrent Neural Networks}
-Unlike feedforward networks, \emph{recurrent neural networks} contain layers with back references forming a feedback loop or directed cycle. This allows them to maintain an internal state often referred to as memory. RNNs are commonly used to process a sequence of input data of arbitrary length, such as time series data. In the context of this thesis, we make use of RNNs to learn time series of audio frequencies.
+Unlike feedforward networks, \emph{recurrent neural networks} contain layers with recurrent conncetions forming a feedback loop or directed cycle. This allows RNNS to maintain an internal state, often referred to as memory. RNNs are commonly used to process a sequence of input data of arbitrary length, such as time series data. In the context of this thesis, we make use of RNNs to learn time series of audio frequencies.
 
 	RNNs have the benefit of incorporating the context of previous states into the current prediction. We think of an RNN as a loop where during each iteration we use the previous iteration's output as an additional input. In the context of our LID task this means that for every time step the RNN has knowledge about the utterances or frequency activation prior to the current time step.
 
 	While there are various forms of RNN implementation, we use \emph{Long Short-Term Memory} (LSTM) networks in this thesis \cite{hochreiter1997long}. There are two advantages for this. First, LSTMs overcome a problem known as  \emph{exploding gradients} when training the networks \cite[p.~288]{Goodfellow-et-al-2016}. Second, related work on spoken language understanding shows the usefulness of LSTMs for audio tasks. (see related work chapter for more details)
 
 \subsubsection{Long Short-Term Memory Networks}
-Unlike other RNNs, Long Short-Term Memory networks are designed to capture context over long as well as short periods of time. An LSTM network is composed of many, hidden LSTM cells. Each cell holds its internal state or memory and is carefully controlled by three, trainable \emph{gates} layers. Each gate controls the information flow and decides if the cell's state should be altered. Gates are represented as sigmoid function and element-wise multiplications of the input and previous cell's state. The sigmoid outputs numbers between zero and one, where zero blocks any changes and one completely accepts all modifications to cell's state.
+Unlike other RNNs, Long Short-Term Memory networks are designed to capture context over long as well as short periods of time. An LSTM network is composed of many, hidden LSTM cells. Each cell holds its internal state or memory and is carefully controlled by three, trainable \emph{gate} layers. Each gate controls the information flow and decides if the cell's state should be altered. Gates are represented as sigmoid functions and element-wise multiplications of the input and previous cell's state. The sigmoid outputs numbers between zero and one, where zero blocks any changes and one completely accepts all modifications to cell's state.
 
 First, a \emph{forget gate} $\vecsym{f_t}$ selects which information to erase from the cell's state because it no longer deems it necessary. Next, the \emph{input gate} $\vecsym{i_t}$ controls which of the new information is stored in the cell's state. Last, the \emph{output gate} $\vecsym{o_t}$ regulates how state information is used for computing the output activation of the cell. Figure~\ref{fig:lstm} shows an LSTM cell with its three gates.
+%
+	\begin{figure}[tp]
+  		\centering
+    	\includegraphics{img/lstm.pdf}
+    	\caption{A long short-term memory network can capture prior context in a sequences of input data. Each time step is calculated by an LSTM cell with an internal memory. The cell's state is controlled by a forget gate $f_t$, an input gate $i_t$, and an output gate $o_t$. The blue, round shapes denote element-wise operations. The red, square shapes represent trainable neural network layers.}
+    	\label{fig:lstm}
+	\end{figure}
+%
 
 The LSTM is calculated as follows:
 $$
@@ -138,7 +170,7 @@ $$
 \vecsym{f_t} &= \sigma_g(\matsym{W_{f}} \vecsym{x_t} + \matsym{U_{f}} \vecsym{y_{t-1}} + \vecsym{b_f}) \\
 \vecsym{i_t} &= \sigma_g(\matsym{W_{i}} \vecsym{x_t} + \matsym{U_{i}} \vecsym{y_{t-1}} + \vecsym{b_i}) \\
 \vecsym{o_t} &= \sigma_g(\matsym{W_{o}} \vecsym{x_t} + \matsym{U_{o}} \vecsym{y_{t-1}} + \vecsym{b_o}) \\
-\vecsym{c_t} &= \vecsym{f_t} \circ \vecsym{c_{t-1}} + \vecsym{i_t} \circ \sigma_c(\matsym{W_{c}} \vecsym{x_t} + \matsym{U_{c}} \vecsym{y_{t-1}} + \vecsym{b_c}) \\
+\vecsym{c_t} &= \vecsym{f_t} \circ \vecsym{c_{t-1}} + \vecsym{i_t} \circ \sigma_h(\matsym{W_{c}} \vecsym{x_t} + \matsym{U_{c}} \vecsym{y_{t-1}} + \vecsym{b_c}) \\
 \vecsym{y_t} &= \vecsym{o_t} \circ \sigma_h(c_t)
   \end{aligned}
 $$
@@ -151,6 +183,7 @@ While both CNNs and RNNs can be used completely on their own, for some task it i
 
 The convolutional part is responsible for detecting and extracting local visual features into an intermediary audio representation. A recurrent part is tasked with temporal summarization of these features taking the global structure into account. Figure~\ref{fig:crnn} show the architecture of a CRNN network. 
 %
+	\todo{refactor}
 	\begin{figure}[]
   		\centering
     	\includegraphics[]{img/crnn.pdf}
