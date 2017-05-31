@@ -182,15 +182,14 @@ where $\vecsym{x_t}$ is an input vector and $\vecsym{y_t}$ is the output vector 
 While both CNNs and RNNs can be used completely on their own, for some task it is worthwhile to use a combination of both. These \emph{hybrid networks} can combine the best of both worlds. Specifically, in this thesis we are using \emph{convolutional recurrent neural network} consisting of a CNN part and an RNN part. Tang et al. first introduced this architecture in the context of document classification \cite{tang2015document}.
 
 The convolutional part is responsible for detecting and extracting local visual features into an intermediary audio representation. A recurrent part is tasked with temporal summarization of these features taking the global structure into account. Figure~\ref{fig:crnn} shows the architecture of a CRNN network. 
-%%
-%	\todo{refactor}
-%	\begin{figure}[]
-%  		\centering
-%    	\includegraphics[]{img/crnn.pdf}
-%    	\caption{Our proposed CRNN hybrid network architecture consists of two parts. A CNN extracts local visual feature from our input images and outputs a intermediary representation of our audio frequencies. The output of the final convolutional layer is sliced along the time axis into time steps of frequency features for the LSTM. The output of the final LSTM time step is fed into a fully-connected layer for classification.}
-%    	\label{fig:crnn}
-%	\end{figure}
-%	%
+%
+	\begin{figure}[]
+  		\centering
+    	\includegraphics[]{img/crnn3.pdf}
+    	\caption{Our proposed CRNN hybrid network architecture consists of two parts. A CNN extracts local visual feature from our input images and outputs a intermediary representation of our audio frequencies. The output of the final convolutional layer is sliced along the time axis into time steps of frequency features for the LSTM. The output of the final LSTM time step is fed into a fully-connected layer for classification.}
+    	\label{fig:crnn}
+	\end{figure}
+	%
 	The last convolutional layer of a CNN is replace with an LSTM layer. In the context of language identification, the outputs of the last convolutional layer result in a tensor $t \times f \times c$, where $t$ are time steps, $f$ the frequency features, and $c$ the feature map outputs of the CNN. This tensor is stacked along the frequency dimension and split along the time axis into $t$ time step inputs of $ f \times c$ for the LSTM.
 	
 	For this thesis we use a bidirectional LSTM that performs both forward and backward pass a long the time sequence. We combine that last output of the forward pass with the first output of backward into a single, concatenated output. Finally, this is fed into a fully-connected layer serving as a classifier.
