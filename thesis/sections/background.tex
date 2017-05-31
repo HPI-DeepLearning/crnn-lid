@@ -181,40 +181,41 @@ where $\vecsym{x_t}$ is an input vector and $\vecsym{y_t}$ is the output vector 
 \label{sec:hybrid_networks}
 While both CNNs and RNNs can be used completely on their own, for some task it is worthwhile to use a combination of both. These \emph{hybrid networks} can combine the best of both worlds. Specifically, in this thesis we are using \emph{convolutional recurrent neural network} consisting of a CNN part and an RNN part. Tang et al. first introduced this architecture in the context of document classification \cite{tang2015document}.
 
-The convolutional part is responsible for detecting and extracting local visual features into an intermediary audio representation. A recurrent part is tasked with temporal summarization of these features taking the global structure into account. Figure~\ref{fig:crnn} show the architecture of a CRNN network. 
-%
-	\todo{refactor}
-	\begin{figure}[]
-  		\centering
-    	\includegraphics[]{img/crnn.pdf}
-    	\caption{Our proposed CRNN hybrid network architecture consists of two parts. A CNN extracts local visual feature from our input images and outputs a intermediary representation of our audio frequencies. The output of the final convolutional layer is sliced along the time axis into time steps of frequency features for the LSTM. The output of the final LSTM time step is fed into a fully-connected layer for classification.}
-    	\label{fig:crnn}
-	\end{figure}
-	%
-	The last convolutional layer of a CNN is replace with a LSTM layer. In the context of language identification, the outputs of the last convolutional layer result in a tensor $t \times f \times c$, where $t$ are time steps, $f$ the frequency features, and $c$ the feature map outputs of the CNN. This tensor is stacked along the frequency dimension and split along the time axis into $t$ time step inputs of $ f \times c$ for the LSTM.
+The convolutional part is responsible for detecting and extracting local visual features into an intermediary audio representation. A recurrent part is tasked with temporal summarization of these features taking the global structure into account. Figure~\ref{fig:crnn} shows the architecture of a CRNN network. 
+%%
+%	\todo{refactor}
+%	\begin{figure}[]
+%  		\centering
+%    	\includegraphics[]{img/crnn.pdf}
+%    	\caption{Our proposed CRNN hybrid network architecture consists of two parts. A CNN extracts local visual feature from our input images and outputs a intermediary representation of our audio frequencies. The output of the final convolutional layer is sliced along the time axis into time steps of frequency features for the LSTM. The output of the final LSTM time step is fed into a fully-connected layer for classification.}
+%    	\label{fig:crnn}
+%	\end{figure}
+%	%
+	The last convolutional layer of a CNN is replace with an LSTM layer. In the context of language identification, the outputs of the last convolutional layer result in a tensor $t \times f \times c$, where $t$ are time steps, $f$ the frequency features, and $c$ the feature map outputs of the CNN. This tensor is stacked along the frequency dimension and split along the time axis into $t$ time step inputs of $ f \times c$ for the LSTM.
 	
 	For this thesis we use a bidirectional LSTM that performs both forward and backward pass a long the time sequence. We combine that last output of the forward pass with the first output of backward into a single, concatenated output. Finally, this is fed into a fully-connected layer serving as a classifier.
 	
 \subsection{Audio Representations}
-There are many different representations for audio data. Many people are familiar with waveform representation which is usually represented as a plot of signal amplitude along a time axis. A raw waveform representation is typically not directly used as input to machine learning systems.
-Other representations such as \emph{spectrogram} images or \emph{mel-frequency cepstral coefficients} (MFCCs) vectors are more common. To obtain both of these we need to transform the original audio signal.
+There are many different representations for audio data. Many people are familiar with the waveform representation which is usually represented as a plot of signal amplitude along a time axis. A raw waveform representation is typically not directly used as input to machine learning systems.
+Other representations such as \emph{spectrograms} or \emph{mel-frequency cepstral coefficients} (MFCCs) vectors are more common. To obtain both of these we need to transform the original audio signal.
 
-First, we discretize the audio signal into into a list \emph{spectral vectors} (a spectrum) by applying a Fourier transformation. Each spectral vector consists of amplitude and frequencies pairs at a point in time. When visualizing these we get a spectrogram image as shown in Figure~\ref{fig:waveform}. 
+First, we discretize the audio signal into into a list of \emph{spectral vectors} (a spectrum) by applying a Fourier transformation. Each spectral vector consists of amplitude and frequencies pairs at a point in time. When visualizing these we get a spectrogram image as shown in Figure~\ref{fig:waveform}. 
 %
 	\begin{figure}[tp]
   		\centering
     	\includegraphics{img/waveform.pdf}
-    	\caption{Different visual representations for a ten second audio file. a) shows a familiar waveform representation. b) shows the spectrum of frequencies known as spectrogram. Spectrogram images  are a commonly used representation for audio learning tasks.}
+    	\caption{Different visual representations for a ten second audio file. a) shows a familiar waveform representation. b) shows the spectrum of frequencies known as spectrogram. Spectrogram images  are a commonly used representation for audio-based learning tasks.}
     	\label{fig:waveform}
 	\end{figure}
 %
 
-The time domain is along $x$ axis and the frequency domain in Hz is along the $y$ axis. Additionally, the color intensity for each data point represents the amplitude or loudness value for a given frequency at that point of time. Spectrograms are especially useful for studying time--frequency features such as \emph{phonemes}. A phoneme is the smallest unit of sound expressing part of an word or single letters. While phonemes themselves are universally shared across different languages, their arrangement as a sequence forms the individual sounds and words distinctive to one language. Frequencies form phonemes which in turn form words. These can be combined to sentences or assemble the vocabulary of a language.
-Within a spectrogram image we can clearly see distinct, bright, ripple-like patters, each representing a heightened frequency activation at that time. Due to the anatomy of the human vocal cords we emit sounds vibrating on multiple frequencies while speaking. 
-The frequency axis is divide into multiple \emph{formants}, defined as a range of frequencies of a complex sound in which there is an absolute or relative maximum in the sound spectrum. There are several formants ranging form the lower speech frequencies to the higher ones. Voxels can be identified by their difference in the lower F1 and higher F2 format. Already, we note that there is a lot more information encoded into theses images then first meets the eye and, hence, a lot of speech processing systems use spectrograms.
+The time domain is along $x$ axis and the frequency domain in Hz is along the $y$ axis. Additionally, the color intensity for each data point represents the amplitude or loudness value for a given frequency at that point of time. Spectrograms are especially useful for studying time--frequency features such as \emph{phonemes}. A phoneme is the smallest unit of sound expressing part of a word or single letters. While phonemes themselves are universally shared across different languages, their arrangement as a sequence forms the individual sounds and words distinctive to one language. Frequencies form phonemes which in turn form words. These can be combined to sentences or assemble the vocabulary of a language.
+
+Within a spectrogram image we can clearly see distinct, bright, ripple-like patters, each representing a heightened frequency activation at that time. Due to the anatomy of the human vocal cords we emit sounds vibrating on multiple frequencies while speaking, resulting in these ripples. 
+The frequency axis is divide into multiple \emph{formants}, defined as a range of frequencies of a complex sound in which there is an absolute or relative maximum in the sound spectrum. There are several formants ranging form the lower speech frequencies to the higher ones. Vowels can be identified by their difference in the lower F1 and higher F2 format. Already, we note that there is a lot more information encoded into theses images then first meets the eye and, hence, a lot of speech processing systems use spectrograms.
 
 MFCC is obtained by using linear cosine transform of log power spectrum on a nonlinear mel-frequency scale. This means that, first the powers of the spectrum are mapped onto the \emph{mel-scale}. The mel-scale groups frequencies onto a perceptual scale of equally distanced audio pitch values \cite{stevens1937scale}: 
 $$
 \vecsym{m} = 2595 \log_{10}\left(1+{\frac {f}{700}}\right)
 $$
-where $\vecsym{m}$ are the resulting mels and $f$ frequencies in Hz. The mel-scale is modeled after human ear's deficiency to differentiate adjacent frequencies. Effectively this groups frequencies together into bins with many, smaller bins for lower frequencies and only a few larger for the higher frequencies. Further, we calculate the powers of the mel-spectrum and apply the logarithm to these. The resulting energies are fed into a \emph{discrete cosine transformation} of which we keep the first 13 coefficients as our MFFC vector \cite{sahidullah2012design}. 
+where $\vecsym{m}$ are the resulting mels and $f$ frequencies in Hz. The mel-scale is modeled after the human ear's deficiency to differentiate adjacent frequencies. Effectively this groups frequencies together into bins with many, smaller bins for lower frequencies and only a few larger for the higher frequencies. Further, we calculate the powers of the mel-spectrum and apply the logarithm to these. The resulting energies are fed into a \emph{discrete cosine transformation} of which we keep the first 13 coefficients as our MFFC vector \cite{sahidullah2012design}. 
