@@ -143,18 +143,18 @@ In the CNN part, we repurpose the CNN\_A network architecture of five convolutio
   \begin{tabu}{rccc}
   \toprule
 \textbf{Layer Type}       & \textbf{Output Size}    & \textbf{Kernel} & \textbf{Stride}  \\ \midrule
-Convolution               & $123 \times 494 \times 16$  & $7 \times 7$    & $1 \times 1$    \\
-Max Pooling               & $61 \times 247 \times 16$   & $2 \times 2$    & $2 \times 2$    \\
-Convolution               & $57 \times 243 \times 32$   & $5 \times 5$    & $1 \times 1$    \\
-Max Pooling               & $28 \times 121 \times 32$   & $2 \times 2$    & $2 \times 2$    \\
-Convolution               & $26 \times 119 \times 64$   & $3 \times 3$    & $1 \times 1$    \\
-Max Pooling               & $13 \times 59 \times 64$    & $2 \times 2$    & $2 \times 2$    \\
-Convolution               & $11 \times 57 \times 128$   & $3 \times 3$    & $1 \times 1$    \\
-Max Pooling               & $5 \times 56 \times 128$    & $2 \times 2$    & $2 \times 1$    \\
-Convolution               & $3 \times 54 \times 256$    & $3 \times 3$    & $1 \times 1$    \\
-Max Pooling               & $1 \times 53 \times 256$    & $2 \times 2$    & $2 \times 1$    \\
-Transpose                 & $53 \times 1 \times 256$    &        &         \\
-Reshape                   & $53 \times 256$           &        &         \\
+Convolution               & $123 \times 244 \times 16$  & $7 \times 7$    & $1 \times 1$    \\
+Max Pooling               & $61 \times 122 \times 16$   & $2 \times 2$    & $2 \times 2$    \\
+Convolution               & $57 \times 118 \times 32$   & $5 \times 5$    & $1 \times 1$    \\
+Max Pooling               & $28 \times 59 \times 32$   & $2 \times 2$    & $2 \times 2$    \\
+Convolution               & $26 \times 57 \times 64$   & $3 \times 3$    & $1 \times 1$    \\
+Max Pooling               & $13 \times 28 \times 64$    & $2 \times 2$    & $2 \times 2$    \\
+Convolution               & $11 \times 26 \times 128$   & $3 \times 3$    & $1 \times 1$    \\
+Max Pooling               & $5 \times 25 \times 128$    & $2 \times 2$    & $2 \times 1$    \\
+Convolution               & $3 \times 23 \times 256$    & $3 \times 3$    & $1 \times 1$    \\
+Max Pooling               & $1 \times 22 \times 256$    & $2 \times 2$    & $2 \times 1$    \\
+Transpose                 & $22 \times 1 \times 256$    &        &         \\
+Reshape                   & $22 \times 256$           &        &         \\
 Bidirectional LSTM & 1024                    &        &         \\
 Fully-Connected    & 4                       &        &         \\
   \bottomrule
@@ -162,6 +162,5 @@ Fully-Connected    & 4                       &        &         \\
   \caption{The layerwise architecture of the convolutional recurrent neural network. The network consists of two parts, a CNN and a bidirectional LSTM. This design shares its CNN architecture with the previously introduced CNN\_A. The final convolutional layer is sliced into time steps along the $x$ axis (time axis) and serves as input to LSTM.}
   \label{tab:layers_CRNN}
  \end{table}
- \todo{double check output sizes}
 
 We decided on training both parts of the hybrid network separately. First, we trained the CNN part by itself. This simplifies the task of learning the frequency features for the network. In practical terms, this means that we could reuse the model weights of the previously trained CNN\_A model. For the RNN part, we used a fine-tuning approach. This means that we froze all convolutional layers' weights by disallowing any further weight updates during the training phase. The bidirectional LSTM and \ac{fc} layers, however, remained unfrozen and continued to be subject to weight updates and were, hence, trained regularly. Later, we also experimented with unfrozen RNN weights, meaning that we trained and updated both the CNN and LSTM layers at the same time. This approach, however, yielded worse results, and we did not pursue it further.

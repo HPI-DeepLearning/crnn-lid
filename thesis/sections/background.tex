@@ -186,7 +186,7 @@ The convolutional part is responsible for detecting and extracting local visual 
 	\begin{figure}[]
   		\centering
     	\includegraphics[]{img/crnn3.pdf}
-    	\caption{Our proposed CRNN hybrid network architecture consists of two parts. A CNN extracts local visual feature from our input images and outputs a intermediary representation of our audio frequencies. The output of the final convolutional layer is sliced along the time axis into time steps of frequency features for the LSTM. The output of the final LSTM time step is fed into a fully-connected layer for classification.}
+    	\caption{Our proposed CRNN hybrid network architecture consists of two parts. A CNN extracts local visual feature from our input images and outputs a intermediary representation of our audio frequencies. The output of the final convolutional layer $t \times f \times c$ is first stacked and then sliced along the time axis into $t$ time steps. Each time step represents  frequency features of shape $f \times c$ as input to the LSTM. The final LSTM output is fed into a fully-connected layer for classification.}
     	\label{fig:crnn}
 	\end{figure}
 	%
