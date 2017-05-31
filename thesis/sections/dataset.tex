@@ -18,10 +18,6 @@ For the scope of this thesis, we decided to limit ourselves to a number of langu
 
 \subsection{YouTube News Collection}
 \label{sec:youtube_news}
-
-	Following the approach of Montavon, who used podcasts and radio broadcasts as input data~\cite{montavon2009deep}, we looked for large, public sources of speech audio. Both podcasts and radio stations have disadvantages for the language identification task of this thesis for several reasons. Podcasts are usually restricted to one single speaker and lack variety. Radio, on the other hand, contains much less speech content and consists mainly of music and songs. Consequently, we decided on using news broadcasts, which provide high-quality male and female speech audio data suitable to our needs. To obtain a large variety of languages and gather enough hours of speech audio, we sourced the majority of our data from YouTube.
-
-	For each target language, we manually selected one or more YouTube channels of respected news outlets, for instance, BBC and CNN for the English language. Using more than one channel for each language has the benefit of collecting a wide variety of accents, speech patterns, and intonations. For a full list of channels, refer to Table~\ref{tab:channels}.
 %
 	\begin{table}[tp]
 	\centering
@@ -45,7 +41,12 @@ For the scope of this thesis, we decided to limit ourselves to a number of langu
 	\label{tab:channels}
 	\end{table}
 %
-All channels were chosen regardless of their content, their political views, or journalistic agenda. Again, we downloaded the data using the command line tool \texttt{youtube-dl} and saved only the audio channel.
+
+	Following the approach of Montavon, who used podcasts and radio broadcasts as input data~\cite{montavon2009deep}, we looked for large, public sources of speech audio. Both podcasts and radio stations have disadvantages for the language identification task of this thesis for several reasons. Podcasts are usually restricted to one single speaker and lack variety. Radio, on the other hand, contains much less speech content and consists mainly of music and songs. Consequently, we decided on using news broadcasts, which provide high-quality male and female speech audio data suitable to our needs. To obtain a large variety of languages and gather enough hours of speech audio, we sourced the majority of our data from YouTube.
+
+	For each target language, we manually selected one or more YouTube channels of respected news outlets, for instance, BBC and CNN for the English language. Using more than one channel for each language has the benefit of collecting a wide variety of accents, speech patterns, and intonations. For a full list of channels, refer to Table~\ref{tab:channels}.
+
+	All channels were chosen regardless of their content, their political views, or journalistic agenda. Again, we downloaded the data using the command line tool \texttt{youtube-dl} and saved only the audio channel.
 
   	Audio obtained from news coverage has many desired properties. The data is of high recording quality and hundreds of hours of recordings are available online. News anchors are trained to speak naturally and conversationally, while maintaining a steady speed of about \num{150}~words per minute~\cite{Kantilaftis2016}. News programs often feature guests or remote correspondents resulting in a good mix of different speakers. Unlike audio book recordings with texts read aloud, news anchors converse in a regular, human, conversational tone with each other. Last, news programs feature all the noise one would expect from a real-world situation: music jingles, nonspeech audio from video clips and transitions between reports. On the one hand, this might improve the model's noise robustness. On the other hand, this might interfere with training, for example, when having audio segments containing very low speech-to-duration ratios. Although some broadcasts feature mixed language parts, such as the names of foreign cities, companies, and persons, we believe this is not a big problem. The pronunciation and intonation of these words and phrases still follow the host's native language.\footnote{As an example, according to the international phonetic alphabet (IPA), the city of Berlin has many different pronunciations in different languages: \textipa{[bEK"\textiota i:n]} (German), \textipa{/b\textschwa ."lIn/} (British English), and \textipa{[b\textrhookschwa ."lIn]} (American English).} In essence, we believe that speech data sourced from news broadcasts represents an accurate, real-world sample for speech audio.
 

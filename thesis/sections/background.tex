@@ -91,9 +91,8 @@ Unlike fully-connected artificial neural networks, CNNs need fewer parameters th
 \subsubsection{Pooling Layers}
 A convolutional layer is typically followed by a \emph{pooling} layer (sometimes also called subsampling or downsampling layer). Pooling layers are used to reduce the spatial dimensions (width and height) on the input data. \emph{Max pooling}, for instance, only outputs the maximum value within its neighborhood. Similar to convolutions, pooling uses a $n \times m$ kernel parameter to determine which input pixels are effected by the subsampling.
 
-	While pooling leads to a reduction in information, this has three main benefits. First, pooling improves the computing efficiency of a network since the following layers in the network architecture need to process less data. Typically, $2 \times 2$ pooling with a stride of \num{2} is used, effectively halving every input along the width and height dimension. 	
-	Second, pooling helps against overfitting.
-	Third, max-pooling make the model translation invariant to a degree since all \todo{write more}
+	While pooling leads to a reduction in information, this has two main benefits. First, pooling improves the computing efficiency of a network since the following layers in the network architecture need to process less data. Typically, $2 \times 2$ pooling with a stride of \num{2} is used, effectively halving every input along the width and height dimension. This subsampling helps against overfitting.
+	Second, max-pooling makes the model translation invariant to a degree since the output of the pooling function samples values from within a neighborhood.
 	
 	Figure~\ref{fig:convnet} shows an example of a typical convolutional neural network constructed from convolutional, pooling and fully-connected layers.
 		\begin{figure}[tp]

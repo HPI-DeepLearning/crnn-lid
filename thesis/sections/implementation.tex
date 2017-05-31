@@ -24,8 +24,6 @@ We regularly compared different approaches and models against each other and use
 	All audio files undergo preprocessing before being fed to the neural network. As a first step, all files are encoded in the uncompressed, lossless Waveform Audio File Format (WAVE\footnote{\url{http://www.microsoft.com/whdc/device/audio/multichaud.mspx}, accessed 23 February 2017}), commonly known by its file extension \texttt{*.wav}. This conversion has two advantages. First, a lossless data codec allows for future audio manipulations without any deterioration in signal quality and, second, makes the data easily interchangeable with third-party programs and libraries such as SciPy~\cite{scipy}.
 
 	Since none our neural networks operate on raw waveform audio signals directly, we transfer our features into the image domain. As introduced in Section~\ref{sec:audio_representations}, we use a spectrogram representation of the audio data for training our models. The spectrograms are generated using the open-source command line tool SoX.\footnote{\url{http://sox.sourceforge.net/}, accessed 23 February 2017} The spectrograms are discretized using a Hann window~\cite{blackman1958measurement} and \num{129}~frequency bins along the frequency axis ($y$~axis), as instructed by the SoX manual.\footnote{\url{http://sox.sourceforge.net/sox.pdf}, p.~32, accessed 26 March 2017}
-
-	Male human voice frequencies begin between \SI{150}{\hertz}~and \SI{255}{\hertz}~\cite{traunmuller1993frequency}. Female voice frequencies are usually shifted by one octave and begin at~\SI{210}{\hertz}. Typically, voice frequencies range up to~\SI{3.4}{\kilo\hertz}. For reference, the human ear is capable of recognizing frequencies from \SI{20}{\hertz}~to \SI{20}{\kilo\hertz}, with most sensitivity in the region of between \SI{300}{\hertz}~and \SI{10}{\kilo\hertz}. Single sounds, however, exceed this limit significantly. Generally, voice frequencies are influenced by gender, age, as well as various other factors, such as the language, the type of discourse, and the emotional state of the speaker. Figure~\ref{img:frequencies} shows the frequency areas with high energy in response to the tone of different vowels of human speech for the English language.
 %
 	\begin{figure}[tp]
   		\centering
@@ -35,11 +33,12 @@ We regularly compared different approaches and models against each other and use
 	\end{figure}
 %
 
+	Male human voice frequencies begin between \SI{150}{\hertz}~and \SI{255}{\hertz}~\cite{traunmuller1993frequency}. Female voice frequencies are usually shifted by one octave and begin at~\SI{210}{\hertz}. Typically, voice frequencies range up to~\SI{3.4}{\kilo\hertz}. For reference, the human ear is capable of recognizing frequencies from \SI{20}{\hertz}~to \SI{20}{\kilo\hertz}, with most sensitivity in the region of between \SI{300}{\hertz}~and \SI{10}{\kilo\hertz}. Single sounds, however, exceed this limit significantly. Generally, voice frequencies are influenced by gender, age, as well as various other factors, such as the language, the type of discourse, and the emotional state of the speaker. Figure~\ref{img:frequencies} shows the frequency areas with high energy in response to the tone of different vowels of human speech for the English language.
+
+
 Most phonemes in the English language do not exceed \SI{3000}{\hertz} in conversational speech.
 Consequently, we instructed SoX to only include frequencies of up to~\SI{5}{\kilo\hertz} in the spectrograms.
 The time axis ($x$~axis) is rendered at \num{25}~pixels per second. Each audio sequence is clipped into nonoverlapping ten-second segments. To avoid padding issues and segments shorter than ten seconds, the final segment is discarded. Since we gathered enough training data, we decided against padding with black pixels, which could be interpreted as silence and add unnaturally long speech pauses. We also decided against filtering silent sections within the ten-second audio segments to preserve the natural pauses between words and to not disturb the regular speech rhythm. 
-
-Frequency intensities are mapped to an eight-bit grayscale range. We combined all audio channels into a single mono channel in order to generate only a single spectrogram image. The resulting grayscale images are saved as lossless, $500 \times 129$ PNG files. Listing~\ref{lst:spectrograms} shows the SoX command for generating a spectrogram image from an input audio file.
 
 	\begin{listing}[tp]
 	\begin{lstlisting}[caption={SoX command and options used for generating monochrome spectrograms. All audio files were discretized into \num{129}~frequency buckets using a constant pixel width per time step, resulting in spectrogram images of $500 \times 129$ pixels.}, label={lst:spectrograms}]
@@ -56,6 +55,9 @@ r - disable legend
 o - output file
     \end{lstlisting}
     \end{listing}
+    
+Frequency intensities are mapped to an eight-bit grayscale range. We combined all audio channels into a single mono channel in order to generate only a single spectrogram image. The resulting grayscale images are saved as lossless, $500 \times 129$ PNG files. Listing~\ref{lst:spectrograms} shows the SoX command for generating a spectrogram image from an input audio file.
+
 
 	As seen in Figure~\ref{fig:spectrogram}, the spectrograms feature very apparent bright ripple-like patterns.
 %

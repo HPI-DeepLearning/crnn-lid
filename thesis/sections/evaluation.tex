@@ -8,7 +8,7 @@ Further, we experiment with modified model architectures to maximize the model's
 \label{sec:hardware}
 	In order to facilitate Keras's and TensorFlow's hardware-accelerated computation, we executed all training runs on CUDA-compatible\footnote{\url{https://developer.nvidia.com/cuda-zone}, accessed 30 January 2017} \ac{gpu} machines at our disposal at the Internet Technologies and Systems chair of the Hasso Plattner Institute. Details are shown in Table~\ref{tab:hardware}.
 
-	\begin{table}[tp]
+	\begin{table}[bp]
 	\centering
 	\begin{tabu}{lll}
 	\toprule
@@ -29,7 +29,7 @@ Further, we experiment with modified model architectures to maximize the model's
 \label{sec:data}
 	For our performance evaluation, we use the European Speech Repository and YouTube News dataset, as described in Chapter~\ref{sec:datasets}. Both datasets were preprocessed and converted to spectrogram images (see Section~\ref{sec:data_processing}). Each spectrogram image represents a nonoverlapping ten-second snippet of a source audio file. We chose this duration in reference to the NIST LRE2015 challenge~\cite{lre2015}. We split both datasets into a training (\SI{70}{\percent}), a validation \SI{20}{\percent}, and a testing set \SI{10}{\percent}, and all files were distributed equally between all four language classes. The number of samples per class was limited by the language with the least number of files to ensure an equal distribution across the classes. The European Speech repository yields a total of about \num{19000}~training images, which amounts to roughly \num{53}~hours of speech audio. The YouTube News dataset is considerably larger and yields a total of about \num{194000}~training files, or \num{540}~hours. Table~\ref{tab:data_splits} contains the detailed dataset splits.
 %
-	\begin{table}[tp]
+	\begin{table}[bp]
 	\centering
 	\begin{tabu}{lrr}
 	\toprule
@@ -265,7 +265,9 @@ The noise spectrogram in Figure~\ref{fig:noise} show that the white noise effect
 %
 Most parts of the image end up covered by the distinct noise texture and only the lower frequency features remain intact. Yet, most speech frequencies are still contained in this range. All pauses and fine-grained details are also lost to the noise sound. The crackling experiment does not incur such a dramatic drop in performance. That might be in part due to the consistent recurring sound of the noise, in contrast to the randomly generated white noise sound. Perhaps, a second factor is the lower, less intrusive volume used for augmenting this dataset.
 
-The deeper, more complex structure of the Inception-v3 CRNN suffers from a significantly smaller performance deterioration than our proposed CRNN model architecture. The more than five-times higher number of parameters seems to capture the frequency features in a more robust manner. In an attempt to remedy the performance loss of our model, we trained and fine-tuned models containing white noise data. We experimented with a \SI{100}{\percent}~noise dataset and the original YouTube News dataset augmented with \SI{10}{\percent}~white noise. While both approaches recover some performance in the white noise setting, they impair language identification in the general test set and the crackling noise environment as a trade-off.
+The deeper, more complex structure of the Inception-v3 CRNN suffers from a significantly smaller performance deterioration than our proposed CRNN model architecture. The more than five-times higher number of parameters seems to capture the frequency features in a more robust manner. In an attempt to remedy the performance loss of our model, we trained and fine-tuned models containing white noise data. We experimented with a \SI{100}{\percent}~noise dataset and the original YouTube News dataset augmented with \SI{10}{\percent}~white noise. 
+
+While both approaches recover some performance in the white noise setting, they impair language identification in the general test set and the crackling noise environment as a trade-off.
 
 Let it be noted that our audio mixing was fully automated and that the resulting samples varied in speech and noise volume. We tried to match volume levels of speech and noise to maintain as much clarity of speech as possible, yet some samples have an artificial quality to them.
 
@@ -277,12 +279,6 @@ Overall, we note that even deep convolutional recurrent networks are still subje
 
 \subsubsection{Background Music Robustness}
 \label{sec:music_robustness}
-
-Many real-world audio applications involve some form of music. For example, imagine speaking into your mobile phone from a busy caf\'{e} with background music or having a voice chat session at home while the TV is running. Therefore, we evaluate our model to see if language identification is still possible when mixing speech with music. For this experiment, we use two different test sets. For the first series, we augment our existing YouTube News dataset with randomly sampled background music, similar to the background noise augmentation.
-
-The background audio was obtained from Soundcloud, and features royalty-free, instrument-only music from various genres, including Pop, Dubstep, Rock, and Electro.\footnote{\url{https://soundcloud.com/royalty-free-audio-loops}, accessed 01 March 2017} We normalized the volume of these tracks and overlaid them onto our speech data while trying to stay below the speech audio volume. In the best cases, the two audio streams blend nicely with the background music, producing a soft but noticeable ambient effect while retaining the clarity of the speech. In some other cases, audio level and volume of speech or music are over-accentuated. The final result, however, does neither resemble a song nor a piece of music. We changed neither the tempo nor the pitch of our speakers, and the rhythm of the vocals does not match the rhythm of the background audio.
-
-Given that our training set does not intentionally include samples with music or songs, we expected the performance to be lower than for pure speech samples. Table~\ref{tab:background-music}, which shows accuracy and F1 score for the two test sets augmented with background music, confirms this hypothesis.
 	\begin{table}[tp]
 	\centering
 	\begin{tabu}{lcccc}
@@ -296,7 +292,15 @@ Given that our training set does not intentionally include samples with music or
 	\caption{Accuracy and F1 score for our models evaluated on the speech data augmented with background music from different genres.}
 	\label{tab:background-music}
 	\end{table}
-Additionally, it should be noted that the frequency activations of the instruments overlap with the speech frequencies. There is no easy way to separate the instruments from the singer or speaker in a music recording. The approach described here is not intended to work for language identification in songs, and we leave this task open for future work. Figure~\ref{fig:background_music} shows the raw and augmented spectrograms of a Spanish speech snippet.
+Many real-world audio applications involve some form of music. For example, imagine speaking into your mobile phone from a busy caf\'{e} with background music or having a voice chat session at home while the TV is running. Therefore, we evaluate our model to see if language identification is still possible when mixing speech with music. For this experiment, we use two different test sets. For the first series, we augment our existing YouTube News dataset with randomly sampled background music, similar to the background noise augmentation.
+
+The background audio was obtained from Soundcloud, and features royalty-free, instrument-only music from various genres, including Pop, Dubstep, Rock, and Electro.\footnote{\url{https://soundcloud.com/royalty-free-audio-loops}, accessed 01 March 2017} We normalized the volume of these tracks and overlaid them onto our speech data while trying to stay below the speech audio volume. In the best cases, the two audio streams blend nicely with the background music, producing a soft but noticeable ambient effect while retaining the clarity of the speech. In some other cases, audio level and volume of speech or music are over-accentuated. The final result, however, does neither resemble a song nor a piece of music. We changed neither the tempo nor the pitch of our speakers, and the rhythm of the vocals does not match the rhythm of the background audio.
+
+
+	
+Given that our training set does not intentionally include samples with music or songs, we expected the performance to be lower than for pure speech samples. Table~\ref{tab:background-music}, which shows accuracy and F1 score for the two test sets augmented with background music, confirms this hypothesis.
+
+Additionally, it should be noted that the frequency activations of the instruments overlap with the speech frequencies. There is no easy way to separate the instruments from the singer or speaker in a music recording. The approach described here is not intended to work for language identification in songs, and we leave this task open for future work. 
 %
 	\begin{figure}[tp]
   		\centering
@@ -305,6 +309,8 @@ Additionally, it should be noted that the frequency activations of the instrumen
     	\label{fig:background_music}
 	\end{figure}
 %
+
+Figure~\ref{fig:background_music} shows the raw and augmented spectrograms of a Spanish speech snippet.
 There are several changes of note. First, the large area on the right-hand side, which was formerly silent, starts to show repeated patterns. Second, along the lower image boundary, we see new, regular frequency activation spikes. Third, the clear ripple-like patterns in the raw spectrogram turn into muddy, unclear patterns.
 
 \subsubsection{Model Extensibility}
@@ -314,6 +320,8 @@ So far, all our experiments were conducted on datasets consisting of only four l
 We increase our existing YouTube News dataset with samples taken from Chinese and Russian news channels. Altogether, these now form the Extended YouTube News dataset described earlier in Section~\ref{sec:youtube_news}. In order to maintain the class distribution for six languages, we have to decrease the number of training samples of the existing samples slightly. Table~\ref{tab:dataset_comparison} contains the details for the Extended YouTube News dataset.
 
 For this experiment, we first fine-tune our previously best CNN by replacing the final fully-connected layers and adjust the number of output nodes to accommodate for six classes. The resulting model serves as the basis for training the CRNN in a similar manner as in earlier experiments. Applied on the test set, we measure an accuracy of~\num{0.92} and an F1 score of~\num{0.92}. Both measurements match our previous evaluation with four languages on the YouTube News dataset, proving that the proposed CRNN architecture can be extended to cover more languages. Figure~\ref{fig:6lang} shows individual performance measures for each language.
+
+Mandarin Chinese outperforms all other languages with a top accuracy of~\num{0.96}, which could be explained by its sound contrast to western languages and its unique intonation. We also note that Russian is most frequently misclassified as Spanish and vice versa. In contrast to our previous observation in Section~\ref{sec:lang_discrimination}, German is no longer the worst-performing class but English instead. This is, in part, due to a significant number of misclassifications as Russian samples.
 %
 	\begin{figure}[tp]
   		\centering
@@ -322,8 +330,6 @@ For this experiment, we first fine-tune our previously best CNN by replacing the
     	\label{fig:6lang}
 	\end{figure}
 %
-Mandarin Chinese outperforms all other languages with a top accuracy of~\num{0.96}, which could be explained by its sound contrast to western languages and its unique intonation. We also note that Russian is most frequently misclassified as Spanish and vice versa. In contrast to our previous observation in Section~\ref{sec:lang_discrimination}, German is no longer the worst-performing class but English instead. This is, in part, due to a significant number of misclassifications as Russian samples.
-
 
 Given that both new languages are rooted within their own respective language families and feature considerably different intonations, we are content to find that the features learned by our model are, indeed, universal in nature. We believe that the approach to language identification proposed in this thesis can be successfully applied to a wide variety of languages.
 
