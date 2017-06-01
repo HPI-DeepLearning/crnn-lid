@@ -388,32 +388,35 @@
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
+     bordercolor="#e0e0e0"
+     borderopacity="1"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="1.3374727"
-     inkscape:cy="61.061112"
+     inkscape:cx="194.93723"
+     inkscape:cy="-36.004347"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="2560"
-     inkscape:window-height="1376"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-height="1403"
+     inkscape:window-x="2560"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      units="pt"
      inkscape:snap-midpoints="true"
      inkscape:object-paths="true"
      inkscape:snap-object-midpoints="true"
-     inkscape:snap-global="true"
+     inkscape:snap-global="false"
      inkscape:snap-center="true"
      inkscape:snap-page="true"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
-     fit-margin-bottom="0" />
+     fit-margin-bottom="0"
+     showborder="true"
+     borderlayer="false"
+     inkscape:showpageshadow="false" />
   <metadata
      id="metadata6905">
     <rdf:RDF>
@@ -456,11 +459,11 @@
     <text
        id="text15283"
        y="587.72546"
-       x="362.73035"
+       x="360.28369"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.25px;line-height:0%;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        xml:space="preserve"><tspan
          y="587.72546"
-         x="362.73035"
+         x="360.28369"
          sodipodi:role="line"
          id="tspan15287"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.25px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';stroke-width:1px">output layer</tspan></text>
