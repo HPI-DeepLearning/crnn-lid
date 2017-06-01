@@ -25,16 +25,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.979899"
-     inkscape:cx="213.52453"
-     inkscape:cy="-9.6839955"
+     inkscape:zoom="2.8"
+     inkscape:cx="78.585112"
+     inkscape:cy="41.378674"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="2560"
-     inkscape:window-height="1376"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-height="1403"
+     inkscape:window-x="2560"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      units="pt"
      inkscape:snap-page="true"
@@ -185,7 +185,7 @@
              id="tspan4256"
              x="149.64285"
              y="585.67926"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:9.88846397px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';stroke-width:0.87897462px">a</tspan></text>
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:9.88846397px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';stroke-width:0.87897462px">a)</tspan></text>
       </g>
       <g
          transform="translate(5.0272931)"
@@ -303,7 +303,7 @@
              y="585.67926"
              x="351.64285"
              id="tspan4260"
-             sodipodi:role="line">b</tspan></text>
+             sodipodi:role="line">b)</tspan></text>
         <path
            inkscape:connector-curvature="0"
            id="path4300"
