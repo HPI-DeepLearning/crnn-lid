@@ -107,8 +107,11 @@ University of Potsdam, Germany
     \cleardoublepage
     
     \tableofcontents
-    \clearpage
+    \cleardoublepage
+    \pagestyle{empty}
     \printacronyms[include-classes=abbrev,name=Abbreviations]
+    \cleardoublepage
+    \pagestyle{plain}
 
     \pagenumbering{arabic}
     \include{sections/intro}
@@ -125,6 +128,7 @@ University of Potsdam, Germany
 
     % Inhaltsverzeichnis
     \clearpage % auf neuer Seite
+    \pagestyle{empty}
     \bibliography{referenzen}
     \include{sections/author}
 
