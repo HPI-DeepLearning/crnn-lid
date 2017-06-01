@@ -5,7 +5,6 @@ To showcase some possible use cases for our language identification system we de
 The web server was implemented in Python using the Flask\footnote{\url{http://flask.pocoo.org}, accessed 16.05.2017} micro web development framework. The interactive frontend is designed as a Javascript single page app using the React\footnote{\url{https://facebook.github.io/react/}, accessed 16.05.2017} framework to offer a modular, interactive, and declarative built user interface. The client-side web application architecture is based on the Flux\footnote{\url{https://facebook.github.io/flux}, accessed 16.05.2017} pattern to enforce unidirectional data flow that works well in unison with React's declarative programming style.\\
 The language prediction is handled by the server using Keras and our best performing CRNN model. For each incoming request we apply the same preprocessing steps to the audio file as during our training sessions. Audio files are converted to spectrogram images on the fly before being classified by our deep CRNN system. In contrast to our training data user uploaded audio files can extend past our ten second audio snippet duration. Longer files are split into a sequence of individual ten second snippets for classification. All snippets with a duration of less than ten seconds are discarded. The resulting prediction probabilities are averaged into a single fusion score. 
 
-\todo{image}
 
 
 
