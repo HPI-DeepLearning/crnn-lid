@@ -64,13 +64,13 @@ Within the deep learning community, these standard neural networks are also refe
 Any layer not directly connected to the input or output is referred to as a \emph{hidden layer}. In our example, we only have a single output neuron and, hence, a binary classifier for the two classes. For multi-class tasks, we can add more output neurons. Typically, fully-connected layers are used as final layers of a deep neural network architecture serving as a classifier.
 
 \subsubsection{Convolutional Layers}
-\emph{Convolutional neural networks} (CNN) are simply neural networks that use convolution in place of general matrix multiplication in at least one of their layers. CNNs specialize in processing data that has a grid-like structure, such as the 2D grid of pixels of an input image as in our case. As the name suggests, they make use of the mathematical \emph{convolution} operation. For computer vision tasks this can be thought of as the weighted sum of all pixels in a neighborhood. More formally, convolution layers are expressed as \cite{sun2014deep}: 
+\emph{Convolutional neural networks} (CNN) are simply neural networks that use convolution in place of general matrix multiplication in at least one of their layers. CNNs specialize in processing data that has a grid-like structure, such as the 2D grid of pixels of an input image as in our case. As the name suggests, they make use of the mathematical \emph{convolution} operation. For computer vision tasks this can be thought of as the weighted sum of all pixels in a neighborhood. More formally, convolution layers are expressed as:
 %
 $$
 \matsym{Y}^{j(r)} = \sigma \left( \vecsym{b}^{j(r)} + \sum_i \matsym{K}^{ij(r)} \ast \matsym{X}^{i(r)} \right)
 $$
 %
-where $\matsym{X}^i$ and $\matsym{Y}^j$ are the $i$-th input and $j$-th output map, respectively. $\matsym{K}^{ij}$ defines the kernel between those two maps and $\ast$ denotes the convolutional operation. $\sigma$ is an activation function, such as ReLU. $\vecsym{b}^j$ is the bias of the $j$-th output map and $r$ indicates a local region where weights are shared.
+where $\matsym{X}^i$ and $\matsym{Y}^j$ are the $i$-th input and $j$-th output map, respectively. $\matsym{K}^{ij}$ defines the kernel between those two maps and $\ast$ denotes the convolutional operation~\cite{sun2014deep}. $\sigma$ is an activation function, such as ReLU. $\vecsym{b}^j$ is the bias of the $j$-th output map and $r$ indicates a local region where weights are shared.
 
 Typical kernels for CNNs have a square size of $3 \times 3$. Thus, for each pixel in the output map a neighborhood of $3 \times 3 = 9$ pixels is evaluated by the convolutional operation.  Figure~\ref{fig:convolution} shows the convolution of a single pixel in the output map $\matsym{Y}^{j}$.
 	\begin{figure}[tp]
@@ -121,15 +121,17 @@ where $f_y$ is the probability granted to the correct class and $f_k$ are probab
 \subsubsection{Updating the Network}
 A single calculation run through the network for a given input is called \emph{forward pass}. In an untrained network, the output value is an rough estimate of the real, desired value sampled from the training data  and generally differs significantly. Therefore, we need to train and update our network parameters $\theta$ to minimize the error when comparing the estimated output value and the real, ground truth value from the training data. We use a cost or loss function $L(\theta)$, as introduced in the previous section, in order to quantify this error.
 
-In order to update the layer weights with respect to the loss function, we use a \emph{gradient descent}-based optimizer. Starting from the output layer, we do a \emph{backward pass} and calculate the gradients of the loss function with respect to the model parameters $\nabla_\theta L(\theta)$. The gradients can be efficiently computed using first-order derivates and the \emph{backpropagation} algorithm  \cite{rumelhart1985learning}.
+In order to update the layer weights with respect to the loss function, we use a \emph{gradient descent}-based optimizer. Starting from the output layer, we do a \emph{backward pass} and calculate the gradients of the loss function with respect to the model parameters $\nabla_\theta L(\theta)$. The gradients can be efficiently computed using first-order derivates and the \emph{backpropagation} algorithm~\cite{rumelhart1985learning}.
 
-In the previous sections, we introduced neural networks as a directed graph of computations $ f(\vecsym{x}) = f_i(f_{i-1}(...(f_1(\vecsym{x})))) $. When calculating the partial derivates for each layer's function we can apply the chain rule of calculus. Goodfellow et al. provide the following example with can be applied to tensors without loss of generality \cite{Goodfellow-et-al-2016}. 
+In the previous sections, we introduced neural networks as a directed graph of computations $ f(\vecsym{x}) = f_i(f_{i-1}(...(f_1(\vecsym{x})))) $. When calculating the partial derivates for each layer's function we can apply the chain rule of calculus. Goodfellow et al. provide the following example with can be applied to tensors without loss of generality~\cite{Goodfellow-et-al-2016}. 
 
 Let $w \in\mathbb{R}$ be the input to the graph. We use the same function $f: \mathbb{R} \rightarrow \mathbb{R}$ as the operation that we apply at every step of a chain: $x = f(w)$, $y = f(x)$, $z = f(y)$. To compute the partial derivate $\partial z$, we apply the chain rule and obtain:
 $$
 \begin{aligned}
-&\phantom{{}={}} \frac{\partial z}{\partial w} \\&= \frac{\partial z}{\partial y} \frac{\partial x}{\partial y}  \frac{\partial x}{\partial w} \\
-&= f'(y) f'(x) f'(w) \\&= f'(f(f(w)))f'(f(w))f'(w) \\
+&\phantom{{}={}} \frac{\partial z}{\partial w} \\
+&= \frac{\partial z}{\partial y} \frac{\partial x}{\partial y}  \frac{\partial x}{\partial w} \\
+&= f'(y) f'(x) f'(w) \\
+&= f'(f(f(w)))f'(f(w))f'(w) \\
 \end{aligned}
 $$
 
@@ -149,7 +151,7 @@ Unlike feedforward networks, \emph{recurrent neural networks} contain layers wit
 
 	RNNs have the benefit of incorporating the context of previous states into the current prediction. We think of an RNN as a loop where during each iteration we use the previous iteration's output as an additional input. In the context of our LID task this means that for every time step the RNN has knowledge about the utterances or frequency activation prior to the current time step.
 
-	While there are various forms of RNN implementations, we use \emph{Long Short-Term Memory} (LSTM) networks in this thesis \cite{hochreiter1997long}. There are two advantages for this. First, LSTMs overcome a problem known as  \emph{exploding or vanishing gradients} when training the networks \cite[p.~288]{Goodfellow-et-al-2016}. Second, related work on spoken language understanding shows the usefulness of LSTMs for audio tasks. (see related work chapter for more details)
+	While there are various forms of RNN implementations, we use \emph{Long Short-Term Memory} (LSTM) networks in this thesis~\cite{hochreiter1997long}. There are two advantages for this. First, LSTMs overcome a problem known as  \emph{exploding or vanishing gradients} when training the networks~\cite[p.~288]{Goodfellow-et-al-2016}. Second, related work on spoken language understanding shows the usefulness of LSTMs for audio tasks. (see related work chapter for more details)
 
 \subsubsection{Long Short-Term Memory Networks}
 Unlike other RNNs, Long Short-Term Memory networks are designed to capture context over long as well as short periods of time. An LSTM network is composed of many, hidden LSTM cells. Each cell holds its internal state or memory and is carefully controlled by three, trainable \emph{gate} layers. Each gate controls the information flow and decides if the cell's state should be altered. Gates are represented as sigmoid functions and element-wise multiplications of the input and previous cell's state. The sigmoid outputs numbers between zero and one, where zero blocks any changes and one completely accepts all modifications to cell's state.
@@ -179,7 +181,7 @@ where $\vecsym{x_t}$ is an input vector and $\vecsym{y_t}$ is the output vector 
 
 \subsection{Convolutional Recurrent Neural Networks}
 \label{sec:hybrid_networks}
-While both CNNs and RNNs can be used completely on their own, for some task it is worthwhile to use a combination of both. These \emph{hybrid networks} can combine the best of both worlds. Specifically, in this thesis we are using \emph{convolutional recurrent neural network} consisting of a CNN part and an RNN part. Tang et al. first introduced this architecture in the context of document classification \cite{tang2015document}.
+While both CNNs and RNNs can be used completely on their own, for some task it is worthwhile to use a combination of both. These \emph{hybrid networks} can combine the best of both worlds. Specifically, in this thesis we are using \emph{convolutional recurrent neural network} consisting of a CNN part and an RNN part. Tang et al. first introduced this architecture in the context of document classification~\cite{tang2015document}.
 
 The convolutional part is responsible for detecting and extracting local visual features into an intermediary audio representation. A recurrent part is tasked with temporal summarization of these features taking the global structure into account. Figure~\ref{fig:crnn} shows the architecture of a CRNN network. 
 %
@@ -213,8 +215,8 @@ The time domain is along the $x$ axis and the frequency domain in Hz is along th
 Within a spectrogram image we can clearly see distinct, bright, ripple-like patters, each representing a heightened frequency activation at that time. Due to the anatomy of the human vocal cords we emit sounds vibrating on multiple frequencies while speaking, resulting in these ripples. 
 The frequency axis is divided into multiple \emph{formants}, defined as a range of frequencies of a complex sound in which there is an absolute or relative maximum in the sound spectrum. There are several formants ranging form the lower speech frequencies to the higher ones. Vowels can be identified by their difference in the lower F1 and higher F2 formant. Already, we note that there is a lot more information encoded into theses images then first meets the eye and, hence, a lot of speech processing systems use spectrograms.
 
-MFCC is obtained by using linear cosine transform of log power spectrum on a nonlinear mel-frequency scale. This means that, first the powers of the spectrum are mapped onto the \emph{mel-scale}. The mel-scale groups frequencies onto a perceptual scale of equally distanced audio pitch values \cite{stevens1937scale}: 
+MFCC is obtained by using linear cosine transform of log power spectrum on a nonlinear mel-frequency scale. This means that, first the powers of the spectrum are mapped onto the \emph{mel-scale}. The mel-scale groups frequencies onto a perceptual scale of equally distanced audio pitch values~\cite{stevens1937scale}: 
 $$
 \vecsym{m} = 2595 \log_{10}\left(1+{\frac {f}{700}}\right)
 $$
-where $\vecsym{m}$ are the resulting mels and $f$ frequencies in Hz. The mel-scale is modeled after the human ear's deficiency to differentiate adjacent frequencies. Effectively this groups frequencies together into bins with many, smaller bins for lower frequencies and only a few larger for the higher frequencies. Further, we calculate the powers of the mel-spectrum and apply the logarithm to these. The resulting energies are fed into a \emph{discrete cosine transformation} of which we keep the first 13 coefficients as our MFFC vector \cite{sahidullah2012design}. 
+where $\vecsym{m}$ are the resulting mels and $f$ frequencies in Hz. The mel-scale is modeled after the human ear's deficiency to differentiate adjacent frequencies. Effectively this groups frequencies together into bins with many, smaller bins for lower frequencies and only a few larger for the higher frequencies. Further, we calculate the powers of the mel-spectrum and apply the logarithm to these. The resulting energies are fed into a \emph{discrete cosine transformation} of which we keep the first 13 coefficients as our MFFC vector~\cite{sahidullah2012design}. 
