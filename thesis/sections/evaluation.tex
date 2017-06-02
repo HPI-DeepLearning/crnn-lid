@@ -349,9 +349,9 @@ First, we visualize the high-dimensional language vector embedding space using t
 %
 Note that French and Spanish are separated very nicely from the other languages, while German and English have some overlap. This is in line with our previous observations of classification errors, as described in Section~\ref{sec:youtube_news}.
 
-A primary advantage of deep neural networks is their ability to identify and learn useful features without requiring a data scientist to manually define these. Therefore, no prior domain knowledge is needed, a fact that makes these techniques so powerful and versatile. From an outsider's perspective, deep learning can appear as a black box, and it remains unclear which features were ultimately deemed relevant. In order to gain a better understanding of our model, we visualize its convolutional layers. Figure~\ref{fig:conv_filter} visualizes nine of the highest-activating filters of the final convolutional layer.
+A primary advantage of deep neural networks is their ability to identify and learn useful features without requiring a data scientist to manually define these. Therefore, no prior domain knowledge is needed, a fact that makes these techniques so powerful and versatile. From an outsider's perspective, deep learning can appear as a black box, and it remains unclear which features were ultimately deemed relevant. In order to gain a better understanding of our model, we visualize its convolutional layers. Figure~\ref{fig:conv_filter} visualizes nine of the highest-activating filters of the final convolutional layer
 %
-	\begin{figure}[tp]
+	\begin{figure}[bp]
   		\centering
     	\includegraphics{img/conv_filter.pdf}
     	\caption{Visualization of nine filters in the final convolutional layer. Note the ripple-like patterns responsible for detecting different frequency spans in the input audio.}
@@ -359,6 +359,7 @@ A primary advantage of deep neural networks is their ability to identify and lea
 	\end{figure}
 %
 To obtain these filters, we performed backpropagation from the output of each filter back to the input image. This yielded the gradients in the filter output with respect to the input image pixels. We used these to perform gradient ascent, searching for the image pixels that maximize the output of the filter, by following the method proposed by Chollet~\cite{chol16}.
+
 
 Visualizations for the lower-level convolutional layers result in images of very simple geometric shapes like lines and circles, which matched our expectations. With increasing network depth, each convolutional layer's features combined and evolved into more complex shapes resembling our input domain. In Figure~\ref{fig:conv_filter}, we identify the familiar ripple-like patterns that represent frequency activations over time. This proves that the network learned these structures, as we hypothesized earlier. We can also identify that some filters specialize in high frequencies, whereas others focus on lower ones. Furthermore, it can be observed that the filters only react to a short and specific span of time within the spectrogram, all of which are less than one second long.
 
