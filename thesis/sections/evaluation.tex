@@ -8,7 +8,14 @@ Further, we experiment with modified model architectures to maximize the model's
 \label{sec:hardware}
 	In order to facilitate Keras's and TensorFlow's hardware-accelerated computation, we executed all training runs on CUDA-compatible\footnote{\url{https://developer.nvidia.com/cuda-zone}, accessed 30 January 2017} \ac{gpu} machines at our disposal at the Internet Technologies and Systems chair of the Hasso Plattner Institute. Details are shown in Table~\ref{tab:hardware}.
 
-	\begin{table}[bp]
+
+
+
+\subsection{Data}
+\label{sec:data}
+	For our performance evaluation, we use the European Speech Repository and YouTube News dataset, as described in Chapter~\ref{sec:datasets}. Both datasets were preprocessed and converted to spectrogram images (see Section~\ref{sec:data_processing}). Each spectrogram image represents a nonoverlapping ten-second snippet of a source audio file. We chose this duration in reference to the NIST LRE2015 challenge~\cite{lre2015}. We split both datasets into a training (\SI{70}{\percent}), a validation \SI{20}{\percent}, and a testing set \SI{10}{\percent}, and all files were distributed equally between all four language classes. The number of samples per class was limited by the language with the least number of files to ensure an equal distribution across the classes. The European Speech repository yields a total of about \num{19000}~training images, which amounts to roughly \num{53}~hours of speech audio. The YouTube News dataset is considerably larger and yields a total of about \num{194000}~training files, or \num{540}~hours. Table~\ref{tab:data_splits} contains the detailed dataset splits.
+
+	\begin{table}[tp]
 	\centering
 	\begin{tabu}{lll}
 	\toprule
@@ -23,13 +30,7 @@ Further, we experiment with modified model architectures to maximize the model's
 	\caption{Hardware resources used in training the neural networks. We made heavy use of modern GPUs to benefit from hardware-accelerated numerical computations.}
 	\label{tab:hardware}
 	\end{table}
-
-
-\subsection{Data}
-\label{sec:data}
-	For our performance evaluation, we use the European Speech Repository and YouTube News dataset, as described in Chapter~\ref{sec:datasets}. Both datasets were preprocessed and converted to spectrogram images (see Section~\ref{sec:data_processing}). Each spectrogram image represents a nonoverlapping ten-second snippet of a source audio file. We chose this duration in reference to the NIST LRE2015 challenge~\cite{lre2015}. We split both datasets into a training (\SI{70}{\percent}), a validation \SI{20}{\percent}, and a testing set \SI{10}{\percent}, and all files were distributed equally between all four language classes. The number of samples per class was limited by the language with the least number of files to ensure an equal distribution across the classes. The European Speech repository yields a total of about \num{19000}~training images, which amounts to roughly \num{53}~hours of speech audio. The YouTube News dataset is considerably larger and yields a total of about \num{194000}~training files, or \num{540}~hours. Table~\ref{tab:data_splits} contains the detailed dataset splits.
-%
-	\begin{table}[bp]
+	\begin{table}[tp]
 	\centering
 	\begin{tabu}{lrr}
 	\toprule
