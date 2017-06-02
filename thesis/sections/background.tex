@@ -197,6 +197,7 @@ The convolutional part is responsible for detecting and extracting local visual 
 	For this thesis, we use a bidirectional LSTM that performs both forward and backward passes along the time sequence. We combine that last output of the forward pass with the first output of the backward pass into a single, concatenated output. Finally, this is fed into a fully-connected layer serving as a classifier.
 	
 \subsection{Audio Representations}
+\label{sec:audio_representations}
 There are many different representations for audio data. Many people are familiar with the waveform representation, which is usually represented as a plot of signal amplitude along a time axis. A raw waveform representation is typically not directly used as input to machine learning systems.
 Other representations such as \emph{spectrograms} or \emph{mel-frequency cepstral coefficients} (MFCC) vectors are more common. To obtain both of these, we need to transform the original audio signal.
 
