@@ -1,4 +1,4 @@
-\section{Conclusion and Future Work}
+\section{Conclusions and Future Work}
 \label{sec:summary}
 This last chapter presents high-level insights and finally comments on
 future work and prospects concerning the discussed topics.
@@ -20,7 +20,7 @@ Throughout this work, we evaluated our models' robustness to white noise and bac
 
 Our approach relies on extracting and classifying a sequence of intermediate language representations created from spectrogram image inputs. Within the automatic speech recognition community (ASR), there is related work on extracting and classifying sequences of phonemes~\cite{song2015end}. Instead of matching these phoneme sequences to words, one could use these to classify a target language. This is an alternative approach to the one presented in this thesis and could be used to compare the effectiveness and robustness of the two methods. Another interesting idea was introduced by Google's \emph{Wavenet}~\cite{van2016wavenet}. By utilizing dilated convolutions for speech recognition, the authors were able to capture a longer receptive field, which is much cheaper to compute than LSTMs. Further, \emph{Wavenet} operates on raw audio signals forgoing the need for spectrogram features.  Even though \emph{Wavenet} was evaluated for automatic speech recognition, it could likely be adopted to language identification as well. 
 
-\subsection{Conclusion}
+\subsection{Conclusions}
 In this thesis, we presented several neural network architectures aimed at the task of solving the language identification problem. We employed CNNs and CRNNs to infer the language of given audio samples directly from their spectrogram representation. 
 
 We proposed three hypotheses and conducted experiments to verify their validity. We confirmed that, first, convolutional neural networks are an effective, high-accuracy solution for language identification tasks. Second, spectrogram images are a suitable input representation for learning audio features. Third, convolutional recurrent neural networks consistently improve the classification accuracy throughout all experiments compared to a plain, CNN-based approach.
