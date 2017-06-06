@@ -1,5 +1,6 @@
 # Master Thesis
 Language Identification Using Deep Convolutional Recurrent Neural Network
+[Read the complete thesis here.](https://github.com/hotzenklotz/master-thesis/blob/master/thesis/Masters%20Thesis%20Tom%20Herold.pdf)
 
 
 ## Repo Structure
