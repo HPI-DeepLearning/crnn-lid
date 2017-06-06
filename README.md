@@ -1,50 +1,38 @@
 # Master Thesis
-Automatic spoken language identification (LID) using deep learning.
+Language Identification Using Deep Convolutional Recurrent Neural Network
 
-## Motivation
-I want to classify the spoken language within audio files, a process that usually serves as the first step for NLP or speech transcription.
-
-I used two deep learning approaches using the Tensorflow and Caffe frameworks for different model configuration.
 
 ## Repo Structure
 
 - **/data**
-  - Scripts to download training data from Voxforge and Youtube. For usage details see below.  
-- **/Evaluation**
-  - Prediction scripts for single audio files or list of files using Caffe
-- **/Preprocessing**
-  - Includes all scripts to convert a WAV audio file into spectrogram and mel-filter spectrogram images using a Spark Pipeline.
-  - All scripts to create/extract the audio features
-  - To convert a directory of WAV audio files using the Spark pipeline run: `./run.sh --inputPath {input_path} --outputPath {output_path} | tee sparkline.log -`
-- **/models**
-  - All our Caffe models: Berlin_net, Topcoder, VGG_M
-  - Berlin_net: 3Conv + Batch Normalisation, 2 FullyConnected Layer (Shallow Architecture)
-  - Topcoder_net: (Deep Architecture) inspired by [Topcoder's spoken language identification challenge](https://yerevann.github.io/2015/10/11/spoken-language-identification-with-deep-convolutional-networks/)
-  - Finetuning of [Inception-v3](https://github.com/tensorflow/models/tree/master/inception)
-- **/tensorflow**
-  - All the code for setting up and training various models with Tensorflow.
+  - Scripts to download training data from Voxforge, European Parliament Speech Repository and YouTube. For usage details see below.
+- **/keras**
+  - All the code for setting up and training various models with Keras/Tensorflow.
   - Includes training and prediction script. See `train.py` and `predict.py`.
   - Configure your learning parameters in `config.yaml`.
-  - Add or change network under `/tensorflow/networks/instances/`.
+  - More below
 - **/tools**
   - Some handy scripts to clean filenames, normalize audio files and other stuff.
+- **/webserver**
+  - A demo project for language identification. A small web server with a REST interface for classification and a small web frontend to upload audio files.
+- **/notebooks**
+  - Various jupyter notebooks with various audio experiments
+- **/thesis**
+  - Latex sources & figures for my thesis
+- **/paper**
+  - Some papers / related worked I used in preparation for this thesis. Not complete.
+
 
 
 ## Requirements
-- Caffe 
+- Keras 1
 - TensorFlow
-- Spark
-- Python 2.7
-- OpenCV 2.4+
+- Python 3.4
 - youtube_dl
+- sox
 
-```
-// Install additional Python requirements
-pip install -r requirements.txt
-pip install youtube_dl
-```
 
-## Datasets
+## Training Data
 Downloads training data / audio samples from various sources.
 
 #### Voxforge
@@ -55,43 +43,61 @@ Downloads training data / audio samples from various sources.
 ```
 
 #### Youtube
-- Downloads various news channels from Youtube.
-- Configure channels/sources in `youtube/sources.yml`
+- Downloads various news channels from YouTube.
+- Configure channels/sources in `/data/sources.yml`
 
 ```python
-python /data/youtube/download.py
+python /data/download_youtube.py
 ```
+
+#### European Speech Repository
+- Downloads various speeches and press conferences from [European Speech Repository](https://webgate.ec.europa.eu/sr/).
+- needs WebDriver/Selenium & Firefox
+
+```python
+python /data/download_europe_speech_repository.py
+```
+
+## Convert Audio Files to Spectrograms
+
+Make sure you have [SoX](http://sox.sourceforge.net/) installed. To create 500x129x1 grayscale spectrogram images run the following script.
+
+```
+python /data/wav_to_spectrogram.py --source <path> --target <path>
+```
+
+The above script uses different spectrogram generators to augment the data with additional noise or background music if needed. Adjust the imports accordingly.
+
 
 ## Models
 
-I trained models for 2/4 languages (English, German, French, Spanish). 
+I trained models for 4 languages (English, German, French, Spanish) and 6 languages (English, German, French, Spanish, Chinese, Russian).
+They might be released later.
 
 
+#### Training & Prediction
 
-#### Training
-
+To start a training run, set all the desired properties and hyperparameters i the config.yaml file and train with Keras:
 ```
-// Caffe:
-/models/{model_name}/training.sh
+python /keras/train.py --config <config.yaml>
 ```
 
+To predict a single audio file run:
+```
+python /keras/train.py --model <path/to/model> --input <path/to/speech.mp3>
+```
+Audio files can be in any format understood by SoX. The pretrained model files need to be caomptible with Keras v1.
 
-```
-// Tensorflow:
-python /tensorflow/train.py
-```
 
 #### Labels
 ```
-0 English, 
-1 German, 
-2 French, 
-3 Spanish
+0 English,
+1 German,
+2 French,
+3 Spanish,
+4 Mandarin Chinese,
+5 Russian
 ```
-
-
-## Training Data
-For training I downloaded news reel videos from Youtube. Check out the **/data** directory.
 
 ## LICENSE
 TBD
