@@ -15,6 +15,8 @@ class ResultStore {
   onReceivePrediction(response) {
     this.audio = response.audio;
     this.predictions = response.predictions;
+    this.metadata = response.metadata;
+    this.timesteps = response.timesteps;
 
     RouterActions.transition("result")
 
@@ -29,6 +31,14 @@ class ResultStore {
     }
   }
 
+  static getTimesteps() {
+    const timesteps = this.getState().timesteps;
+    if (timesteps) {
+      return timesteps;
+    } else {
+      return null;
+    }
+  }
 
 };
 

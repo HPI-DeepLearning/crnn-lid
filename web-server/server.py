@@ -10,6 +10,8 @@ from werkzeug import secure_filename
 from flask_extensions import *
 from keras.models import load_model
 import tensorflow as tf
+import sox
+import pickle
 
 lib_path = os.path.abspath(os.path.join('../keras'))
 sys.path.append(lib_path)
@@ -100,12 +102,24 @@ def get_prediction(file_path):
     data = [np.divide(image, 255.0) for image in data_generator]
     data = np.stack(data)
 
-    # load model and do predictions
-    model = getattr(g, "_model", None)
-    if model is None:
-        model = flask.g._model = load_model("model/2017-01-02-13-39-41.weights.06.model")
+    if not os.path.isfile("prediction.pickle"):
 
-    probabilities = flask.g._model.predict(data)
+        # load model and do predictions
+        model = getattr(g, "_model", None)
+        if model is None:
+            print("loading model")
+            start_time = time.time()
+            model = flask.g._model = load_model("model/2017-01-02-13-39-41.weights.06.model")
+            print("finished loding model", time.time() - start_time)
+
+        print("starting prediction")
+        start_time = time.time()
+        probabilities = flask.g._model.predict(data)
+        print("finished prediction", time.time() - start_time)
+
+        pickle.dump(probabilities, open("prediction.pickle", "wb"))
+    else:
+        probabilities = pickle.load(open("prediction.pickle", "rb"))
 
     # average predictions along time axis (majority voting)
     average_prob = np.mean(probabilities, axis=0)
@@ -114,14 +128,17 @@ def get_prediction(file_path):
     print(probabilities, average_prob, average_class)
 
     pred_with_label = {LABEL_MAP[index] : prob for index, prob in enumerate(average_prob.tolist())}
+    timesteps_with_labels = {LABEL_MAP[index] : prob for index, prob in enumerate(probabilities.T.tolist())}
 
     # transform results a little to make them ready for JSON conversion
-    file_path = file_path + "?cachebuster=%s" % time.time()
+    file_path_cachebuster = file_path + "?cachebuster=%s" % time.time()
     result = {
         "audio" : {
-            "url" : "%s" % file_path,
+            "url" : "%s" % file_path_cachebuster,
         },
-        "predictions" : pred_with_label
+        "predictions" : pred_with_label,
+        "timesteps": timesteps_with_labels,
+        "metadata": sox.file_info.info(file_path),
     }
 
     return result

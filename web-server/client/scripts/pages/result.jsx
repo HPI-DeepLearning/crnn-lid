@@ -38,13 +38,29 @@ class Result extends Component {
       .value();
 
     const colors = _.mapValues(predictions, (value, key) => ColorStore.getColorForLabel(key))
-    debugger
 
     return {
       columns : columns,
       colors : colors
     }
+  }
 
+  getLineCharData() {
+
+    const timesteps = ResultStore.getTimesteps();
+    const columns = _.map(timesteps, (value, key) => [key].concat(value))
+    columns.push(
+      ["x"].concat(_.range(0, columns[0].length - 1 ).map((i) => i * 10))
+    )
+    debugger
+
+    const colors = _.mapValues(timesteps, (value, key) => ColorStore.getColorForLabel(key))
+
+    return {
+      x: "x",
+      columns : columns,
+      colors : colors
+    }
   }
 
   render() {
@@ -52,14 +68,43 @@ class Result extends Component {
     return (
       <div className="result-page">
         <div className="row">
-          <div className="col s12 m12">
+          <div className="col s6 m6">
             <div className="card-panel center-align prediction-panel">
               <BarChart data={this.getBarChartData()} />
+            </div>
+          </div>
+          <div className="col s6 m6">
+            <div className="card-panel center-align prediction-panel">
               <audio
                 src={this.props.audio.url}
                 className="valign"
                 controls
                 />
+              <table className="striped">
+                <tbody></tbody>
+                <tr>
+                  <td>Channels</td><td>{this.props.metadata.channels}</td>
+                </tr>
+                <tr>
+                  <td>Duration</td><td>{parseInt(this.props.metadata.duration)}s</td>
+                </tr>
+                <tr>
+                  <td>Bit Rate</td><td>{this.props.metadata.bitrate}</td>
+                </tr>
+                <tr>
+                  <td>Sample</td><td>{parseInt(this.props.metadata.sample_rate) / 1000}kHz</td>
+                </tr>
+                <tr>
+                  <td>Encoding</td><td>{this.props.metadata.encoding}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col s12 m12">
+            <div className="card-panel center-align">
+              <LineChart data={this.getLineCharData()}/>
             </div>
           </div>
         </div>

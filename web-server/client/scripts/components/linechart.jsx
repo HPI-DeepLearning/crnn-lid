@@ -28,12 +28,12 @@ class LineChart extends Component {
       data : this.props.data,
       tooltip: {
         format : {
-          title: (x) => "Frame #" + x
+          title: (x) => x + "s"
         }
       },
       axis : {
         x : {
-          label : "Frame Number"
+          label : "seconds"
         }
       }
     });

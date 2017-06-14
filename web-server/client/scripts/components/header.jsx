@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router";
 import connectToStores from "alt/utils/connectToStores";
 import Component from "./baseComponent.jsx";
-//import Logo from "../../images/apple-touch-icon-72x72.png";
+import Logo from "../../images/favicon/android-icon-96x96.png";
 import ResultStore from "../stores/resultStore.js";
 
 
@@ -33,11 +33,11 @@ class Header extends Component {
     const resultLink = this.getResultLink();
 
     return (
-      <nav className="blue">
+      <nav className="blue lighten-1">
         <div className="nav-wrapper">
           <div className="col s12">
             <a href="/" className="brand-logo">
-              <img src="../../dist/images/apple-touch-icon-72x72.png" width="48px" height="48px"/>
+              <img src="/dist/images/favicon/android-icon-96x96.png" width="48px" height="48px"/>
               Language Identification
             </a>
           </div>
