@@ -2,6 +2,7 @@
 import sys, subprocess, time
 import numpy as np
 from os import path
+import flask
 from flask.ext.cors import CORS
 from flask import *
 from flask.json import jsonify
@@ -13,6 +14,7 @@ import tensorflow as tf
 lib_path = os.path.abspath(os.path.join('../keras'))
 sys.path.append(lib_path)
 from data_loaders.SpectrogramGenerator import SpectrogramGenerator
+
 
 static_assets_path = path.join(path.dirname(__file__), "dist")
 app = Flask(__name__, static_folder= static_assets_path)
@@ -98,9 +100,14 @@ def get_prediction(file_path):
     data = [np.divide(image, 255.0) for image in data_generator]
     data = np.stack(data)
 
-    model = load_model("model/2017-01-02-13-39-41.weights.06.model")
-    probabilities = model.predict(data)
+    # load model and do predictions
+    model = getattr(g, "_model", None)
+    if model is None:
+        model = flask.g._model = load_model("model/2017-01-02-13-39-41.weights.06.model")
 
+    probabilities = flask.g._model.predict(data)
+
+    # average predictions along time axis (majority voting)
     average_prob = np.mean(probabilities, axis=0)
     average_class = np.argmax(average_prob)
 
@@ -108,6 +115,7 @@ def get_prediction(file_path):
 
     pred_with_label = {LABEL_MAP[index] : prob for index, prob in enumerate(average_prob.tolist())}
 
+    # transform results a little to make them ready for JSON conversion
     file_path = file_path + "?cachebuster=%s" % time.time()
     result = {
         "audio" : {
