@@ -11,7 +11,7 @@ from flask_extensions import *
 from keras.models import load_model
 import tensorflow as tf
 import sox
-import pickle
+import keras
 
 lib_path = os.path.abspath(os.path.join('../keras'))
 sys.path.append(lib_path)
@@ -20,9 +20,15 @@ from data_loaders.SpectrogramGenerator import SpectrogramGenerator
 
 static_assets_path = path.join(path.dirname(__file__), "dist")
 app = Flask(__name__, static_folder= static_assets_path)
+app._graph = keras.backend.tf.get_default_graph();
+
+print("loading model")
+start_time = time.time()
+app._model = load_model("model/2017-01-02-13-39-41.weights.06.model")
+print("finished loding model", time.time() - start_time)
+
+
 CORS(app)
-
-
 # ----- Routes ----------
 
 @app.route("/", defaults={"fall_through": ""})
@@ -102,24 +108,11 @@ def get_prediction(file_path):
     data = [np.divide(image, 255.0) for image in data_generator]
     data = np.stack(data)
 
-    if not os.path.isfile("prediction.pickle"):
-
-        # load model and do predictions
-        model = getattr(g, "_model", None)
-        if model is None:
-            print("loading model")
-            start_time = time.time()
-            model = flask.g._model = load_model("model/2017-01-02-13-39-41.weights.06.model")
-            print("finished loding model", time.time() - start_time)
-
-        print("starting prediction")
-        start_time = time.time()
-        probabilities = flask.g._model.predict(data)
-        print("finished prediction", time.time() - start_time)
-
-        pickle.dump(probabilities, open("prediction.pickle", "wb"))
-    else:
-        probabilities = pickle.load(open("prediction.pickle", "rb"))
+    print("starting prediction")
+    start_time = time.time()
+    with app._graph.as_default():
+        probabilities = app._model.predict(data)
+    print("finished prediction", time.time() - start_time)
 
     # average predictions along time axis (majority voting)
     average_prob = np.mean(probabilities, axis=0)

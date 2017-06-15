@@ -15,7 +15,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.1 r"
-   sodipodi:docname="icon.svg">
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="/Users/therold/Uni/master-thesis/web-server/client/images/icon.png"
+   inkscape:export-xdpi="367.74667"
+   inkscape:export-ydpi="367.74667">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -26,7 +29,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="175.93653"
+     inkscape:cx="159.68653"
      inkscape:cy="916.15332"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"

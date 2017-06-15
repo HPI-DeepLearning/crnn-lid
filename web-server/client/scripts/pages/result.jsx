@@ -5,6 +5,12 @@ import BarChart from "../components/barchart.jsx";
 import Component from "../components/baseComponent.jsx";
 import ResultStore from "../stores/resultStore"
 import ColorStore from "../stores/colorStore"
+import EnFlag from "../../images/gb.png"
+import DeFlag from "../../images/de.png"
+import FrFlag from "../../images/fr.png"
+import EsFlag from "../../images/es.png"
+import CnFlag from "../../images/cn.png"
+import RuFlag from "../../images/ru.png"
 
 class Result extends Component {
 
@@ -45,6 +51,21 @@ class Result extends Component {
     }
   }
 
+  getFlag() {
+    const languageMap = {
+      "English": "gb",
+      "German": "de",
+      "French": "fr",
+      "Spanish": "es",
+      "Chinese": "cn",
+      "Russian": "ru",
+    }
+    const predictions = ResultStore.getPredictions();
+    const highestPrediction = Object.keys(predictions).reduce(function(a, b){ return predictions[a] > predictions[b] ? a : b });
+
+    return `/dist/images/${languageMap[highestPrediction]}.png`
+  }
+
   getLineCharData() {
 
     const timesteps = ResultStore.getTimesteps();
@@ -52,7 +73,6 @@ class Result extends Component {
     columns.push(
       ["x"].concat(_.range(0, columns[0].length - 1 ).map((i) => i * 10))
     )
-    debugger
 
     const colors = _.mapValues(timesteps, (value, key) => ColorStore.getColorForLabel(key))
 
@@ -70,16 +90,24 @@ class Result extends Component {
         <div className="row">
           <div className="col s6 m6">
             <div className="card-panel center-align prediction-panel">
+              <span className="card-title">Majority Voting Prediction</span>
               <BarChart data={this.getBarChartData()} />
             </div>
           </div>
           <div className="col s6 m6">
             <div className="card-panel center-align prediction-panel">
-              <audio
-                src={this.props.audio.url}
-                className="valign"
-                controls
-                />
+              <div className="row">
+                <div className="col s3 m3">
+                  <img className="flag" src={this.getFlag()} />
+                </div>
+                <div className="col s9 m9">
+                  <audio
+                    src={this.props.audio.url}
+                    className="valign"
+                    controls
+                    />
+                </div>
+              </div>
               <table className="striped">
                 <tbody></tbody>
                 <tr>
@@ -104,6 +132,7 @@ class Result extends Component {
         <div className="row">
           <div className="col s12 m12">
             <div className="card-panel center-align">
+              <span className="card-title">Predicitions per 10s Time Steps</span>
               <LineChart data={this.getLineCharData()}/>
             </div>
           </div>
