@@ -7,6 +7,7 @@ import FileInput from "../components/fileInput.jsx";
 import Spinner from "../components/spinner.jsx";
 import ImageCard from "../components/imageCard.jsx";
 import AudioCapture from "../components/audioCapture.jsx";
+import Modal from "../components/modal.jsx";
 import AudioStore from "../stores/audioStore.js";
 import AudioActions from "../actions/audioActions.js";
 
@@ -31,10 +32,10 @@ class Home extends Component {
     }
   }
 
-  handleClickExample(videoID, evt) {
+  handleClickExample(audioID, evt) {
 
     evt.preventDefault();
-    AudioActions.useExample(videoID);
+    AudioActions.useExample(audioID);
 
   }
 
@@ -56,7 +57,7 @@ class Home extends Component {
       ];
 
       return (
-        <div className="col s12 m4" key={audio.title}>
+        <div className="col s12 m3" key={audio.title}>
           <div className="card-link" onClick={this.handleClickExample.bind(this, audio.id)}>
             <ImageCard
               image={audio.thumbnail}
@@ -87,17 +88,27 @@ class Home extends Component {
       );
   }
 
+  getLoadingModal() {
+    if (this.props.isUploading) {
+      return <Modal />;
+    } else {
+      return null;
+    }
+  }
+
   render() {
 
     const spinner =  this.getSpinner();
     const exampleAudio = this.getExampleAudio();
     const errorPanel = this.getErrorPanel();
+    const loadingModal = this.getLoadingModal();
     const CSSTransitionGroup = ReactAddons.addons.CSSTransitionGroup;
 
     //<AudioCapture/>
     return (
       <div className="home-page">
         {errorPanel}
+        {loadingModal}
 
         <div className="row">
           <div className="col s12">

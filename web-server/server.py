@@ -74,7 +74,7 @@ def uploadAudio():
 
 @app.route("/api/example/<int:example_id>")
 def use_example(example_id):
-    if example_id <= 3:
+    if example_id <= 6:
         filename = "audio%s.wav" % example_id
         file_path = path.join(app.config["UPLOAD_FOLDER"], "examples", filename)
         response = jsonify(get_prediction(file_path))

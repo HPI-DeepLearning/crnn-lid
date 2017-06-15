@@ -16,22 +16,40 @@ class AudioStore {
     this.exampleAudio = [
       {
         id : 1,
-        thumbnail : "/dist/images/examples/audio.png",
+        thumbnail : "/dist/images/gb.png",
         title : "CNN",
         language : "English",
       },
       {
         id : 2,
-        thumbnail : "/dist/images/examples/audio.png",
-        title : "Dubsmash 2",
+        thumbnail : "/dist/images/de.png",
+        title : "Deutsche Welle",
         language : "German",
       },
       {
         id : 3,
-        thumbnail : "/dist/images/examples/audio.png",
-        title : "Voxforge",
-        language : "English",
-      }
+        thumbnail : "/dist/images/fr.png",
+        title : "France24",
+        language : "French",
+      },
+      {
+        id : 4,
+        thumbnail : "/dist/images/es.png",
+        title : "Antena3noticias",
+        language : "Spanish",
+      },
+      // {
+      //   id : 5,
+      //   thumbnail : "/dist/images/cn.png",
+      //   title : "VOAChina",
+      //   language : "Mandarin Chinese",
+      // },
+      // {
+      //   id : 6,
+      //   thumbnail : "/dist/images/ru.png",
+      //   title : "Russia24TV",
+      //   language : "Russian",
+      // },
     ];
   }
 
