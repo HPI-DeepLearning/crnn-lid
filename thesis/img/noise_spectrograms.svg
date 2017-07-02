@@ -27,17 +27,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="115.63637"
+     inkscape:cx="-40.634224"
      inkscape:cy="312.30818"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g5292-5"
      showgrid="false"
      units="pt"
-     inkscape:window-width="2560"
-     inkscape:window-height="1403"
-     inkscape:window-x="2560"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:window-width="1393"
+     inkscape:window-height="855"
+     inkscape:window-x="0"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -140,7 +140,7 @@
            y="127.86651"
            x="12.702234"
            id="tspan9072-7-6"
-           sodipodi:role="line">cracking noise spectrogram</tspan></text>
+           sodipodi:role="line">crackling noise spectrogram</tspan></text>
     </g>
   </g>
 </svg>

@@ -19,7 +19,7 @@
    inkscape:version="0.92.1 r"><metadata
      id="metadata15484"><rdf:RDF><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
      id="defs15482"><clipPath
        clipPathUnits="userSpaceOnUse"
        id="clipPath15498"><path
@@ -199,8 +199,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="2560"
-     inkscape:window-height="1403"
+     inkscape:window-width="1393"
+     inkscape:window-height="855"
      id="namedview15480"
      showgrid="false"
      units="pt"
@@ -215,11 +215,11 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:bbox-paths="true"
      inkscape:zoom="1.4142136"
-     inkscape:cx="129.29538"
+     inkscape:cx="255.86749"
      inkscape:cy="75.348441"
-     inkscape:window-x="2560"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:window-x="0"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
      inkscape:current-layer="g15486"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -274,7 +274,7 @@
          x="352.31793"
          id="tspan15568"
          sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:9px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:1">CNN_D</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:9px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:1">CRNN</tspan></text>
 <text
        y="-55.692783"
        x="13.050207"
