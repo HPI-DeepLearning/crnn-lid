@@ -6,7 +6,7 @@ import connectToStores from "alt/utils/connectToStores";
 import FileInput from "../components/fileInput.jsx";
 import Spinner from "../components/spinner.jsx";
 import ImageCard from "../components/imageCard.jsx";
-import AudioCapture from "../components/audioCapture.jsx";
+// import AudioCapture from "../components/audioCapture.jsx";
 import Modal from "../components/modal.jsx";
 import AudioStore from "../stores/audioStore.js";
 import AudioActions from "../actions/audioActions.js";
@@ -104,7 +104,6 @@ class Home extends Component {
     const loadingModal = this.getLoadingModal();
     const CSSTransitionGroup = ReactAddons.addons.CSSTransitionGroup;
 
-    //<AudioCapture/>
     return (
       <div className="home-page">
         {errorPanel}
