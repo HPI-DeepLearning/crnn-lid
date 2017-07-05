@@ -38,18 +38,18 @@ class AudioStore {
         title : "Antena3noticias",
         language : "Spanish",
       },
-      // {
-      //   id : 5,
-      //   thumbnail : "/dist/images/cn.png",
-      //   title : "VOAChina",
-      //   language : "Mandarin Chinese",
-      // },
-      // {
-      //   id : 6,
-      //   thumbnail : "/dist/images/ru.png",
-      //   title : "Russia24TV",
-      //   language : "Russian",
-      // },
+      {
+        id : 5,
+        thumbnail : "/dist/images/cn.png",
+        title : "VOAChina",
+        language : "Mandarin Chinese",
+      },
+      {
+        id : 6,
+        thumbnail : "/dist/images/ru.png",
+        title : "Russia24TV",
+        language : "Russian",
+      },
     ];
   }
 
