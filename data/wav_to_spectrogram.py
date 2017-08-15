@@ -25,6 +25,7 @@ def directory_to_spectrograms(args):
 
     # Start a spectrogram generator for each class
     # Each generator will scan a directory for audio files and convert them to spectrogram images
+    # adjust this if you have other languages or any language is missing
     languages = ["english",
                  "german",
                  "french",
@@ -32,7 +33,7 @@ def directory_to_spectrograms(args):
                  "chinese",
                  "russian"]
 
-    generators = [MusicBackgroundSpectrogramGenerator(os.path.join(source, language), config, shuffle=False, run_only_once=True) for language in languages]
+    generators = [SpectrogramGenerator(os.path.join(source, language), config, shuffle=False, run_only_once=True) for language in languages]
     generator_queues = [SpectrogramGen.get_generator() for SpectrogramGen in generators]
 
     for language in languages:
