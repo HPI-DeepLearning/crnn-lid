@@ -12,7 +12,7 @@ def create_model(input_shape, config):
 
     input_tensor = Input(shape=input_shape)  # this assumes K.image_dim_ordering() == 'tf'
     inception_model = InceptionV3(include_top=False, weights=None, input_tensor=input_tensor)
-    inception_model.load_weights("logs/2016-12-18-13-56-44/weights.21.model", by_name=True)
+    # inception_model.load_weights("logs/2016-12-18-13-56-44/weights.21.model", by_name=True)
 
     for layer in inception_model.layers:
         layer.trainable = False
@@ -30,5 +30,8 @@ def create_model(input_shape, config):
 
     predictions = Dense(config["num_classes"], activation='softmax')(x)
 
-    return Model(input=inception_model.input, output=predictions)
+    model = Model(input=inception_model.input, output=predictions)
+    model.load_weights("logs/2017-01-02-13-39-41/weights.06.model")
+
+    return model
 

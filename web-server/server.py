@@ -24,8 +24,8 @@ app._graph = keras.backend.tf.get_default_graph();
 
 print("loading model")
 start_time = time.time()
-app._model = load_model("model/2017-01-31-14-29-14.CRNN_INCEPTION_EN_DE_FR_ES.model")
-# app._model = load_model("model/2017-01-31-14-29-14.CRNN_EN_DE_FR_ES_CN_RU.model")
+# app._model = load_model("model/2017-01-31-14-29-14.CRNN_INCEPTION_EN_DE_FR_ES.model")
+app._model = load_model("model/2017-01-31-14-29-14.CRNN_EN_DE_FR_ES_CN_RU.model")
 print("finished loding model", time.time() - start_time)
 NUM_LANGUAGES = 6
 

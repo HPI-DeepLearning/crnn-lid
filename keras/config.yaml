@@ -1,22 +1,37 @@
-train_data_dir: "/Users/therold/Uni/master-thesis/datasets/news/training.csv"
-validation_data_dir: "/Users/therold/Uni/master-thesis/datasets/news/validation.csv"
-test_data_dir: "/extra/tom/validation/segmented/testing.csv"
+train_data_dir: "/data/tom/eu_speech/png_20s/training.csv"
+validation_data_dir: "/data/tom/eu_speech/png_20s/validation.csv"
+test_data_dir: "/data/tom/eu_speech/png_20s/testing.csv"
 
-batch_size: 32
+# train_data_dir: "/data/tom/news2/png_10s_6lang/training.csv"
+# validation_data_dir: "/data/tom/news2/png_10s_6lang/validation.csv"
+# test_data_dir: "/data/tom/news2/png_10s_6lang/testing.csv"
+
+# train_data_dir: "/data/tom/news2/png_10s/training.csv"
+# validation_data_dir: "/data/tom/news2/png_10s/validation.csv"
+# # test_data_dir: "/data/tom/news2/png_10s/testing.csv"
+# # test_data_dir: "/data/tom/news2/vinyl_10s_newest/testing.csv"
+# # test_data_dir: "/data/tom/news2/whitenoise_10s_newest/testing.csv"
+# test_data_dir: "/data/tom/news2/backgroundmusic_10s/testing.csv"
+
+batch_size: 128
 learning_rate: 0.001
-num_epochs: 10
+num_epochs: 50
 
-data_loader: "Spectrogram2Loader"
+data_loader: "ImageLoader"
 color_mode: "L" # L = bw or RGB
-input_shape: [128, 312, 1]
+input_shape: [129, 1000, 1]
 
-model: "topcoder_small"
+model: "topcoder_crnn_finetune" # _finetune"
 
-segment_length: 10 # sec
+segment_length: 20 # sec
 pixel_per_second: 50
 
 label_names: ["EN", "DE", "FR", "ES"]
 num_classes: 4
+
+# label_names: ["EN", "DE", "FR", "ES", "CN", "RUS"]
+# num_classes: 6
+
 
 
 
