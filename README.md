@@ -66,7 +66,7 @@ python visualize_conv.py --model <path/to/model>
 
 ## LICENSE
 
-GPLv3 see `LICENSE.txt` for more information.
+GPLv3 see `LICENSE` for more information.
 
 ## Citation
 
