@@ -1,29 +1,18 @@
-train_data_dir: "/data/tom/eu_speech/png_20s/training.csv"
-validation_data_dir: "/data/tom/eu_speech/png_20s/validation.csv"
-test_data_dir: "/data/tom/eu_speech/png_20s/testing.csv"
-
-# train_data_dir: "/data/tom/news2/png_10s_6lang/training.csv"
-# validation_data_dir: "/data/tom/news2/png_10s_6lang/validation.csv"
-# test_data_dir: "/data/tom/news2/png_10s_6lang/testing.csv"
-
-# train_data_dir: "/data/tom/news2/png_10s/training.csv"
-# validation_data_dir: "/data/tom/news2/png_10s/validation.csv"
-# # test_data_dir: "/data/tom/news2/png_10s/testing.csv"
-# # test_data_dir: "/data/tom/news2/vinyl_10s_newest/testing.csv"
-# # test_data_dir: "/data/tom/news2/whitenoise_10s_newest/testing.csv"
-# test_data_dir: "/data/tom/news2/backgroundmusic_10s/testing.csv"
+train_data_dir: "<path to dataset dir>/training.csv"
+validation_data_dir: "<path to dataset dir>/validation.csv"
+test_data_dir: "<path to dataset dir>/testing.csv"
 
 batch_size: 128
 learning_rate: 0.001
 num_epochs: 50
 
 data_loader: "ImageLoader"
-color_mode: "L" # L = bw or RGB
-input_shape: [129, 1000, 1]
+color_mode: "L"  # L = bw or RGB
+input_shape: [129, 500, 1]
 
 model: "topcoder_crnn_finetune" # _finetune"
 
-segment_length: 20 # sec
+segment_length: 10  # number of seconds each spectogram represents
 pixel_per_second: 50
 
 label_names: ["EN", "DE", "FR", "ES"]

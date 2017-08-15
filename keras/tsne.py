@@ -49,9 +49,14 @@ def visualize_cluster(cli_args):
 
     # Create a new model and copy all but the last layer over
     model = Sequential()
-    for i, layer in enumerate(ref_model.layers[:-1]):
-        model.add(layer)
-        model.layers[i].set_weights(layer.get_weights())
+    i = 0
+    for layer in ref_model.layers[:-1]:
+        try:
+            model.add(layer)
+            model.layers[i].set_weights(layer.get_weights())
+        except ValueError:
+            continue
+        i += 1
     model.compile("adam", "categorical_crossentropy")
 
     probabilities = model.predict_generator(
