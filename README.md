@@ -77,7 +77,7 @@ If you find this code useful, please cite our paper:
   Author = {Christian Bartz, Tom Herold, Haojin Yang, Christoph Meinel},
   journal = {ArXiv e-prints},
   archivePrefix = "arXiv",
-  eprint = {TODO},
+  eprint = {1708.04811},
   Title = {Language Identification Using Deep Convolutional Recurrent Neural Networks},
   Year = {2017}
 }
