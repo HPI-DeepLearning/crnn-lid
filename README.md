@@ -73,11 +73,13 @@ GPLv3 see `LICENSE` for more information.
 If you find this code useful, please cite our paper:
 
 ```
-@article{crnn-lid,
+@inproceedings{crnn-lid,
   title={Language Identification Using Deep Convolutional Recurrent Neural Networks},
   author={Bartz, Christian and Herold, Tom and Yang, Haojin and Meinel, Christoph},
-  journal={arXiv preprint arXiv:1708.04811},
-  year={2017}
+  booktitle={International Conference on Neural Information Processing},
+  pages={880--889},
+  year={2017},
+  organization={Springer}
 }
 ```
 
