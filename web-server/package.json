@@ -14,7 +14,7 @@
     "c3": "^0.4.10",
     "css-loader": "^0.15.1",
     "file-loader": "^0.8.4",
-    "jquery": "^2.1.4",
+    "jquery": "^3.0.0",
     "less": "^2.5.1",
     "less-loader": "^2.2.0",
     "lodash": "^3.9.3",
